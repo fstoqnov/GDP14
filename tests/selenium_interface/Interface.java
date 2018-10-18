@@ -18,6 +18,7 @@ public class Interface {
 		correct = correct && testInter.testGetElementContent();
 		correct = correct && testInter.testGetElementById();
 		correct = correct && testInter.testGetElementsByTagName();
+		correct = correct && testInter.testExecuteJavascript();
 		correct = correct && testInter.testClose();
 		return correct;
 	}
@@ -78,6 +79,11 @@ public class Interface {
 		return RunTests.test("Interface(GetElementsByTagName)", expectedElementStr, elementStr);
 	}
 
+	private boolean testExecuteJavascript() {
+		inter.executeJavascript("document.getElementById('val').innerHTML = \"goodbye world!\"");
+		return RunTests.test("Interface(ExecuteJavascript)", "goodbye world!", inter.getElementById("val").getText());
+	}
+	
 	private boolean testClose() {
 		inter.close();
 		return RunTests.test("Interface(Close)", true, inter.driver == null);

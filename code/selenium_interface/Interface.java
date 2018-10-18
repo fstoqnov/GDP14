@@ -64,4 +64,8 @@ public class Interface {
 		driver.quit();
 		driver = null;
 	}
+
+	public void executeJavascript(String script) {
+		//TODO
+	}
 }

@@ -8,8 +8,20 @@ public class Orientation extends Check {
 	}
 
 	@Override
-	public boolean runTest(String url, Interface inter) {
+	public boolean runTest(String content, Interface inter) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public String getHTMLPass() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getHTMLFail() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

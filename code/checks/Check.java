@@ -20,4 +20,8 @@ public abstract class Check {
 	public void outputFailed() {
 		System.out.println("Failed test '" + getName() + "'");
 	}
+
+	public abstract String getHTMLPass();
+
+	public abstract String getHTMLFail();
 }
