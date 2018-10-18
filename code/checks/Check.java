@@ -21,7 +21,7 @@ public abstract class Check {
 		System.out.println("Failed test '" + getName() + "'");
 	}
 
-	public abstract String getHTMLPass();
+	public abstract String[] getHTMLPass();
 
-	public abstract String getHTMLFail();
+	public abstract String[] getHTMLFail();
 }

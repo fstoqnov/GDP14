@@ -14,13 +14,13 @@ public class Orientation extends Check {
 	}
 
 	@Override
-	public String getHTMLPass() {
+	public String[] getHTMLPass() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getHTMLFail() {
+	public String[] getHTMLFail() {
 		// TODO Auto-generated method stub
 		return null;
 	}
