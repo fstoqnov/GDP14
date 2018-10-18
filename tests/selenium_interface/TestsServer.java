@@ -16,9 +16,18 @@ public class TestsServer implements Runnable {
 		ss = new ServerSocket(port);
 		(new Thread(this)).start();
 	}
+	
+	private String html;
+	
+	public TestsServer() {
+		html = "<html><head></head><body><div id=\"val\" class=\"test\"></div><script>document.getElementById(\"val\").innerHtml = \"hello world!\"</script></html>";
+	}
+	
+	public TestsServer(String html) {
+		this.html = html;
+	}
 
 	public void sendBasicHtml(Socket s) throws Exception {
-		String html = "<html><head></head><body><div id=\"val\" class=\"test\"></div><script>document.getElementById(\"val\").innerHtml = \"hello world!\"</script></html>";
 		BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
 		while ((br.readLine()) != null) {  }

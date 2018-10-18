@@ -29,7 +29,7 @@ public class CheckList {
 		int totalFailed = 0;
 		boolean curPassed;
 		for (Check c : checks) {
-			curPassed = c.runTest(content, inter);
+			curPassed = c.runCheck(content, inter);
 			if (curPassed) {
 				c.outputPassed();
 				totalPassed ++;

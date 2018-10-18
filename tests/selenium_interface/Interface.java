@@ -29,12 +29,11 @@ public class Interface {
 
 	private boolean testGetRenderedHtml() {
 		try {
-			int port = 28739;
 			TestsServer ts = new TestsServer();
-			ts.createServer(port);
+			ts.createServer(RunTests.TEST_PORT);
 			return
-					RunTests.test("Interface(GetRenderedHtml)", inter.getRenderedHtml("http://localhost:" + port + "/"), TestsServer.renderedHTML) &&
-					RunTests.test("Interface(GetRenderedHtml)", true, !ts.hadErrors());
+				RunTests.test("Interface(GetRenderedHtml)", inter.getRenderedHtml("http://localhost:" + RunTests.TEST_PORT + "/"), TestsServer.renderedHTML) &&
+				RunTests.test("Interface(GetRenderedHtml)", true, !ts.hadErrors());
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;

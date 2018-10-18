@@ -26,4 +26,10 @@ public class InfoAndRelationships extends Check {
 		return null;
 	}
 
+	@Override
+	public void initialise() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

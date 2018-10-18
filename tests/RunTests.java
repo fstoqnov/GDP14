@@ -1,11 +1,13 @@
 package tests;
 
+import tests.checks.CheckList;
 import tests.selenium_interface.Interface;
 
 public class RunTests {
 
 	public static int countPass = 0;
 	public static int countFailure = 0;
+	public static final int TEST_PORT = 28739;
 
 	public static void main(String[] args) {
 		boolean correct = true;
@@ -17,6 +19,7 @@ public class RunTests {
 
 	private static boolean test_checks() {
 		boolean correct = true;
+		correct = correct && CheckList.runTests();
 		return correct;
 	}
 
