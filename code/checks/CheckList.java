@@ -15,7 +15,9 @@ public class CheckList {
 	}
 
 	private void addChecks() {
-		checks.add(new Orientation());
+		checks.add(new InfoAndRelationships());
+		checks.add(new MeaningfulSequence());
+		checks.add(new IdentifyInputPurpose());
 	}
 
 	public void runChecksAtURL(String url) {
@@ -42,4 +44,6 @@ public class CheckList {
 		System.out.println();
 		inter.close();
 	}
+	
+	public List<Check> getChecks() { return checks; }
 }

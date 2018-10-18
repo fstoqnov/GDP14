@@ -2,13 +2,14 @@ package code.checks;
 
 import code.selenium_interface.Interface;
 
-public class Orientation extends Check {
-	public Orientation() {
-		super("Orientation");
+public class IdentifyInputPurpose extends Check {
+
+	protected IdentifyInputPurpose() {
+		super("Criterion 1.3.5 Identify Input Purpose");
 	}
 
 	@Override
-	public boolean runTest(String content, Interface inter) {
+	public boolean runCheck(String urlContent, Interface inter) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -24,4 +25,5 @@ public class Orientation extends Check {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 }

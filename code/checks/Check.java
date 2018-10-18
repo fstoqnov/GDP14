@@ -9,7 +9,8 @@ public abstract class Check {
 		this.name = name;
 	}
 
-	public abstract boolean runTest(String urlContent, Interface inter);
+	//runs the check on the url content and the selenium interface to the page
+	public abstract boolean runCheck(String urlContent, Interface inter);
 
 	public String getName() { return name; }
 	
