@@ -13,13 +13,13 @@ public class Interface {
 	public static boolean runTests() {
 		Interface testInter = new Interface();
 		boolean correct = true;
-		correct = correct && testInter.testGetRenderedHtml();
-		correct = correct && testInter.testGetElementAttributes();
-		correct = correct && testInter.testGetElementContent();
-		correct = correct && testInter.testGetElementById();
-		correct = correct && testInter.testGetElementsByTagName();
-		correct = correct && testInter.testExecuteJavascript();
-		correct = correct && testInter.testClose();
+		correct = testInter.testGetRenderedHtml() && correct;
+		correct = testInter.testGetElementAttributes() && correct;
+		correct = testInter.testGetElementContent() && correct;
+		correct = testInter.testGetElementById() && correct;
+		correct = testInter.testGetElementsByTagName() && correct;
+		correct = testInter.testExecuteJavascript() && correct;
+		correct = testInter.testClose() && correct;
 		return correct;
 	}
 
@@ -32,7 +32,7 @@ public class Interface {
 			TestsServer ts = new TestsServer();
 			ts.createServer(RunTests.TEST_PORT);
 			return
-				RunTests.test("Interface(GetRenderedHtml)", inter.getRenderedHtml("http://localhost:" + RunTests.TEST_PORT + "/"), TestsServer.renderedHTML) &&
+				RunTests.test("Interface(GetRenderedHtml)", TestsServer.renderedHTML, inter.getRenderedHtml("http://localhost:" + RunTests.TEST_PORT + "/")) &&
 				RunTests.test("Interface(GetRenderedHtml)", true, !ts.hadErrors());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -48,7 +48,7 @@ public class Interface {
 		for (Entry<String, String> entry : attr.entrySet()) {
 			if (loop != 0) { attrString += " "; }
 			loop ++;
-			attrString += entry.getValue() + "=\"" + entry.getKey() + "\"";
+			attrString += entry.getKey() + "=\"" + entry.getValue() + "\"";
 		}
 		return RunTests.test("Interface(GetElementAttributes)", expectedAttrString, attrString);
 	}
@@ -61,8 +61,8 @@ public class Interface {
 
 	private boolean testGetElementById() {
 		String expectedElementStr = "div val";
-		String elementStr = inter.getElementById("val").getTagName() + inter.getElementById("val").getAttribute("id");
-		return RunTests.test("Interface(GetElementContent)", expectedElementStr, elementStr);
+		String elementStr = inter.getElementById("val").getTagName() + " " + inter.getElementById("val").getAttribute("id");
+		return RunTests.test("Interface(GetElementById)", expectedElementStr, elementStr);
 	}
 
 	private boolean testGetElementsByTagName() {

@@ -11,29 +11,31 @@ public class RunTests {
 
 	public static void main(String[] args) {
 		boolean correct = true;
-		correct = correct && test_checks();
-		correct = correct && test_selenium_interface();
+		correct = test_selenium_interface() && correct;
+		correct = test_checks() && correct;
 
 		System.out.println("Tests complete. Passed " + countPass + "/" + (countPass + countFailure) + " tests");
 	}
 
-	private static boolean test_checks() {
+	private static boolean test_selenium_interface() {
 		boolean correct = true;
-		correct = correct && CheckList.runTests();
+		correct = Interface.runTests() && correct;
 		return correct;
 	}
 
-	private static boolean test_selenium_interface() {
+	private static boolean test_checks() {
 		boolean correct = true;
-		correct = correct && Interface.runTests();
+		correct = CheckList.runTests() && correct;
 		return correct;
 	}
 
 	public static boolean test(String testName, String expectedValue, String testValue) {
 		boolean result = expectedValue.equals(testValue);
 		if (result) {
+			countPass++;
 			System.out.println("Test: " + testName + " passed");
 		} else {
+			countFailure++;
 			System.err.println("Test: " + testName + " failed. Expected: '" + expectedValue + "', Received: '" + testValue + "'");
 		}
 		return result;

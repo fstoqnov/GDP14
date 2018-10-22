@@ -3,10 +3,11 @@ package code.selenium_interface;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -16,6 +17,8 @@ public class Interface {
 	public WebDriver driver;
 	
 	public Interface() {
+		System.setProperty("webdriver.chrome.silentOutput", "true");
+		Logger.getLogger("org.openqa.selenium.remote").setLevel(Level.OFF);
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--headless");
 		driver = new ChromeDriver(options);
@@ -24,17 +27,21 @@ public class Interface {
 	//Navigates to url and returns it's rendered form
 	public String getRenderedHtml(String url) {
 		driver.get(url);
-		return driver.getPageSource();
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		while (!js.executeScript("return document.readyState").toString().equals("complete")) {
+			try { Thread.sleep(50); } catch (Exception e) {  }
+		}
+		return this.getElementsByTagName("html")[0].getAttribute("outerHTML");
 	}
 
 	//Returns the attributes of an element
 	public Map<String, String> getElementAttributes(WebElement ele) {
 		Map<String, String> attr = new HashMap<String, String>();
-		String outer = ele.getAttribute("outerHTML");
-		Pattern pattern = Pattern.compile("([a-z]+-?[a-z]+_?)=('?\"?)");
-		Matcher m = pattern.matcher(outer);
-		while (m.find()) {
-			attr.put(m.group(1), m.group(2));
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		String ret = js.executeScript("var items = {}; for (index = 0; index < arguments[0].attributes.length; ++index) { items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;", ele).toString();
+		ret = ret.substring(1, ret.length() - 1);
+		for (int i = 0; i < ret.split(",").length; i ++) {
+			attr.put(ret.split(",")[i].split("=")[0].trim(), ret.split(",")[i].split("=")[1].trim());
 		}
 		return attr;
 	}
@@ -58,6 +65,15 @@ public class Interface {
 		}
 		return e;
 	}
+	
+	public WebElement[] getSubElementsByTagName(WebElement parent, String tag) {
+		List<WebElement> elements = parent.findElements(By.tagName(tag));
+		WebElement[] e = new WebElement[elements.size()];
+		for (int i = 0; i < elements.size(); i ++) {
+			e[i] = elements.get(i);
+		}
+		return e;
+	}
 
 	public void close() {
 		driver.close();
@@ -65,7 +81,8 @@ public class Interface {
 		driver = null;
 	}
 
-	public void executeJavascript(String script) {
-		//TODO
+	public Object executeJavascript(String script) {
+		JavascriptExecutor js = (JavascriptExecutor) driver;  
+		return js.executeScript(script);
 	}
 }

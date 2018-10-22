@@ -20,7 +20,7 @@ public class TestsServer implements Runnable {
 	private String html;
 	
 	public TestsServer() {
-		html = "<html><head></head><body><div id=\"val\" class=\"test\"></div><script>document.getElementById(\"val\").innerHtml = \"hello world!\"</script></html>";
+		html = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body><div id=\"val\" class=\"test\"></div><script>document.getElementById(\"val\").innerHTML = \"hello world!\"</script></html>";
 	}
 	
 	public TestsServer(String html) {
@@ -30,7 +30,8 @@ public class TestsServer implements Runnable {
 	public void sendBasicHtml(Socket s) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-		while ((br.readLine()) != null) {  }
+		String line;
+		while ((line = br.readLine()).length() > 0) {  }
 		bw.write("HTTP/1.0 200 OK\r\n");
 		bw.write("Date: Fri, 18 October 2018 23:59:59 GMT\r\n");
 		bw.write("Server: Apache/0.8.4\r\n");
@@ -40,12 +41,12 @@ public class TestsServer implements Runnable {
 		bw.write("Last-modified: Fri, 09 Aug 1996 14:21:40 GMT\r\n");
 		bw.write("\r\n");
 		bw.write(html);
-		br.close();
 		bw.close();
+		br.close();
 		s.close();
 	}
 
-	public static String renderedHTML = "<html><head></head><body><div id=\"val\" class=\"test\">hello world!</div><script>document.getElementById(\"val\").innerHtml = \"hello world!\"</script></html>";
+	public static String renderedHTML = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body><div id=\"val\" class=\"test\">hello world!</div><script>document.getElementById(\"val\").innerHTML = \"hello world!\"</script></body></html>";
 
 	public void run() {
 		try {
