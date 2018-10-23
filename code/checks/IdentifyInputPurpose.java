@@ -23,12 +23,12 @@ public class IdentifyInputPurpose extends Check {
 			for (int j = 0; j < inputs.length; j ++) {
 				if (inputs[j].getAttribute("autocomplete") != null) {
 					if (!list.contains(inputs[j].getAttribute("autocomplete"))) {
-						addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, this, inputs[j]);
+						addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[j]);
 					} else {
-						addFlagToElement(markers, Marker.MARKER_SUCCESS, this, inputs[j]);
+						addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[j]);
 					}
 				} else {
-					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, this, inputs[j]);
+					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[j]);
 				}
 			}
 		}
