@@ -18,6 +18,8 @@ public class CheckList {
 		checks.add(new InfoAndRelationships());
 		checks.add(new MeaningfulSequence());
 		checks.add(new IdentifyInputPurpose());
+		checks.add(new Parsing());
+		checks.add(new StatusMessages());
 	}
 
 	public boolean runChecksAtURLs(String[] urls) {

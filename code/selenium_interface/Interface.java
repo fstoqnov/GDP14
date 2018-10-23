@@ -75,6 +75,13 @@ public class Interface {
 		return e;
 	}
 
+	//Returns list of all elements present on page.
+	public List<WebElement> getAllElements() {
+		List<WebElement> el = driver.findElements(By.cssSelector("*"));
+
+		return el;
+	}
+
 	public void close() {
 		driver.close();
 		driver.quit();
