@@ -1,5 +1,7 @@
 package code.checks;
 
+import java.util.List;
+
 import code.selenium_interface.Interface;
 
 public class InfoAndRelationships extends Check {
@@ -9,8 +11,8 @@ public class InfoAndRelationships extends Check {
 	}
 
 	@Override
-	public boolean runCheck(String urlContent, Interface inter) {
-		return false;
+	public void runCheck(String urlContent, List<Marker> markers, Interface inter) {
+		// TODO Auto-generated method stub
 	}
 
 	@Override

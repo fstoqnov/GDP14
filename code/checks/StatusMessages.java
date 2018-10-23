@@ -1,15 +1,15 @@
 package code.checks;
 
+import java.util.List;
+
 import code.selenium_interface.Interface;
 
 public class StatusMessages extends Check {
 
     protected StatusMessages() { super("Criterion 4.1.3 Status Messages"); }
 
-    @Override
-    public boolean runCheck(String urlContent, Interface inter) {
-        // TODO Auto-generated method stub
-        return false;
+	public void runCheck(String urlContent, List<Marker> markers, Interface inter) {
+		// TODO Auto-generated method stub
     }
 
     @Override

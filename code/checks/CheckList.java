@@ -3,14 +3,22 @@ package code.checks;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openqa.selenium.WebElement;
+
 import code.selenium_interface.Interface;
 
 public class CheckList {
 
 	private List<Check> checks;
+	private List<Marker> markers;
+	
+	public void addMarker(Marker m) {
+		markers.add(m);
+	}
 
 	public CheckList() {
 		checks = new ArrayList<Check>();
+		markers = new ArrayList<Marker>();
 		addChecks();
 	}
 
@@ -32,7 +40,7 @@ public class CheckList {
 			System.out.println("Running checks for url: '" + url + "'");
 			String content = inter.getRenderedHtml(url);
 			for (Check c : checks) {
-				curPassed = c.runCheck(content, inter);
+				curPassed = c.runCheck(content, this, inter);
 				if (curPassed) {
 					c.outputPassed();
 					totalPassed ++;

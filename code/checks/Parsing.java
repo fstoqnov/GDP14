@@ -1,22 +1,21 @@
 package code.checks;
 
-import code.selenium_interface.Interface;
-import org.apache.commons.exec.util.StringUtils;
-import org.openqa.selenium.WebElement;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.openqa.selenium.WebElement;
+
+import code.selenium_interface.Interface;
 
 public class Parsing extends Check {
 
     protected Parsing() { super("Criterion 4.1.1 Parsing"); }
 
     @Override
-    public boolean runCheck(String urlContent, Interface inter) {
+	public void runCheck(String urlContent, List<Marker> markers, Interface inter) {
 
         String[] forbidden = {"area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link",
         "meta", "param", "source", "track", "wbr"};
@@ -41,7 +40,7 @@ public class Parsing extends Check {
 
         while(idMatcher.find()) {
             if(ids.contains(idMatcher.group(0))) {
-                return false;
+            	//TODO add error marker
             }
             else {
                 ids.add(idMatcher.group(0));
@@ -55,7 +54,7 @@ public class Parsing extends Check {
             Matcher m = pattern.matcher(outer);
             while (m.find()) {
                 if(attr.contains(m.group(1))) {
-                    return false;
+                	//TODO add error marker
                 }
                 else {
                     attr.add(m.group(1));
@@ -69,12 +68,14 @@ public class Parsing extends Check {
             }
             else if(eN.contains("</") ) {
                 if(Arrays.asList(forbidden).contains(eN.split("/")[1].split(">")[0])) {
-                    return false;
+                    //TODO add error marker
                 }
                 else if(parse.get(parse.size()-1).equals(eN.split("/")[1].split(">")[0])) {
                     parse.remove(parse.size()-1);
                 }
-                else return false;
+                else {
+                	//TODO add error marker
+                }
             }
             else if(eN.contains("/>")) {
                 continue;
@@ -85,10 +86,10 @@ public class Parsing extends Check {
         }
 
         if(parse.size() == 0) {
-            return true;
+        	//TODO add success marker
         }
         else {
-            return false;
+        	//TODO add error marker
         }
     }
 

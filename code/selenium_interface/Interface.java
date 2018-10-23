@@ -18,6 +18,7 @@ public class Interface {
 	
 	public Interface() {
 		System.setProperty("webdriver.chrome.silentOutput", "true");
+		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
 		Logger.getLogger("org.openqa.selenium.remote").setLevel(Level.OFF);
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--headless");

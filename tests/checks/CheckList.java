@@ -35,7 +35,7 @@ public class CheckList {
 					TestsServer ts = new TestsServer(passHTML);
 					ts.createServer(RunTests.TEST_PORT);
 					String content = inter.getRenderedHtml("http://localhost:" + RunTests.TEST_PORT + "/");
-					correct = RunTests.test(c.getName() + "-pass (" + (passTestCount + 1) + "/" + pass.length + ")", true, c.runCheck(content, inter)) && correct;
+					correct = RunTests.test(c.getName() + "-pass (" + (passTestCount + 1) + "/" + pass.length + ")", true, c.runCheck(content, cl, inter)) && correct;
 					passTestCount ++;
 				} catch (Exception e) { RunTests.countFailure++; correct = false; e.printStackTrace(); }
 			}
@@ -51,7 +51,7 @@ public class CheckList {
 					TestsServer ts = new TestsServer(failHTML);
 					ts.createServer(RunTests.TEST_PORT);
 					String content = inter.getRenderedHtml("http://localhost:" + RunTests.TEST_PORT + "/");
-					correct = RunTests.test(c.getName() + "-fail (" + (failTestCount + 1) + "/" + pass.length + ")", false, c.runCheck(content, inter)) && correct;
+					correct = RunTests.test(c.getName() + "-fail (" + (failTestCount + 1) + "/" + pass.length + ")", false, c.runCheck(content, cl, inter)) && correct;
 					failTestCount ++;
 				} catch (Exception e) { RunTests.countFailure++; correct = false; e.printStackTrace(); }
 			}

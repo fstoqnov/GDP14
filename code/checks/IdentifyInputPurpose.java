@@ -16,21 +16,22 @@ public class IdentifyInputPurpose extends Check {
 	}
 
 	@Override
-	public boolean runCheck(String urlContent, Interface inter) {
+	public void runCheck(String urlContent, List<Marker> markers, Interface inter) {
 		WebElement[] forms = inter.getElementsByTagName("form");
 		for (int i = 0; i < forms.length; i ++) {
 			WebElement[] inputs = inter.getSubElementsByTagName(forms[i], "input");
 			for (int j = 0; j < inputs.length; j ++) {
 				if (inputs[j].getAttribute("autocomplete") != null) {
 					if (!list.contains(inputs[j].getAttribute("autocomplete"))) {
-						return false;
+						addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, this, inputs[j]);
+					} else {
+						addFlagToElement(markers, Marker.MARKER_SUCCESS, this, inputs[j]);
 					}
 				} else {
-					return false;
+					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, this, inputs[j]);
 				}
 			}
 		}
-		return true;
 	}
 
 	@Override
