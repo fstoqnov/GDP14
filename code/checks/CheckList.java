@@ -28,6 +28,8 @@ public class CheckList {
 		checks.add(new IdentifyInputPurpose());
 		checks.add(new Parsing());
 		checks.add(new StatusMessages());
+		checks.add(new LabelsOrInstructions());
+		checks.add(new LanguageOfPage());
 	}
 
 	public boolean runChecksAtURLs(String[] urls) {
