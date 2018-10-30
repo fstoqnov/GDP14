@@ -15,7 +15,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 
 public class Interface {
 	public WebDriver driver;
-	
+
 	public Interface() {
 		System.setProperty("webdriver.chrome.silentOutput", "true");
 		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
@@ -46,6 +46,84 @@ public class Interface {
 		}
 		return attr;
 	}
+	
+	public String getElementId(WebElement ele) {
+		return getElementAttributes(ele).get("id");
+	}
+
+
+	//Gets the first parent with a specified <* attrName=attrVal></*>
+	public WebElement getParentWithAttribute(WebElement ele, String attrName, String attrVal) {
+		WebElement parent;
+		WebElement first = ele;
+		Map<String, String> attrs;
+		while ((parent = first.findElement(By.xpath(".."))) != null) {
+			attrs = getElementAttributes(parent);
+			if (attrVal.equals("*") ? attrs.containsKey(attrName) : (attrs.containsKey(attrName) && attrs.get(attrName).equals(attrVal) )) {
+				return parent;
+			}
+			first = parent;
+		}
+		return null; //never reaches here as an exception will be thrown if the element cannot be found
+	}
+
+	//Gets the first parent with a specified <tagName attrName=attrVal></tagName>
+	public WebElement getParentWithAttributeAndTag(WebElement ele, String attrName, String attrVal, String tag) {
+		WebElement parent;
+		WebElement first = ele;
+		Map<String, String> attrs;
+		while ((parent = first.findElement(By.xpath(".."))) != null) {
+			attrs = getElementAttributes(parent);
+			if (parent.getTagName().equals(tag) && attrVal.equals("*") ? attrs.containsKey(attrName) : (attrs.containsKey(attrName) && attrs.get(attrName).equals(attrVal) )) {
+				return parent;
+			}
+			first = parent;
+		}
+		return null; //never reaches here as an exception will be thrown if the element cannot be found
+	}
+
+	//Gets the first parent with a specified <tagName></tagName>
+	public WebElement getParentWithTag(WebElement ele, String tag) {
+		WebElement parent;
+		WebElement first = ele;
+		while ((parent = first.findElement(By.xpath(".."))) != null) {
+			if (parent.getTagName().equals(tag)) {
+				return parent;
+			}
+			first = parent;
+		}
+		return null; //never reaches here as an exception will be thrown if the element cannot be found
+	}
+
+	//selects all children with a specified <* attrName=attrVal></*>
+	public WebElement[] getChildrenWithAttribute(WebElement ele, String attrName, String attrVal) {
+		List<WebElement> elements = ele.findElements(By.xpath("//*[@" + attrName + "='" + attrVal + "']"));
+		WebElement[] e = new WebElement[elements.size()];
+		for (int i = 0; i < elements.size(); i ++) {
+			e[i] = elements.get(i);
+		}
+		return e;
+	}
+
+	//selects all children with a specified <tagName attrName=attrVal></tagName>
+	public WebElement[] getChildrenWithAttributeAndTag(WebElement ele, String attrName, String attrVal, String tagName) {
+		List<WebElement> elements = ele.findElements(By.xpath("//" + tagName + "[@" + attrName + "='" + attrVal + "']"));
+		WebElement[] e = new WebElement[elements.size()];
+		for (int i = 0; i < elements.size(); i ++) {
+			e[i] = elements.get(i);
+		}
+		return e;
+	}
+
+	//selects all children with a specified <tagName></tagName>
+	public WebElement[] getChildrenWithTag(WebElement ele, String tag) {
+		List<WebElement> elements = ele.findElements(By.tagName(tag));
+		WebElement[] e = new WebElement[elements.size()];
+		for (int i = 0; i < elements.size(); i ++) {
+			e[i] = elements.get(i);
+		}
+		return e;
+	}
 
 	//Returns the content of the element
 	public String getElementContent(WebElement ele) {
@@ -66,7 +144,7 @@ public class Interface {
 		}
 		return e;
 	}
-	
+
 	public WebElement[] getSubElementsByTagName(WebElement parent, String tag) {
 		List<WebElement> elements = parent.findElements(By.tagName(tag));
 		WebElement[] e = new WebElement[elements.size()];

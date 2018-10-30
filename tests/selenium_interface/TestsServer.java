@@ -20,7 +20,7 @@ public class TestsServer implements Runnable {
 	private String html;
 	
 	public TestsServer() {
-		html = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body><div id=\"val\" class=\"test\"></div><script>document.getElementById(\"val\").innerHTML = \"hello world!\"</script></html>";
+		html = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body><div id=\"val\" class=\"test\"></div><div id=\"one\" find_attr=\"find\"><div id=\"two\"><div id=\"three\"></div></div></div><script>document.getElementById(\"val\").innerHTML = \"hello world!\"</script></html>";
 	}
 	
 	public TestsServer(String html) {
@@ -46,7 +46,7 @@ public class TestsServer implements Runnable {
 		s.close();
 	}
 
-	public static String renderedHTML = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body><div id=\"val\" class=\"test\">hello world!</div><script>document.getElementById(\"val\").innerHTML = \"hello world!\"</script></body></html>";
+	public static String renderedHTML = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body><div id=\"val\" class=\"test\">hello world!</div><div id=\"one\" find_attr=\"find\"><div id=\"two\"><div id=\"three\"></div></div></div><script>document.getElementById(\"val\").innerHTML = \"hello world!\"</script></body></html>";
 
 	public void run() {
 		try {

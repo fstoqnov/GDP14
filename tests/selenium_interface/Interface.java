@@ -18,6 +18,8 @@ public class Interface {
 		correct = testInter.testGetElementContent() && correct;
 		correct = testInter.testGetElementById() && correct;
 		correct = testInter.testGetElementsByTagName() && correct;
+		correct = testInter.testGetSubElementsByTagName() && correct;
+		correct = testInter.testGetParentWithAttributeAndTag() && correct;
 		correct = testInter.testExecuteJavascript() && correct;
 		correct = testInter.testClose() && correct;
 		return correct;
@@ -66,7 +68,7 @@ public class Interface {
 	}
 
 	private boolean testGetElementsByTagName() {
-		String expectedElementStr = "div 0";
+		String expectedElementStr = "div 0 div 1 div 2 div 3";
 		WebElement[] elements = inter.getElementsByTagName("div");
 		String elementStr = "";
 		int loop = 0;
@@ -76,6 +78,29 @@ public class Interface {
 			loop ++;
 		}
 		return RunTests.test("Interface(GetElementsByTagName)", expectedElementStr, elementStr);
+	}
+	
+	private boolean testGetSubElementsByTagName() {
+		String expectedElementStr = "div 0 div 1";
+		WebElement[] elements = inter.getSubElementsByTagName(inter.getElementById("one"), "div");
+		String elementStr = "";
+		int loop = 0;
+		for (WebElement element : elements) {
+			if (loop != 0) { elementStr += " "; }
+			elementStr += element.getTagName() + " " + loop;
+			loop ++;
+		}
+		return RunTests.test("Interface(GetSubElementsByTagName)", expectedElementStr, elementStr);
+	}
+	
+	private boolean testGetParentWithAttributeAndTag() {
+		String expectedElementStr = "div one div one";
+		String elementStr = "";
+		WebElement element = inter.getParentWithAttributeAndTag(inter.getElementById("three"), "find_attr", "find", "div");
+		elementStr += element.getTagName() + " " + inter.getElementId(element);
+		element = inter.getParentWithAttributeAndTag(inter.getElementById("three"), "find_attr", "*", "div");
+		elementStr += " " + element.getTagName() + " " + inter.getElementId(element);
+		return RunTests.test("Interface(GetParentWithAttributeAndTag)", expectedElementStr, elementStr);
 	}
 
 	private boolean testExecuteJavascript() {
