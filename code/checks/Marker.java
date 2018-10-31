@@ -1,16 +1,13 @@
 package code.checks;
 
-import java.util.List;
 import java.util.Objects;
 
 import org.openqa.selenium.WebElement;
 
-import code.interfaces.SeleniumInterface;
-
 public class Marker {
 	private WebElement element;
 	private String attribute;
-	private int position;
+	private long position;
 	private int type;
 	private Check check;
 	
@@ -35,7 +32,7 @@ public class Marker {
 		this.check = check;
 	}
 
-	public Marker(int type, Check check, WebElement element, int position) {
+	public Marker(int type, Check check, WebElement element, long position) {
 		this.element = element;
 		this.position = position;
 		this.attribute = null;
@@ -45,7 +42,7 @@ public class Marker {
 
 	public WebElement getElement() { return element; }
 	public String getAttribute() { return attribute; }
-	public int getPosition() { return position; }
+	public long getPosition() { return position; }
 	public int getType() { return type; }
 	public Check getCheck() { return check; }
 

@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS `variable`;
+DROP TABLE IF EXISTS `marker`;
+DROP TABLE IF EXISTS `checkpage`;
+DROP TABLE IF EXISTS `site`;

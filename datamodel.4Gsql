@@ -1,0 +1,153 @@
+value type "site_id" with (
+    datatype number,
+    value between 10000001 and 99999999
+);
+
+value type "url" with (
+    datatype string,
+    length between 3 and 256
+);
+
+value type "check_id" with (
+    datatype number,
+    value between 100000001 and 999999999
+);
+
+value type "page" with (
+    datatype string,
+    length between 3 and 256
+);
+
+value type "page_source" with (
+    datatype blob
+);
+
+value type "variable_id" with (
+    datatype number,
+    value between 1000000001 and 5499999999
+);
+
+value type "variable_name" with (
+    datatype string,
+    length between 3 and 256
+)
+
+value type "variable_value" with (
+    datatype blob
+);
+
+value type "marker_id" with (
+    datatype number,
+    value between 5500000001 and 9999999999
+);
+
+value type "severity" with (
+    datatype number,
+    value between 1 and 4
+);
+
+value type "position" with (
+    datatype number,
+    value between 0 and 34359738368
+);
+
+value type "eleTagName" with (
+    datatype string,
+    length between 1 and 16
+);
+
+value type "eleTagNumber" with (
+    datatype number,
+    value between 1 and 65536
+);
+
+value type "attribute" with (
+    datatype string,
+    length between 1 and 64
+);
+
+value type "check" with (
+    datatype string,
+    length between 1 and 8
+);
+
+value type "timestamp" with (
+    datatype number,
+    length between 0 and 9999999999999
+);
+
+database table "site" with (
+    label 'Site',
+    plural label 'Sites',
+    row represents 'a site',
+    columns (
+        "id" with ( type "site_id", label "Id", auto increment ),
+        "url" with ( type "url", label 'URL' )
+    ),
+    prime key "site" with columns ( "id" ),
+    optional list "checkpages" based on reference "checkpage"."site"
+);
+
+database table "checkpage" with (
+    label 'Checkpage',
+    plural label 'Checkpages',
+    row represents 'a checkpage',
+    columns (
+        "id" with ( type "check_id", label "Id", auto increment ),
+        "site" with ( type "site_id", label "Site" ),
+        "page" with ( type "page", label "Page" ),
+        "timestamp" with ( type "timestamp", label "Timestamp" ),
+        "source" with ( type "page_source", label "Source" )
+    ),
+    prime key "checkpage" with columns ( "id" ),
+    reference "site" with (
+        join to "site" on (
+            id = site ),
+        label 'Site',
+        prevent on delete
+    ),
+    optional list "variables" based on reference "variable"."checkpage",
+    optional list "markers" based on reference "marker"."checkpage"
+);
+
+database table "variable" with (
+    label 'Variable',
+    plural label 'Variables',
+    row represents 'a variable',
+    columns (
+        "id" with ( type "variable_id", label "Id", auto increment ),
+        "checkpage" with ( type "check_id", label "Checkpage" ),
+        "name" with ( type "variable_name", label "Variable name" ),
+        "value" with ( type "variable_value", label "Variable value" )
+    ),
+    prime key "variable" with columns ( "id" ),
+    reference "checkpage" with (
+        join to "checkpage" on (
+            id = checkpage ),
+        label 'Checkpage',
+        prevent on delete
+    )
+);
+
+database table "marker" with (
+    label 'Marker',
+    plural label 'Markers',
+    row represents 'a marker',
+    columns (
+        "id" with ( type "marker_id", label "Id", auto increment ),
+        "checkpage" with ( type "check_id", label "Checkpage" ),
+        "severity" with ( type "severity", label "Severity" ),
+        "position" with ( type "position", label "Position", optional ),
+        "eleTagName" with ( type "eleTagName", label "Element Tag Name", optional ),
+        "eleTagNumber" with ( type "eleTagNumber", label "Element Tag Number", optional ),
+        "attribute" with ( type "attribute", label "Element Attribute", optional ),
+        "check" with ( type "check", label "Check" )
+    ),
+    prime key "marker" with columns ( "id" ),
+    reference "checkpage" with (
+        join to "checkpage" on (
+            id = checkpage ),
+        label 'Checkpage',
+        prevent on delete
+    )
+);
