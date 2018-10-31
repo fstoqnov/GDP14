@@ -10,7 +10,7 @@ public class Marker {
 	private long position;
 	private int type;
 	private Check check;
-	
+
 	public static final int MARKER_ERROR = 1;
 	public static final int MARKER_AMBIGUOUS = 2;
 	public static final int MARKER_AMBIGUOUS_SERIOUS = 3;
@@ -40,6 +40,14 @@ public class Marker {
 		this.check = check;
 	}
 
+	public Marker(int type, Check check, long position) {
+		this.element = null;
+		this.position = position;
+		this.attribute = null;
+		this.type = type;
+		this.check = check;
+	}
+
 	public WebElement getElement() { return element; }
 	public String getAttribute() { return attribute; }
 	public long getPosition() { return position; }
@@ -55,12 +63,12 @@ public class Marker {
 
 		Marker marker = (Marker) o;
 
-		return marker.element.equals(element) &&
-				marker.attribute.equals(attribute) &&
+		return marker.attribute.equals(attribute) &&
 				marker.position == position &&
 				marker.type == type &&
 				marker.check.equals(check) &&
-				(marker.attribute == null ? attribute == null : (attribute == null ? false : marker.attribute.equals(attribute)));
+				(marker.attribute == null ? attribute == null : (attribute == null ? false : marker.attribute.equals(attribute))) &&
+				(marker.element == null ? element == null : (element == null ? false : marker.element.equals(element)));
 	}
 
 	public int hashCode() {

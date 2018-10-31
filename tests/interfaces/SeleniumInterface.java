@@ -1,4 +1,4 @@
-package tests.selenium_interface;
+package tests.interfaces;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -7,11 +7,11 @@ import org.openqa.selenium.WebElement;
 
 import tests.RunTests;
 
-public class Interface {
+public class SeleniumInterface {
 	private code.interfaces.SeleniumInterface inter;
 
 	public static boolean runTests() {
-		Interface testInter = new Interface();
+		SeleniumInterface testInter = new SeleniumInterface();
 		boolean correct = true;
 		correct = testInter.testGetRenderedHtml() && correct;
 		correct = testInter.testGetElementAttributes() && correct;
@@ -25,7 +25,7 @@ public class Interface {
 		return correct;
 	}
 
-	private Interface() {
+	private SeleniumInterface() {
 		inter = new code.interfaces.SeleniumInterface();
 	}
 
@@ -34,8 +34,8 @@ public class Interface {
 			TestsServer ts = new TestsServer();
 			ts.createServer(RunTests.TEST_PORT);
 			return
-				RunTests.test("Interface(GetRenderedHtml)", TestsServer.renderedHTML, inter.getRenderedHtml("http://localhost:" + RunTests.TEST_PORT + "/")) &&
-				RunTests.test("Interface(GetRenderedHtml)", true, !ts.hadErrors());
+				RunTests.test("SeleniumSeleniumInterface(GetRenderedHtml - match HTML)", TestsServer.renderedHTML, inter.getRenderedHtml("http://localhost:" + RunTests.TEST_PORT + "/")) &&
+				RunTests.test("SeleniumSeleniumInterface(GetRenderedHtml - no server errors)", true, !ts.hadErrors());
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -52,19 +52,19 @@ public class Interface {
 			loop ++;
 			attrString += entry.getKey() + "=\"" + entry.getValue() + "\"";
 		}
-		return RunTests.test("Interface(GetElementAttributes)", expectedAttrString, attrString);
+		return RunTests.test("SeleniumInterface(GetElementAttributes)", expectedAttrString, attrString);
 	}
 
 	private boolean testGetElementContent() {
 		String content = inter.getElementContent(inter.getElementById("val"));
 		String expectedContent = "hello world!";
-		return RunTests.test("Interface(GetElementContent)", expectedContent, content);
+		return RunTests.test("SeleniumInterface(GetElementContent)", expectedContent, content);
 	}
 
 	private boolean testGetElementById() {
 		String expectedElementStr = "div val";
 		String elementStr = inter.getElementById("val").getTagName() + " " + inter.getElementById("val").getAttribute("id");
-		return RunTests.test("Interface(GetElementById)", expectedElementStr, elementStr);
+		return RunTests.test("SeleniumInterface(GetElementById)", expectedElementStr, elementStr);
 	}
 
 	private boolean testGetElementsByTagName() {
@@ -77,7 +77,7 @@ public class Interface {
 			elementStr += element.getTagName() + " " + loop;
 			loop ++;
 		}
-		return RunTests.test("Interface(GetElementsByTagName)", expectedElementStr, elementStr);
+		return RunTests.test("SeleniumInterface(GetElementsByTagName)", expectedElementStr, elementStr);
 	}
 	
 	private boolean testGetSubElementsByTagName() {
@@ -90,7 +90,7 @@ public class Interface {
 			elementStr += element.getTagName() + " " + loop;
 			loop ++;
 		}
-		return RunTests.test("Interface(GetSubElementsByTagName)", expectedElementStr, elementStr);
+		return RunTests.test("SeleniumInterface(GetSubElementsByTagName)", expectedElementStr, elementStr);
 	}
 	
 	private boolean testGetParentWithAttributeAndTag() {
@@ -100,16 +100,16 @@ public class Interface {
 		elementStr += element.getTagName() + " " + inter.getElementId(element);
 		element = inter.getParentWithAttributeAndTag(inter.getElementById("three"), "find_attr", "*", "div");
 		elementStr += " " + element.getTagName() + " " + inter.getElementId(element);
-		return RunTests.test("Interface(GetParentWithAttributeAndTag)", expectedElementStr, elementStr);
+		return RunTests.test("SeleniumInterface(GetParentWithAttributeAndTag)", expectedElementStr, elementStr);
 	}
 
 	private boolean testExecuteJavascript() {
 		inter.executeJavascript("document.getElementById('val').innerHTML = \"goodbye world!\"");
-		return RunTests.test("Interface(ExecuteJavascript)", "goodbye world!", inter.getElementById("val").getText());
+		return RunTests.test("SeleniumInterface(ExecuteJavascript)", "goodbye world!", inter.getElementById("val").getText());
 	}
 	
 	private boolean testClose() {
 		inter.close();
-		return RunTests.test("Interface(Close)", true, inter.driver == null);
+		return RunTests.test("SeleniumInterface(Close)", true, inter.driver == null);
 	}
 }

@@ -34,6 +34,14 @@ public class SeleniumInterface {
 		}
 		return this.getElementsByTagName("html")[0].getAttribute("outerHTML");
 	}
+	
+	public int getTagPosition(WebElement ele) {
+		WebElement[] elements = this.getElementsByTagName(ele.getTagName());
+		for (int i = 0; i < elements.length; i ++) {
+			if (elements[i].equals(ele)) { return i; }
+		}
+		return -1;
+	}
 
 	//Returns the attributes of an element
 	public Map<String, String> getElementAttributes(WebElement ele) {

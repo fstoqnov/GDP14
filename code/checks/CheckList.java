@@ -15,7 +15,7 @@ public class CheckList {
 		addChecks();
 	}
 
-	private void addChecks() {
+	public static void addChecks(List<Check> checks) {
 		checks.add(new InfoAndRelationships());
 		checks.add(new MeaningfulSequence());
 		checks.add(new IdentifyInputPurpose());
@@ -24,13 +24,35 @@ public class CheckList {
 		checks.add(new LabelsOrInstructions());
 		checks.add(new LanguageOfPage());
 	}
+	
+	public static Check getCheckFromCriterionNumber(List<Check> checks, String num) {
+		for (Check c : checks) {
+			if (c.getName().split("Criterion ")[1].split(" ")[0].equals(num)) {
+				return c;
+			}
+		}
+		return null;
+	}
+	
+	private Check getCheckFromCriterionNumber(String num) {
+		return getCheckFromCriterionNumber(checks, num);
+	}
+	
+	private void addChecks() {
+		addChecks(checks);
+	}
 
-	public boolean runChecksAtURLs(String[] urls) {
+	public boolean runChecksAtURLs(String[] urls) throws Exception {
+		return runChecksAtURLs(urls, false, null);
+	}
+
+	public boolean runChecksAtURLs(String[] urls, boolean store, DatabaseInterface db) throws Exception {
 		boolean passed = true;
 		int totalPassed = 0;
 		int totalFailed = 0;
 		boolean curPassed;
 		SeleniumInterface inter = new SeleniumInterface();
+		long curTime = System.currentTimeMillis();
 		for (String url : urls) {
 			List<Marker> markers = new ArrayList<Marker>();
 			System.out.println("Running checks for url: '" + url + "'");
@@ -47,7 +69,9 @@ public class CheckList {
 				}
 				passed = passed && curPassed;
 			}
-			DatabaseInterface.insertIntoDatabase(markers, inter.driver.getCurrentUrl(), inter.driver.getPageSource());
+			if (store) {
+				db.insertIntoDatabase(markers, inter.driver.getCurrentUrl(), inter.driver.getPageSource(), curTime, inter);
+			}
 		}
 		System.out.println("Total passed: " + totalPassed + "/" + (totalPassed + totalFailed));
 		System.out.println();

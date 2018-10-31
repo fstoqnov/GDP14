@@ -3,7 +3,7 @@ package tests.checks;
 import code.checks.Check;
 import code.interfaces.SeleniumInterface;
 import tests.RunTests;
-import tests.selenium_interface.TestsServer;
+import tests.interfaces.TestsServer;
 
 public class CheckList {
 

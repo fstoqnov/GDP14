@@ -1,7 +1,8 @@
 package tests;
 
 import tests.checks.CheckList;
-import tests.selenium_interface.Interface;
+import tests.interfaces.DatabaseInterface;
+import tests.interfaces.SeleniumInterface;
 
 public class RunTests {
 
@@ -12,6 +13,9 @@ public class RunTests {
 	public static void main(String[] args) {
 		boolean correct = true;
 		correct = test_selenium_interface() && correct;
+		System.out.println();
+		correct = test_database_interface() && correct;
+		System.out.println();
 		correct = test_checks() && correct;
 
 		System.out.println("Tests complete. Passed " + countPass + "/" + (countPass + countFailure) + " tests");
@@ -19,7 +23,13 @@ public class RunTests {
 
 	private static boolean test_selenium_interface() {
 		boolean correct = true;
-		correct = Interface.runTests() && correct;
+		correct = SeleniumInterface.runTests() && correct;
+		return correct;
+	}
+	
+	private static boolean test_database_interface() {
+		boolean correct = true;
+		correct = DatabaseInterface.runTests() && correct;
 		return correct;
 	}
 

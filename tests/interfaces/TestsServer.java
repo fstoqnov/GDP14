@@ -1,4 +1,4 @@
-package tests.selenium_interface;
+package tests.interfaces;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

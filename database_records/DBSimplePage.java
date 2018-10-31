@@ -4,12 +4,16 @@ import code.interfaces.DatabaseInterface;
 
 public class DBSimplePage {
 	public long id;
-	public String site; //google.com
 	public String page; //index.php
-	public String pageURL; //google.com/index.php (NO ARGS)
 	public long timestamp;
 	
-	public DBPage loadFullPage(DatabaseInterface db) {
-		return new DBPage(id);
+	public DBSimplePage(long id, String page, long timestamp) {
+		this.id = id;
+		this.page = page;
+		this.timestamp = timestamp;
+	}
+	
+	public DBPage loadFullPage(DatabaseInterface db) throws Exception {
+		return new DBPage(db, id);
 	}
 }
