@@ -28,6 +28,11 @@ public class DatabaseInterface {
 		//TODO
 		return null;
 	}
+	
+	public List<List<DBSimplePage>> groupPagesByTimestamp(List<DBSimplePage> pages) {
+		//TODO
+		return null;
+	}
 
 	//a list of all the simple pages for a site
 	public List<DBSimplePage> getPagesForSite(String site) {
