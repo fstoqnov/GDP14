@@ -1,8 +1,11 @@
 package code.checks;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.openqa.selenium.WebElement;
+
+import code.interfaces.SeleniumInterface;
 
 public class Marker {
 	private WebElement element;
@@ -13,7 +16,8 @@ public class Marker {
 	
 	public static final int MARKER_ERROR = 1;
 	public static final int MARKER_AMBIGUOUS = 2;
-	public static final int MARKER_SUCCESS = 3;
+	public static final int MARKER_AMBIGUOUS_SERIOUS = 3;
+	public static final int MARKER_SUCCESS = 4;
 
 	public Marker(int type, Check check, WebElement element) {
 		this.element = element;

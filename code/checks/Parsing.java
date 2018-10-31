@@ -8,14 +8,14 @@ import java.util.regex.Pattern;
 
 import org.openqa.selenium.WebElement;
 
-import code.selenium_interface.Interface;
+import code.interfaces.SeleniumInterface;
 
 public class Parsing extends Check {
 
     protected Parsing() { super("Criterion 4.1.1 Parsing"); }
 
     @Override
-	public void runCheck(String urlContent, List<Marker> markers, Interface inter) {
+	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
 
         String[] forbidden = {"area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link",
         "meta", "param", "source", "track", "wbr"};

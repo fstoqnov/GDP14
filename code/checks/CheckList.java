@@ -3,22 +3,15 @@ package code.checks;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openqa.selenium.WebElement;
-
-import code.selenium_interface.Interface;
+import code.interfaces.DatabaseInterface;
+import code.interfaces.SeleniumInterface;
 
 public class CheckList {
 
 	private List<Check> checks;
-	private List<Marker> markers;
-	
-	public void addMarker(Marker m) {
-		markers.add(m);
-	}
 
 	public CheckList() {
 		checks = new ArrayList<Check>();
-		markers = new ArrayList<Marker>();
 		addChecks();
 	}
 
@@ -37,12 +30,13 @@ public class CheckList {
 		int totalPassed = 0;
 		int totalFailed = 0;
 		boolean curPassed;
-		Interface inter = new Interface();
+		SeleniumInterface inter = new SeleniumInterface();
 		for (String url : urls) {
+			List<Marker> markers = new ArrayList<Marker>();
 			System.out.println("Running checks for url: '" + url + "'");
 			String content = inter.getRenderedHtml(url);
 			for (Check c : checks) {
-				curPassed = c.runCheck(content, this, inter);
+				curPassed = c.executeCheck(content, markers, inter);
 				if (curPassed) {
 					c.outputPassed();
 					totalPassed ++;
@@ -53,6 +47,7 @@ public class CheckList {
 				}
 				passed = passed && curPassed;
 			}
+			DatabaseInterface.insertIntoDatabase(markers, inter.driver.getCurrentUrl(), inter.driver.getPageSource());
 		}
 		System.out.println("Total passed: " + totalPassed + "/" + (totalPassed + totalFailed));
 		System.out.println();

@@ -1,4 +1,4 @@
-package code.selenium_interface;
+package code.interfaces;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,10 +13,10 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
-public class Interface {
+public class SeleniumInterface {
 	public WebDriver driver;
 
-	public Interface() {
+	public SeleniumInterface() {
 		System.setProperty("webdriver.chrome.silentOutput", "true");
 		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
 		Logger.getLogger("org.openqa.selenium.remote").setLevel(Level.OFF);

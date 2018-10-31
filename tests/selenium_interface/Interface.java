@@ -8,7 +8,7 @@ import org.openqa.selenium.WebElement;
 import tests.RunTests;
 
 public class Interface {
-	private code.selenium_interface.Interface inter;
+	private code.interfaces.SeleniumInterface inter;
 
 	public static boolean runTests() {
 		Interface testInter = new Interface();
@@ -26,7 +26,7 @@ public class Interface {
 	}
 
 	private Interface() {
-		inter = new code.selenium_interface.Interface();
+		inter = new code.interfaces.SeleniumInterface();
 	}
 
 	private boolean testGetRenderedHtml() {

@@ -1,13 +1,13 @@
 package code.checks;
 
-import code.selenium_interface.Interface;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
 import org.openqa.selenium.WebElement;
+
+import code.interfaces.SeleniumInterface;
 
 public class LanguageOfPage extends Check {
 	
@@ -18,7 +18,7 @@ public class LanguageOfPage extends Check {
 	}
 
 	@Override
-	public void runCheck(String urlContent, List<Marker> markers, Interface inter) {
+	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
 		WebElement[] doc = inter.getElementsByTagName("html");
 		for (int i = 0; i < doc.length; i ++) {
 			if(doc[i].getAttribute("language") == null) {

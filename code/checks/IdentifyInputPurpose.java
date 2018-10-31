@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.openqa.selenium.WebElement;
 
-import code.selenium_interface.Interface;
+import code.interfaces.SeleniumInterface;
 
 public class IdentifyInputPurpose extends Check {
 
@@ -16,7 +16,7 @@ public class IdentifyInputPurpose extends Check {
 	}
 
 	@Override
-	public void runCheck(String urlContent, List<Marker> markers, Interface inter) {
+	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
 		WebElement[] forms = inter.getElementsByTagName("form");
 		for (int i = 0; i < forms.length; i ++) {
 			WebElement[] inputs = inter.getSubElementsByTagName(forms[i], "input");

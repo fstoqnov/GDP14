@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.openqa.selenium.WebElement;
 
-import code.selenium_interface.Interface;
+import code.interfaces.SeleniumInterface;
 
 public abstract class Check {
 	private String name;
@@ -16,7 +16,7 @@ public abstract class Check {
 	}
 
 	//runs the check on the url content and the selenium interface to the page. Adds markers to the checklist marker page
-	public boolean runCheck(String urlContent, CheckList cl, Interface inter) {
+	public boolean executeCheck(String urlContent, List<Marker> m, SeleniumInterface inter) {
 		List<Marker> markers = new ArrayList<Marker>();
 		runCheck(urlContent, markers, inter);
 		boolean passed = true;
@@ -24,30 +24,35 @@ public abstract class Check {
 			if (markers.get(i).getType() != Marker.MARKER_SUCCESS) {
 				passed = false;
 			}
-			cl.addMarker(markers.get(i));
+			m.add(markers.get(i));
 		}
 		return passed;
 	}
 
-	public abstract void runCheck(String urlContent, List<Marker> markers, Interface inter);
+	//runs the check on the url content and the selenium interface to the page. Adds markers to the checklist marker page
+	public boolean executeCheck(String urlContent, SeleniumInterface inter) {
+		return executeCheck(urlContent, new ArrayList<Marker>(), inter);
+	}
+
+	public abstract void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter);
 
 	public String getName() { return name; }
-	
+
 	public void outputPassed() {
 		System.out.println("Passed test '" + getName() + "'");
 	}
-	
+
 	public void outputFailed() {
 		System.out.println("Failed test '" + getName() + "'");
 	}
 
 	//Called to set up any variables that might be used for multiple same site urls
 	public abstract void initialise();
-	
+
 	public abstract String[] getHTMLPass();
 
 	public abstract String[] getHTMLFail();
-	
+
 	public void addFlagToElement(List<Marker> markers, int type, WebElement ele) {
 		markers.add(new Marker(type, this, ele));
 	}
