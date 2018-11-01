@@ -51,7 +51,7 @@ public class CheckList {
 					TestsServer ts = new TestsServer(failHTML);
 					ts.createServer(RunTests.TEST_PORT);
 					String content = inter.getRenderedHtml("http://localhost:" + RunTests.TEST_PORT + "/");
-					correct = RunTests.test(c.getName() + "-fail (" + (failTestCount + 1) + "/" + pass.length + ")", false, c.executeCheck(content, inter)) && correct;
+					correct = RunTests.test(c.getName() + "-fail (" + (failTestCount + 1) + "/" + fail.length + ")", false, c.executeCheck(content, inter)) && correct;
 					failTestCount ++;
 				} catch (Exception e) { RunTests.countFailure++; correct = false; e.printStackTrace(); }
 			}

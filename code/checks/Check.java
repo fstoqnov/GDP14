@@ -53,14 +53,26 @@ public abstract class Check {
 
 	public abstract String[] getHTMLFail();
 
+	public void addFlagToElement(List<Marker> markers, int type, WebElement ele, String desc) {
+		markers.add(new Marker(desc, type, this, ele));
+	}
+	
 	public void addFlagToElement(List<Marker> markers, int type, WebElement ele) {
 		markers.add(new Marker(type, this, ele));
 	}
 
+	public void addFlagToElementAttribute(List<Marker> markers, int type, WebElement ele, String attr, String desc) {
+		markers.add(new Marker(desc, type, this, ele, attr));
+	}
+	
 	public void addFlagToElementAttribute(List<Marker> markers, int type, WebElement ele, String attr) {
 		markers.add(new Marker(type, this, ele, attr));
 	}
 
+	public void addFlagToElementInnerPosition(List<Marker> markers, int type, WebElement ele, int position, String desc) {
+		markers.add(new Marker(desc, type, this, ele, position));
+	}	
+	
 	public void addFlagToElementInnerPosition(List<Marker> markers, int type, WebElement ele, int position) {
 		markers.add(new Marker(type, this, ele, position));
 	}

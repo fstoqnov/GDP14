@@ -34,7 +34,7 @@ public class SeleniumInterface {
 		}
 		return this.getElementsByTagName("html")[0].getAttribute("outerHTML");
 	}
-	
+
 	public int getTagPosition(WebElement ele) {
 		WebElement[] elements = this.getElementsByTagName(ele.getTagName());
 		for (int i = 0; i < elements.length; i ++) {
@@ -54,7 +54,7 @@ public class SeleniumInterface {
 		}
 		return attr;
 	}
-	
+
 	public String getElementId(WebElement ele) {
 		return getElementAttributes(ele).get("id");
 	}
@@ -140,7 +140,9 @@ public class SeleniumInterface {
 
 	//Returns the element with specified ID
 	public WebElement getElementById(String id) {
-		return driver.findElement(By.id(id));
+		try {
+			return driver.findElement(By.id(id));
+		} catch (Exception e) { return null; }
 	}
 
 	//Returns the elements with specified tag name
@@ -165,7 +167,6 @@ public class SeleniumInterface {
 	//Returns list of all elements present on page.
 	public List<WebElement> getAllElements() {
 		List<WebElement> el = driver.findElements(By.cssSelector("*"));
-
 		return el;
 	}
 

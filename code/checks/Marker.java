@@ -10,12 +10,14 @@ public class Marker {
 	private long position;
 	private int type;
 	private Check check;
+	private String desc;
 
 	public static final int MARKER_ERROR = 1;
 	public static final int MARKER_AMBIGUOUS = 2;
 	public static final int MARKER_AMBIGUOUS_SERIOUS = 3;
 	public static final int MARKER_SUCCESS = 4;
 
+	//The constructors are coded lazily, I was tired. Feel free to clean them up
 	public Marker(int type, Check check, WebElement element) {
 		this.element = element;
 		this.position = -1;
@@ -23,13 +25,40 @@ public class Marker {
 		this.type = type;
 		this.check = check;
 	}
+	
+	public Marker(String desc, int type, Check check, WebElement element) {
+		this.element = element;
+		this.position = -1;
+		this.attribute = null;
+		this.type = type;
+		this.check = check;
+		this.desc = desc;
+	}
 
+	public Marker(String desc, int type, Check check, WebElement element, String attribute) {
+		this.element = element;
+		this.attribute = attribute;
+		this.position = -1;
+		this.type = type;
+		this.check = check;
+		this.desc = desc;
+	}
+	
 	public Marker(int type, Check check, WebElement element, String attribute) {
 		this.element = element;
 		this.attribute = attribute;
 		this.position = -1;
 		this.type = type;
 		this.check = check;
+	}
+	
+	public Marker(String desc, int type, Check check, WebElement element, long position) {
+		this.element = element;
+		this.position = position;
+		this.attribute = null;
+		this.type = type;
+		this.check = check;
+		this.desc = desc;
 	}
 
 	public Marker(int type, Check check, WebElement element, long position) {
@@ -47,12 +76,22 @@ public class Marker {
 		this.type = type;
 		this.check = check;
 	}
+	
+	public Marker(String desc, int type, Check check, long position) {
+		this.element = null;
+		this.position = position;
+		this.attribute = null;
+		this.type = type;
+		this.check = check;
+		this.desc = desc;
+	}
 
 	public WebElement getElement() { return element; }
 	public String getAttribute() { return attribute; }
 	public long getPosition() { return position; }
 	public int getType() { return type; }
 	public Check getCheck() { return check; }
+	public String getDesc() { return desc; }
 
 	public boolean equals(Object o) {
 

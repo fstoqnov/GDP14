@@ -21,12 +21,13 @@ public class LanguageOfPage extends Check {
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
 		WebElement[] doc = inter.getElementsByTagName("html");
 		for (int i = 0; i < doc.length; i ++) {
-			if(doc[i].getAttribute("language") == null) {
+			if(doc[i].getAttribute("lang") == null) {
 				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i]);
-			} else if(!lang.contains(doc[i].getAttribute("language"))){
-				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i]);;
+			} else if(!lang.contains(doc[i].getAttribute("lang"))){
+				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i]);
+			} else {
+				addFlagToElement(markers, Marker.MARKER_SUCCESS, doc[i]);
 			}
-			addFlagToElement(markers, Marker.MARKER_SUCCESS, doc[i]);
 		}
 		
 	}
@@ -34,14 +35,15 @@ public class LanguageOfPage extends Check {
 	@Override
 	public String[] getHTMLPass() {
 		return new String[] {
-				"<html lang=\"language\"></html>"
+				"<html lang=\"en\"></html>"
 		};
 	}
 
 	@Override
 	public String[] getHTMLFail() {
 		return new String[] {
-				"<html lang=\"not-included\"></html>"
+				"<html lang=\"not-included\"></html>",
+				"<html>I have no lang tag specified</html>"
 		};
 	}
 
