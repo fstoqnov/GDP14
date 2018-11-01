@@ -7,10 +7,10 @@ import tests.interfaces.TestsServer;
 
 public class CheckList {
 
-	code.checks.CheckList cl;
+	code.CheckList cl;
 
 	private CheckList() {
-		cl = new code.checks.CheckList();
+		cl = new code.CheckList();
 	}
 
 	public static boolean runTests() {

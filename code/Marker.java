@@ -1,8 +1,10 @@
-package code.checks;
+package code;
 
 import java.util.Objects;
 
 import org.openqa.selenium.WebElement;
+
+import code.checks.Check;
 
 public class Marker {
 	private WebElement element;

@@ -8,11 +8,12 @@ import java.util.regex.Pattern;
 
 import org.openqa.selenium.WebElement;
 
+import code.Marker;
 import code.interfaces.SeleniumInterface;
 
 public class Parsing extends Check {
 
-    protected Parsing() { super("Criterion 4.1.1 Parsing"); }
+    public Parsing() { super("Criterion 4.1.1 Parsing"); }
 
     @Override
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {

@@ -5,13 +5,14 @@ import java.util.List;
 
 import org.openqa.selenium.WebElement;
 
+import code.Marker;
 import code.interfaces.SeleniumInterface;
 
 public class IdentifyInputPurpose extends Check {
 
 	private List<String> list;
 	
-	protected IdentifyInputPurpose() {
+	public IdentifyInputPurpose() {
 		super("Criterion 1.3.5 Identify Input Purpose");
 	}
 

@@ -1,8 +1,16 @@
-package code.checks;
+package code;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import code.checks.Check;
+import code.checks.IdentifyInputPurpose;
+import code.checks.InfoAndRelationships;
+import code.checks.LabelsOrInstructions;
+import code.checks.LanguageOfPage;
+import code.checks.MeaningfulSequence;
+import code.checks.Parsing;
+import code.checks.StatusMessages;
 import code.interfaces.DatabaseInterface;
 import code.interfaces.SeleniumInterface;
 

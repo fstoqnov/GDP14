@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.openqa.selenium.WebElement;
 
+import code.Marker;
 import code.interfaces.SeleniumInterface;
 
 public abstract class Check {

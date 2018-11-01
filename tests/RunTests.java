@@ -12,13 +12,17 @@ public class RunTests {
 
 	public static void main(String[] args) {
 		boolean correct = true;
-		correct = test_selenium_interface() && correct;
-		System.out.println();
-		correct = test_database_interface() && correct;
-		System.out.println();
-		correct = test_checks() && correct;
+		try {
+			correct = test_selenium_interface() && correct;
+			System.out.println();
+			correct = test_database_interface() && correct;
+			System.out.println();
+			correct = test_checks() && correct;
 
-		System.out.println("Tests complete. Passed " + countPass + "/" + (countPass + countFailure) + " tests");
+			System.out.println("Tests complete. Passed " + countPass + "/" + (countPass + countFailure) + " tests");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static boolean test_selenium_interface() {
@@ -26,8 +30,8 @@ public class RunTests {
 		correct = SeleniumInterface.runTests() && correct;
 		return correct;
 	}
-	
-	private static boolean test_database_interface() {
+
+	private static boolean test_database_interface() throws Exception {
 		boolean correct = true;
 		correct = DatabaseInterface.runTests() && correct;
 		return correct;
@@ -39,8 +43,21 @@ public class RunTests {
 		return correct;
 	}
 
+	public static boolean test(String testName, long expectedValue, long testValue) {
+		return test(testName, expectedValue + "", testValue + "");
+	}
+	
+	public static boolean test(String testName, int expectedValue, int testValue) {
+		return test(testName, expectedValue + "", testValue + "");
+	}
+	
 	public static boolean test(String testName, String expectedValue, String testValue) {
-		boolean result = expectedValue.equals(testValue);
+		boolean result;
+		if (expectedValue == null || testValue == null) {
+			result = expectedValue == null && testValue == null;
+		} else {
+			result = expectedValue.equals(testValue);
+		}
 		if (result) {
 			countPass++;
 			System.out.println("Test: " + testName + " passed");

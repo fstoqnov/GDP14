@@ -2,11 +2,12 @@ package code.checks;
 
 import java.util.List;
 
+import code.Marker;
 import code.interfaces.SeleniumInterface;
 
 public class InfoAndRelationships extends Check {
 	
-	protected InfoAndRelationships() {
+	public InfoAndRelationships() {
 		super("Criterion 1.3.1 Info and Relationships");
 	}
 

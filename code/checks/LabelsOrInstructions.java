@@ -3,6 +3,7 @@ import java.util.List;
 
 import org.openqa.selenium.WebElement;
 
+import code.Marker;
 import code.interfaces.SeleniumInterface;
 
 public class LabelsOrInstructions extends Check {
@@ -13,7 +14,7 @@ public class LabelsOrInstructions extends Check {
 	private static final String ERR_ARIA_LABELLED_BY_HIDDEN = "An element specified in aria-labelledby is hidden";
 	private static final String ERR_ARIA_LABELLED_BY_EMPTY = "No elements specified in aria-labelledby";
 
-	protected LabelsOrInstructions() {
+	public LabelsOrInstructions() {
 		super("Criterion 3.3.2 Labels or Instructions");
 	}
 

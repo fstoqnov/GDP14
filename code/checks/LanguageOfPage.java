@@ -7,13 +7,14 @@ import java.util.Locale;
 
 import org.openqa.selenium.WebElement;
 
+import code.Marker;
 import code.interfaces.SeleniumInterface;
 
 public class LanguageOfPage extends Check {
 	
 	private ArrayList<String> lang;
 	
-	protected LanguageOfPage() {
+	public LanguageOfPage() {
 		super("Criterion 3.1.1 Language of Page");
 	}
 

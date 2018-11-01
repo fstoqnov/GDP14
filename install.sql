@@ -30,7 +30,7 @@ CREATE TABLE `variable` (
 ALTER TABLE `variable` AUTO_INCREMENT=1000000001;
 
 CREATE TABLE `marker` (
-    `id` int NOT NULL AUTO_INCREMENT,
+    `id` bigint NOT NULL AUTO_INCREMENT,
     `checkpage` int NOT NULL,
     `severity` smallint NOT NULL,
     `position` bigint,
@@ -40,9 +40,9 @@ CREATE TABLE `marker` (
     `attribute` VARCHAR(64),
     CHECK (LENGTH(`attribute`) >= 1),
     `check` VARCHAR(8) NOT NULL,
+    `desc` VARCHAR(256),
     CHECK (LENGTH(`check`) >= 1),
     CONSTRAINT `XGSQL__marker_PK_marker` PRIMARY KEY (`id`),
     CONSTRAINT `XGSQL__marker_FK_checkpage` FOREIGN KEY (`checkpage`) REFERENCES `checkpage` (`id`) ON DELETE restrict
 );
 ALTER TABLE `marker` AUTO_INCREMENT=5500000001;
-

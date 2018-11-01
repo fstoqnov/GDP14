@@ -2,11 +2,12 @@ package code.checks;
 
 import java.util.List;
 
+import code.Marker;
 import code.interfaces.SeleniumInterface;
 
 public class MeaningfulSequence extends Check {
 
-	protected MeaningfulSequence() {
+	public MeaningfulSequence() {
 		super("Criterion 1.3.2 Meaningful Sequence");
 	}
 

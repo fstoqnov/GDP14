@@ -1,6 +1,8 @@
-package code.checks;
+package code;
 
 import java.util.Objects;
+
+import code.checks.Check;
 
 public class UnserialisedMarker {
 	public int type;
@@ -9,14 +11,16 @@ public class UnserialisedMarker {
 	public String attribute;
 	public long position;
 	public Check check;
+	public String desc;
 	
-	public UnserialisedMarker(int type, String tag, int tagPos, String attribute, long position, Check check) {
+	public UnserialisedMarker(int type, String tag, int tagPos, String attribute, long position, Check check, String desc) {
 		this.type = type;
 		this.tag = tag;
 		this.tagPos = tagPos;
 		this.attribute = attribute;
 		this.position = position;
 		this.check = check;
+		this.desc = desc;
 	}
 	
 	public boolean equals(Object o) {

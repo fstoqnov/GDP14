@@ -9,9 +9,11 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+
+import code.Marker;
+
 import java.util.Properties;
 
-import code.checks.Marker;
 import database_records.DBSimplePage;
 import database_records.DBSite;
 
@@ -53,8 +55,9 @@ public class DatabaseInterface {
 		} else {
 			int port = connectionString.split("Port=").length > 1 ? Integer.parseInt(connectionString.split("Port=")[1].split(";")[0]) : DatabaseInterface.DEFAULT_MYSQL_PORT;
 			Properties connectionProps = new Properties();
-			connectionProps.put("user", connectionString.split("Uid=")[1].split(";")[0]);
-			connectionProps.put("password", connectionString.split("Pwd=")[1].split(";")[0]);
+			connectionProps.put("user", connectionString.split("Uid=")[1].split(";")[0].trim());
+			connectionProps.put("password", connectionString.split("Pwd=")[1].split(";")[0].trim());
+
 			conn = DriverManager.getConnection(
 					"jdbc:mysql://" +
 							connectionString.split("Server=")[1].split(";")[0] +
@@ -78,13 +81,26 @@ public class DatabaseInterface {
 
 	public DBSite loadSite(String site) throws Exception {
 		String query =
-				"SELECT id, url FROM site WHERE url = ?";
+				"SELECT `id`, `url` FROM `site` WHERE `url` = ?";
 		PreparedStatement stmt = conn.prepareStatement(query);
 		stmt.setString(1, site);
-		ResultSet rs = stmt.executeQuery(query);
+		ResultSet rs = stmt.executeQuery();
 		DBSite siteDB = null;
 		while (rs.next()) {
 			siteDB = new DBSite(rs.getLong("id"), rs.getString("url"));
+		}
+		stmt.close();
+		if (siteDB == null) {
+			query =
+					"INSERT INTO `site` (`url`) VALUES (?)";
+			stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			stmt.setString(1, site);
+			stmt.executeUpdate();
+			ResultSet rs2 = stmt.getGeneratedKeys();
+			rs2.next();
+			int siteID = rs2.getInt(1);
+			siteDB = new DBSite(siteID, site);
+			stmt.close();
 		}
 		return siteDB;
 	}
@@ -112,63 +128,65 @@ public class DatabaseInterface {
 	//inserts the result of an accessibility check on the website into the database
 	public void insertIntoDatabase(DBSite site, List<Marker> markers, String fullURL, String pageContent, long timestamp, SeleniumInterface si) throws Exception {
 		String first =
-				"INSERT INTO checkpage (site, page, timestamp, source) VALUES (?, ?, ?, ?)";
-		PreparedStatement stmt = conn.prepareStatement(first);
+				"INSERT INTO checkpage (`site`, `page`, `timestamp`, `source`) VALUES (?, ?, ?, ?)";
+		PreparedStatement stmt = conn.prepareStatement(first, Statement.RETURN_GENERATED_KEYS);
 		stmt.setLong(1, site.id);
 		stmt.setString(2, partialiseFullURL(fullURL).getValue());
 		stmt.setLong(3, timestamp);
 		stmt.setString(4, pageContent);
-		if (stmt.execute()) {
-			ResultSet rs = stmt.getGeneratedKeys();
-			rs.next();
-			int checkpageID = rs.getInt(1);
-			stmt.close();
-			String second =
-					"INSERT INTO variable (checkpage, name, value) VALUES (?, ?, ?)";
-			stmt = conn.prepareStatement(second);
-			for (Entry<String, String> arg : getURLArgs(fullURL)) {
-				stmt.setLong(1, checkpageID);
-				stmt.setString(2, arg.getKey());
-				stmt.setString(3, arg.getValue());
-				stmt.execute();
-				if (conn.getWarnings() != null) { throw new Exception(conn.getWarnings()); }
-			}
-			stmt.close();
+		stmt.execute();
+		ResultSet rs = stmt.getGeneratedKeys();
+		rs.next();
+		int checkpageID = rs.getInt(1);
+		stmt.close();
+		String second =
+				"INSERT INTO variable (`checkpage`, `name`, `value`) VALUES (?, ?, ?)";
+		stmt = conn.prepareStatement(second);
+		for (Entry<String, String> arg : getURLArgs(fullURL)) {
+			stmt.setLong(1, checkpageID);
+			stmt.setString(2, arg.getKey());
+			stmt.setString(3, arg.getValue());
+			stmt.execute();
+			if (conn.getWarnings() != null) { throw new Exception(conn.getWarnings()); }
+		}
+		stmt.close();
 
-			String third =
-					"INSERT INTO marker (checkpage, severity, position, eleTagName, eleTagNum, attribute, check) VALUES (?, ?, ?, ?, ?, ?, ?)";
-			stmt = conn.prepareStatement(third);
-			for (Marker marker : markers) {
-				stmt.setLong(1, checkpageID);
-				stmt.setInt(2, marker.getType());
-				if (marker.getPosition() == -1) {
-					stmt.setNull(3, java.sql.Types.BIGINT);
-				} else {
-					stmt.setLong(3, marker.getPosition());
-				}
-				if (marker.getElement() == null) {
-					stmt.setNull(4, java.sql.Types.VARCHAR);
-					stmt.setNull(5, java.sql.Types.INTEGER);
-				} else {
-					stmt.setString(4, marker.getElement().getTagName());
-					stmt.setInt(5, si.getTagPosition(marker.getElement()));
-				}
-				if (marker.getAttribute() == null) {
-					stmt.setNull(6, java.sql.Types.VARCHAR);
-				} else {
-					stmt.setString(6, marker.getAttribute());
-				}
-				stmt.setString(7, marker.getCheck().getName().split("Criterion ")[1].split(" ")[0]);
-				stmt.execute();
-				if (conn.getWarnings() != null) { throw new Exception(conn.getWarnings()); }
+		String third =
+				"INSERT INTO marker (`checkpage`, `severity`, `position`, `eleTagName`, `eleTagNumber`, `attribute`, `check`, `desc`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		stmt = conn.prepareStatement(third);
+		for (Marker marker : markers) {
+			stmt.setLong(1, checkpageID);
+			stmt.setInt(2, marker.getType());
+			if (marker.getPosition() == -1) {
+				stmt.setNull(3, java.sql.Types.BIGINT);
+			} else {
+				stmt.setLong(3, marker.getPosition());
 			}
-		} else {
-			throw new Exception(conn.getWarnings());
+			if (marker.getElement() == null) {
+				stmt.setNull(4, java.sql.Types.VARCHAR);
+				stmt.setNull(5, java.sql.Types.INTEGER);
+			} else {
+				stmt.setString(4, marker.getElement().getTagName());
+				stmt.setInt(5, si.getTagPosition(marker.getElement()));
+			}
+			if (marker.getAttribute() == null) {
+				stmt.setNull(6, java.sql.Types.VARCHAR);
+			} else {
+				stmt.setString(6, marker.getAttribute());
+			}
+			stmt.setString(7, marker.getCheck().getName().split("Criterion ")[1].split(" ")[0]);
+			if (marker.getDesc() == null) {
+				stmt.setNull(8, java.sql.Types.VARCHAR);
+			} else {
+				stmt.setString(8, marker.getDesc());
+			}
+			stmt.execute();
+			if (conn.getWarnings() != null) { throw new Exception(conn.getWarnings()); }
 		}
 	}
 
 	public Connection getConn() { return conn; }
-	
+
 	//a list of all the sites
 	public List<DBSite> getSites() throws Exception {
 		String query =
@@ -195,7 +213,7 @@ public class DatabaseInterface {
 				"SELECT id FROM site WHERE url = '?'";
 		PreparedStatement stmt = conn.prepareStatement(query);
 		stmt.setString(1, site);
-		ResultSet rs = stmt.executeQuery(query);
+		ResultSet rs = stmt.executeQuery();
 		while (rs.next()) {
 			site_id = rs.getLong("id");
 		}

@@ -8,6 +8,11 @@ value type "url" with (
     length between 3 and 256
 );
 
+value type "desc" with (
+    datatype string,
+    length between 0 and 256
+)
+
 value type "check_id" with (
     datatype number,
     value between 100000001 and 999999999
@@ -141,7 +146,8 @@ database table "marker" with (
         "eleTagName" with ( type "eleTagName", label "Element Tag Name", optional ),
         "eleTagNumber" with ( type "eleTagNumber", label "Element Tag Number", optional ),
         "attribute" with ( type "attribute", label "Element Attribute", optional ),
-        "check" with ( type "check", label "Check" )
+        "check" with ( type "check", label "Check" ),
+        "desc" with ( type "desc", label "Desc" )
     ),
     prime key "marker" with columns ( "id" ),
     reference "checkpage" with (

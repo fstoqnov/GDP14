@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import code.CheckList;
+import code.UnserialisedMarker;
 import code.checks.Check;
-import code.checks.CheckList;
-import code.checks.UnserialisedMarker;
 import code.interfaces.DatabaseInterface;
 
 public class DBPage {
@@ -25,7 +25,7 @@ public class DBPage {
 	public DBPage(DatabaseInterface db, long id) throws Exception {
 		this.id = id;
 		String query =
-				"SELECT page, timestamp, source FROM checkpage WHERE id = " + id;
+				"SELECT `page`, `timestamp`, `source` FROM `checkpage` WHERE `id` = " + id;
 
 		Statement stmt = db.getConn().createStatement();
 		ResultSet rs = stmt.executeQuery(query);
@@ -37,7 +37,7 @@ public class DBPage {
 		stmt.close();
 
 		query =
-				"SELECT name, value FROM variable WHERE checkpage = " + id;
+				"SELECT `name`, `value` FROM `variable` WHERE `checkpage` = " + id;
 		stmt = db.getConn().createStatement();
 		rs = stmt.executeQuery(query);
 		args = new ArrayList<Entry<String, String>>();
@@ -47,20 +47,25 @@ public class DBPage {
 		stmt.close();
 
 		query =
-				"SELECT severity, position, eleTagName, eleTagNum, attribute, check FROM marker WHERE checkpage = " + id;
+				"SELECT `severity`, `position`, `eleTagName`, `eleTagNumber`, `attribute`, `check`, `desc` FROM `marker` WHERE `checkpage` = " + id;
 		stmt = db.getConn().createStatement();
 		rs = stmt.executeQuery(query);
 		markers = new ArrayList<UnserialisedMarker>();
 		List<Check> checks = new ArrayList<Check>();
 		CheckList.addChecks(checks);
 		while (rs.next()) {
-			markers.add(new UnserialisedMarker(rs.getInt("severity"), rs.getString("eleTagName"), rs.getInt("eleTagNum"), rs.getString("attribute"), rs.getLong("position"), CheckList.getCheckFromCriterionNumber(checks, rs.getString("check"))));
+			markers.add(new UnserialisedMarker(rs.getInt("severity"), rs.getString("eleTagName"), rs.getInt("eleTagNumber"), rs.getString("attribute"), rs.getLong("position"), CheckList.getCheckFromCriterionNumber(checks, rs.getString("check")), rs.getString("desc")));
 		}
 		stmt.close();
 
 		argURL = page + (args.size() != 0 ? "?" : "");
+		int count = 0;
 		for (Entry<String, String> arg : args) {
+			if (count != 0) {
+				argURL += "&";
+			}
 			argURL += arg.getKey() + "=" + arg.getValue();
+			count++;
 		}
 	}
 }
