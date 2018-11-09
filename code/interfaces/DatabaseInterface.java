@@ -210,7 +210,7 @@ public class DatabaseInterface {
 	public List<DBSimplePage> getPagesForSite(String site) throws Exception {
 		long site_id = 0;
 		String query =
-				"SELECT id FROM site WHERE url = '?'";
+				"SELECT id FROM site WHERE url = ?";
 		PreparedStatement stmt = conn.prepareStatement(query);
 		stmt.setString(1, site);
 		ResultSet rs = stmt.executeQuery();
@@ -246,6 +246,7 @@ public class DatabaseInterface {
 		for (int i = 1; i < pages.size(); i ++) {
 			if (lastTimestamp != pages.get(i).timestamp) {
 				grouped.add(new ArrayList<DBSimplePage>());
+				lastTimestamp = pages.get(i).timestamp;
 			}
 			grouped.get(grouped.size() - 1).add(pages.get(i));
 		}
@@ -259,9 +260,12 @@ public class DatabaseInterface {
 
 	public static List<Entry<String, String>> getURLArgs(String fullURL) {
 		List<Entry<String, String>> map = new ArrayList<Entry<String, String>>();
-		String[] argString = fullURL.split("\\?")[1].split("&");
-		for (String s : argString) {
-			map.add(new AbstractMap.SimpleEntry<String, String>(s.split("=")[0], s.split("=")[1]));
+		if(fullURL.contains("\\?")) {
+			String[] argString = fullURL.split("\\?")[1].split("&");
+
+			for (String s : argString) {
+				map.add(new AbstractMap.SimpleEntry<String, String>(s.split("=")[0], s.split("=")[1]));
+			}
 		}
 		return map;
 	}

@@ -12,7 +12,7 @@ CREATE TABLE `checkpage` (
     `page` VARCHAR(256) NOT NULL,
     CHECK (LENGTH(`page`) >= 3),
     `timestamp` bigint NOT NULL,
-    `source` blob NOT NULL,
+    `source` mediumblob NOT NULL,
     CONSTRAINT `XGSQL__checkpage_PK_checkpage` PRIMARY KEY (`id`),
     CONSTRAINT `XGSQL__checkpage_FK_site` FOREIGN KEY (`site`) REFERENCES `site` (`id`) ON DELETE restrict
 );

@@ -27,6 +27,9 @@ public abstract class Check {
 			}
 			m.add(markers.get(i));
 		}
+		if(markers.size() == 0 && passed) {
+			m.add(new Marker(Marker.MARKER_SUCCESS, this, null));
+		}
 		return passed;
 	}
 
