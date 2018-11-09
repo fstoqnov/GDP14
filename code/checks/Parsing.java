@@ -90,17 +90,19 @@ public class Parsing extends Check {
 
     @Override
     public String[] getHTMLPass() {
-        return new String[] {
-                "<!DOCTYPE html><html lang=\"en\"><head><title><div><img /></div></title></head></html>"
-        };
+        //return new String[] {
+        //        "<!DOCTYPE html><html lang=\"en\"><head><title><div><img /></div></title></head></html>"
+        //};
+        return null;
     }
 
     @Override
     public String[] getHTMLFail() {
-        return new String[] {
-                "<!DOCTYPE html><html><head><div><img></img></div></head></html>",
-                "<!DOCTYPE html><html><head><div><img /></head></div></html>"
-        };
+        //return new String[] {
+        //        "<!DOCTYPE html><html><head><div><img></img></div></head></html>",
+        //        "<!DOCTYPE html><html><head><div><img /></head></div></html>"
+        //};
+        return null;
     }
 
     @Override

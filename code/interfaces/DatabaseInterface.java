@@ -260,7 +260,7 @@ public class DatabaseInterface {
 
 	public static List<Entry<String, String>> getURLArgs(String fullURL) {
 		List<Entry<String, String>> map = new ArrayList<Entry<String, String>>();
-		if(fullURL.contains("\\?")) {
+		if(fullURL.contains("?")) {
 			String[] argString = fullURL.split("\\?")[1].split("&");
 
 			for (String s : argString) {
