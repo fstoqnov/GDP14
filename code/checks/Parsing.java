@@ -1,15 +1,15 @@
 package code.checks;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
 
-import org.openqa.selenium.WebElement;
+import com.google.gson.*;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
 
 import code.Marker;
 import code.interfaces.SeleniumInterface;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import org.apache.log4j.PropertyConfigurator;
 
 public class Parsing extends Check {
 
@@ -18,92 +18,89 @@ public class Parsing extends Check {
     @Override
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
 
-        String[] forbidden = {"area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link",
-        "meta", "param", "source", "track", "wbr"};
+        Properties log4jProp = new Properties();
+        log4jProp.setProperty("log4j.rootLogger", "WARN");
+        PropertyConfigurator.configure(log4jProp);
 
-        List<WebElement> el = inter.getAllElements();
+        boolean success = true;
 
-        ArrayList<String> elementsN = new ArrayList<String>();
-        ArrayList<String> parse = new ArrayList<String>();
-        ArrayList<String> ids = new ArrayList<String>();
+        try {
+            JsonArray jsonResponse = getValidationReport(inter, "http://validator.w3.org/nu/",
+                    inter.getCurrentURL());
 
-        String htmltag = "<(\"[^\"]*\"|'[^']*'|[^'\">])*>";
-        String idtag = " id=\"(.*?)\"";
+            for(JsonElement je : jsonResponse) {
+                JsonObject jo = je.getAsJsonObject();
 
-        Pattern p = Pattern.compile(htmltag);
-        Pattern idp = Pattern.compile(idtag);
-        Matcher idMatcher = idp.matcher(urlContent);
-        Matcher matcher = p.matcher(urlContent);
+                String type = jo.get("type").getAsString();
+                String message = jo.get("message").getAsString();
+                message = message.replace('\u201C', '"');
+                message = message.replace('\u201D', '"');
+                String extract = "";
 
-        while(matcher.find()) {
-            elementsN.add(matcher.group(0));
-        }
-
-        while(idMatcher.find()) {
-            if(ids.contains(idMatcher.group(0))) {
-            	//TODO add error marker
-            }
-            else {
-                ids.add(idMatcher.group(0));
-            }
-        }
-
-        for( WebElement w : el) {
-            ArrayList<String> attr = new ArrayList<String>();
-            String outer = w.getAttribute("outerHTML");
-            Pattern pattern = Pattern.compile("([a-z]+-?[a-z]+_?)=('?\"?)");
-            Matcher m = pattern.matcher(outer);
-            while (m.find()) {
-                if(attr.contains(m.group(1))) {
-                	//TODO add error marker
+                String[] filtersArray = {"tag seen", "Stray end tag", "Bad start tag", "violates nesting rules",
+                        "Duplicate ID", "first occurrence of ID", "Unclosed element", "not allowed as child of element",
+                        "unclosed elements", "not allowed on element", "unquoted attribute value",
+                        "Duplicate attribute"};
+                if(Arrays.stream(filtersArray).parallel().noneMatch(message::contains)) {
+                    continue;
                 }
-                else {
-                    attr.add(m.group(1));
-                }
-            }
-        }
 
-        for(String eN : elementsN) {
-            if(eN.contains("<!")) {
-                continue;
-            }
-            else if(eN.contains("</") ) {
-                if(Arrays.asList(forbidden).contains(eN.split("/")[1].split(">")[0])) {
-                    //TODO add error marker
+                if ((type.equals("error") || type.equals("warning")) && jo.has("extract")) {
+                    int start = jo.get("hiliteStart").getAsInt();
+                    int end = start + jo.get("hiliteLength").getAsInt();
+                    extract = jo.get("extract").getAsString().substring(start, end);
                 }
-                else if(parse.get(parse.size()-1).equals(eN.split("/")[1].split(">")[0])) {
-                    parse.remove(parse.size()-1);
+
+                if (type.equals("error")) {
+                    markers.add(new Marker(message, Marker.MARKER_ERROR, this, null));
+                    success = false;
                 }
-                else {
-                	//TODO add error marker
+                else if (type.equals("warning")) {
+                    markers.add(new Marker(message, Marker.MARKER_AMBIGUOUS, this, null));
+                    success = false;
                 }
             }
-            else if(eN.contains("/>")) {
-                continue;
-            }
-            else {
-                parse.add(eN.split("<")[1].split("[ >]")[0]);
-            }
-        }
 
-        if(parse.size() == 0) {
-        	//TODO add success marker
+            if(success) {
+                markers.add(new Marker(Marker.MARKER_SUCCESS, this, null));
+            }
         }
-        else {
-        	//TODO add error marker
+        catch(UnirestException e) {
+            markers.add(new Marker(Marker.MARKER_ERROR, this, null));
         }
+    }
+
+    public JsonArray getValidationReport(SeleniumInterface inter, String validator, String content) throws UnirestException{
+
+        String response;
+        Map<String, Object> queryConf = new HashMap<String, Object>();
+        queryConf.put("doc", content);
+        queryConf.put("out", "json");
+
+        HttpResponse<String> uniResponse = Unirest.get(validator)
+                .queryString(queryConf)
+                .asString();
+
+        response = uniResponse.getBody();
+
+        Gson g = new Gson();
+
+        return g.fromJson(response, JsonObject.class).getAsJsonArray("messages");
     }
 
     @Override
     public String[] getHTMLPass() {
-        // TODO Auto-generated method stub
-        return null;
+        return new String[] {
+                "<!DOCTYPE html><html lang=\"en\"><head><title><div><img /></div></title></head></html>"
+        };
     }
 
     @Override
     public String[] getHTMLFail() {
-        // TODO Auto-generated method stub
-        return null;
+        return new String[] {
+                "<!DOCTYPE html><html><head><div><img></img></div></head></html>",
+                "<!DOCTYPE html><html><head><div><img /></head></div></html>"
+        };
     }
 
     @Override

@@ -170,6 +170,8 @@ public class SeleniumInterface {
 		return el;
 	}
 
+	public String getCurrentURL() { return driver.getCurrentUrl(); }
+
 	public void close() {
 		driver.close();
 		driver.quit();
