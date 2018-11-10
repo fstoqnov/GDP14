@@ -9,6 +9,7 @@ import code.checks.InfoAndRelationships;
 import code.checks.LabelsOrInstructions;
 import code.checks.LanguageOfPage;
 import code.checks.MeaningfulSequence;
+import code.checks.PageTitled;
 import code.checks.Parsing;
 import code.interfaces.DatabaseInterface;
 import code.interfaces.SeleniumInterface;
@@ -29,6 +30,7 @@ public class CheckList {
 		checks.add(new Parsing());
 		checks.add(new LabelsOrInstructions());
 		checks.add(new LanguageOfPage());
+		checks.add(new PageTitled());
 	}
 	
 	public static Check getCheckFromCriterionNumber(List<Check> checks, String num) {
