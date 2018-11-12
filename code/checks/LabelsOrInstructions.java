@@ -13,6 +13,8 @@ public class LabelsOrInstructions extends Check {
 	private static final String ERR_ARIA_LABELLED_BY_MISSING = "An element specified in aria-labelledby is missing";
 	private static final String ERR_ARIA_LABELLED_BY_HIDDEN = "An element specified in aria-labelledby is hidden";
 	private static final String ERR_ARIA_LABELLED_BY_EMPTY = "No elements specified in aria-labelledby";
+	
+	private static final String ERR_LABEL_MISSING = "No label specified for this element";
 
 	public LabelsOrInstructions() {
 		super("Criterion 3.3.2 Labels or Instructions");
@@ -68,7 +70,7 @@ public class LabelsOrInstructions extends Check {
 				}
 
 				if (!found_for) {
-					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[j]); //label was not found. This _might_ not be described but we have no way of telling
+					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[j], ERR_LABEL_MISSING); //label was not found. This _might_ not be described but we have no way of telling
 				}
 
 			} else {
