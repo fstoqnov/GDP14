@@ -148,17 +148,18 @@ public class ConformanceReport {
     }
     
     public String getFlagText(UnserialisedMarker usm) {
-    	if (usm.desc != null) {
-    		return usm.desc;
-    	}
+    	String base = usm.desc != null ? "'" + usm.desc + "' " : "";
     	if (usm.tag != null) {
     		if (usm.attribute != null) {
-    			return "at tag " + usm.tag + "#" + usm.tagPos + " around attribute " + usm.attribute;
+    			return base + "at tag " + usm.tag + "#" + usm.tagPos + " around attribute " + usm.attribute;
     		} else {
-    			return "at tag " + usm.tag + "#" + usm.tagPos;
+    			return base + "at tag " + usm.tag + "#" + usm.tagPos;
     		}
     	}
-    	return "at position " + usm.position;
+    	if (usm.position != -1) {
+    		return base + "at position " + usm.position;
+    	}
+    	return base;
     }
 
     public boolean checkPass(ArrayList<UnserialisedMarker> currentCheck) {

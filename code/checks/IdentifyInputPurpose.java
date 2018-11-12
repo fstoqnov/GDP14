@@ -24,12 +24,12 @@ public class IdentifyInputPurpose extends Check {
 			for (int j = 0; j < inputs.length; j ++) {
 				if (inputs[j].getAttribute("autocomplete") != null) {
 					if (!list.contains(inputs[j].getAttribute("autocomplete"))) {
-						addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[j]);
+						addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[j], "no autocomplete attribute defined by wcag 2.1 input purposes");
 					} else {
-						addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[j]);
+						addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[j], "autocomplete attribute in defined list");
 					}
 				} else {
-					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[j]);
+					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[j], "no autocomplete attribute");
 				}
 			}
 		}
