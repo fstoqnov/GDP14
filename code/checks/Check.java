@@ -8,7 +8,7 @@ import org.openqa.selenium.WebElement;
 import code.Marker;
 import code.interfaces.SeleniumInterface;
 
-public abstract class Check {
+public abstract class Check implements Comparable<Check> {
 	private String name;
 
 	protected Check(String name) {
@@ -79,5 +79,9 @@ public abstract class Check {
 	
 	public void addFlagToElementInnerPosition(List<Marker> markers, int type, WebElement ele, int position) {
 		markers.add(new Marker(type, this, ele, position));
+	}
+
+	public int compareTo(Check c) {
+		return getName().compareTo(c.getName());
 	}
 }

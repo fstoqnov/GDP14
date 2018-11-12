@@ -10,7 +10,6 @@ CREATE TABLE `checkpage` (
     `id` int NOT NULL AUTO_INCREMENT,
     `site` int NOT NULL,
     `page` VARCHAR(256) NOT NULL,
-    CHECK (LENGTH(`page`) >= 3),
     `timestamp` bigint NOT NULL,
     `source` mediumblob NOT NULL,
     CONSTRAINT `XGSQL__checkpage_PK_checkpage` PRIMARY KEY (`id`),
