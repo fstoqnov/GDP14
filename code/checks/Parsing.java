@@ -28,10 +28,16 @@ public class Parsing extends Check {
             JsonArray jsonResponse = getValidationReport(inter, "http://validator.w3.org/nu/",
                     inter.getCurrentURL());
 
+            if((jsonResponse.get(0).getAsJsonObject().get("type").getAsString().equals("non-document-error"))) {
+                jsonResponse = getValidationReportString(inter, "http://validator.w3.org/nu/",
+                        urlContent);
+            }
+
             for(JsonElement je : jsonResponse) {
                 JsonObject jo = je.getAsJsonObject();
 
                 String type = jo.get("type").getAsString();
+
                 String message = jo.get("message").getAsString();
                 message = message.replace('\u201C', '"');
                 message = message.replace('\u201D', '"');
@@ -41,7 +47,7 @@ public class Parsing extends Check {
                         "Duplicate ID", "first occurrence of ID", "Unclosed element", "not allowed as child of element",
                         "unclosed elements", "not allowed on element", "unquoted attribute value",
                         "Duplicate attribute"};
-                if(Arrays.stream(filtersArray).parallel().noneMatch(message::contains)) {
+                if(Arrays.stream(filtersArray).parallel().anyMatch(message::contains)) {
                     continue;
                 }
 
@@ -88,21 +94,41 @@ public class Parsing extends Check {
         return g.fromJson(response, JsonObject.class).getAsJsonArray("messages");
     }
 
+    public JsonArray getValidationReportString(SeleniumInterface inter, String validator, String content) throws UnirestException{
+
+        String response;
+        Map<String, Object> queryConf = new HashMap<String, Object>();
+        queryConf.put("out", "json");
+
+        HttpResponse<String> uniResponse = Unirest.post(validator)
+                .queryString(queryConf)
+                .header("Content-Type", "text/html; charset=UTF-8")
+                .body(content)
+                .asString();
+
+        response = uniResponse.getBody();
+
+        Gson g = new Gson();
+
+        return g.fromJson(response, JsonObject.class).getAsJsonArray("messages");
+    }
+
     @Override
     public String[] getHTMLPass() {
-        //return new String[] {
-        //        "<!DOCTYPE html><html lang=\"en\"><head><title><div><img /></div></title></head></html>"
-        //};
-        return null;
+        return new String[] {
+                "<!DOCTYPE html><html lang=\"en\"><head><title><div><img /></div></title></head></html>"
+        };
+        //return null;
     }
 
     @Override
     public String[] getHTMLFail() {
-        //return new String[] {
-        //        "<!DOCTYPE html><html><head><div><img></img></div></head></html>",
-        //        "<!DOCTYPE html><html><head><div><img /></head></div></html>"
-        //};
-        return null;
+        return new String[] {
+                "<!DOCTYPE html><html><head><div><img></img></div></html>",
+                "<!DOCTYPE html><html><head><p id='id1'><p id='id1'><div><img /></head></div></html>",
+                "<!DOCTYPE html><html><head><div><img /></head></div></html>"
+        };
+        //return null;
     }
 
     @Override

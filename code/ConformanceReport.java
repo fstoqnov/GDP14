@@ -13,33 +13,33 @@ public class ConformanceReport {
 
     private String report;
 
-    final List<String> header = Lists.newArrayList("<h1 style=\"font-size: 48px; text-align: left;\">",
+    private final List<String> header = Lists.newArrayList("<h1 style=\"font-size: 48px; text-align: left;\">",
             "<strong>", "</strong>", "</h>");
-    final List<String> title = Lists.newArrayList("<p>", "<span style=\"font-size: 24px;\">",
+    private final List<String> title = Lists.newArrayList("<p>", "<span style=\"font-size: 24px;\">",
             "<strong>", "</strong>", "</span>", "</p>");
-    final List<String> testPass = Lists.newArrayList("<p>",
+    private final List<String> testPass = Lists.newArrayList("<p>",
             "<span style=\"font-size: 24px; color: #10640c;\">", "<em>", "<strong>", "</strong>", "</em>", "</span>",
             "</p>");
-    final List<String> testFail = Lists.newArrayList("<p>",
+    private final List<String> testFail = Lists.newArrayList("<p>",
             "<span style=\"font-size: 24px; color: #b30000;\">", "<em>", "<strong>", "</strong>", "</em>", "</span>",
             "</p>");
-    final List<String> listWarningElement = Lists.newArrayList("<li>",
+    private final List<String> listWarningElement = Lists.newArrayList("<li>",
             "<span style=\"font-size: 18px; color: #715409;\">", "</span>", "</li>");
-    final List<String> listStart = Lists.newArrayList("<ul>", "<span style=\"font-size: 18px;\">");
-    final List<String> listEnd = Lists.newArrayList("</span>", "</ul>");
-    final List<String> listElement = Lists.newArrayList("<li>",
+    private final List<String> listStart = Lists.newArrayList("<ul>", "<span style=\"font-size: 18px;\">");
+    private final List<String> listEnd = Lists.newArrayList("</span>", "</ul>");
+    private final List<String> listElement = Lists.newArrayList("<li>",
             "<span style=\"font-size: 18px; color: #b30000;\">", "</span>", "</li>");
 
-    public String addURL(String url) { return formatLine("URL: " + url, title);}
+    private String addURL(String url) { return formatLine("URL: " + url, title);}
 
-    public String addPassTest(String test) { return formatLine("&#9745; " + test + " - Passed", testPass); }
+    private String addPassTest(String test) { return formatLine("&#9745; " + test + " - Passed", testPass); }
 
-    public String addFailTest(String test) {
+    private String addFailTest(String test) {
         return formatLine("&#9746; " + test + ":", testFail) +
                 formatLine("", listStart);
     }
 
-    public String addWarningElement(String test, boolean serious) {
+    private String addWarningElement(String test, boolean serious) {
         String s;
         if(serious) {
             s = formatLine("Warning (Serious): " + test, listWarningElement);
@@ -50,13 +50,13 @@ public class ConformanceReport {
         return s;
     }
 
-    public String endList() { return formatLine("", listEnd); }
+    private String endList() { return formatLine("", listEnd); }
 
-    public String addFailElement(String element) { return formatLine("Error: " + element, listElement); }
+    private String addFailElement(String element) { return formatLine("Error: " + element, listElement); }
 
     public String getReport() { return report; }
 
-    public String formatLine(String line, List<String> params) {
+    private String formatLine(String line, List<String> params) {
 
         String formattedLine = "";
 
@@ -147,7 +147,7 @@ public class ConformanceReport {
         }
     }
 
-    public boolean checkPass(ArrayList<UnserialisedMarker> currentCheck) {
+    private boolean checkPass(ArrayList<UnserialisedMarker> currentCheck) {
         boolean passed = true;
         for(UnserialisedMarker usm : currentCheck) {
             if(!(usm.type == Marker.MARKER_SUCCESS)) {
