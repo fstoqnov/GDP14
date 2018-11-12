@@ -79,7 +79,7 @@ public class Parsing extends Check {
     public JsonArray getValidationReport(SeleniumInterface inter, String validator, String content) throws UnirestException{
 
         String response;
-        Map<String, Object> queryConf = new HashMap<String, Object>();
+        Map<String, Object> queryConf = new HashMap<>();
         queryConf.put("doc", content);
         queryConf.put("out", "json");
 
@@ -97,7 +97,7 @@ public class Parsing extends Check {
     public JsonArray getValidationReportString(SeleniumInterface inter, String validator, String content) throws UnirestException{
 
         String response;
-        Map<String, Object> queryConf = new HashMap<String, Object>();
+        Map<String, Object> queryConf = new HashMap<>();
         queryConf.put("out", "json");
 
         HttpResponse<String> uniResponse = Unirest.post(validator)

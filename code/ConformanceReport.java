@@ -76,7 +76,7 @@ public class ConformanceReport {
     public void generateReportFromPage(DatabaseInterface db, String site) {
 
         try {
-            List<DBSimplePage> pages = new ArrayList<DBSimplePage>();
+            List<DBSimplePage> pages;
             List<List<DBSimplePage>> groupedPages = db.groupPagesByTimestamp(db.getPagesForSite(site));
             pages = groupedPages.get(groupedPages.size() - 1);
 
@@ -105,7 +105,7 @@ public class ConformanceReport {
                 }
             }
 
-            List<String> keys = new ArrayList<String>(checkMarkers.size());
+            List<String> keys = new ArrayList<>(checkMarkers.size());
             keys.addAll(checkMarkers.keySet());
             Collections.sort(keys);
 
