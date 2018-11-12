@@ -1,14 +1,13 @@
 package code;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import code.checks.Check;
 import code.checks.IdentifyInputPurpose;
-import code.checks.InfoAndRelationships;
 import code.checks.LabelsOrInstructions;
 import code.checks.LanguageOfPage;
-import code.checks.MeaningfulSequence;
 import code.checks.PageTitled;
 import code.checks.Parsing;
 import code.interfaces.DatabaseInterface;
@@ -24,13 +23,12 @@ public class CheckList {
 	}
 
 	public static void addChecks(List<Check> checks) {
-		checks.add(new InfoAndRelationships());
-		checks.add(new MeaningfulSequence());
 		checks.add(new IdentifyInputPurpose());
 		checks.add(new Parsing());
 		checks.add(new LabelsOrInstructions());
 		checks.add(new LanguageOfPage());
 		checks.add(new PageTitled());
+		Collections.sort(checks);
 	}
 	
 	public static Check getCheckFromCriterionNumber(List<Check> checks, String num) {

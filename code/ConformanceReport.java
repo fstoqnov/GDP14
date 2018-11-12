@@ -126,10 +126,10 @@ public class ConformanceReport {
                         break;
                     }
                     else if(usm.type == Marker.MARKER_ERROR) {
-                        report += addFailElement(usm.desc);
+                        report += addFailElement(getFlagText(usm));
                     }
                     else {
-                        report += addWarningElement(usm.desc, usm.type == Marker.MARKER_AMBIGUOUS_SERIOUS);
+                        report += addWarningElement(getFlagText(usm), usm.type == Marker.MARKER_AMBIGUOUS_SERIOUS);
                     }
                 }
 
@@ -145,6 +145,20 @@ public class ConformanceReport {
         catch(Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    public String getFlagText(UnserialisedMarker usm) {
+    	if (usm.desc != null) {
+    		return usm.desc;
+    	}
+    	if (usm.tag != null) {
+    		if (usm.attribute != null) {
+    			return "at tag " + usm.tag + "#" + usm.tagPos + " around attribute " + usm.attribute;
+    		} else {
+    			return "at tag " + usm.tag + "#" + usm.tagPos;
+    		}
+    	}
+    	return "at position " + usm.position;
     }
 
     public boolean checkPass(ArrayList<UnserialisedMarker> currentCheck) {
