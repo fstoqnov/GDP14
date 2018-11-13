@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import code.Marker;
+import code.UnserialisedMarker;
 
 import java.util.Properties;
 
@@ -108,6 +109,16 @@ public class DatabaseInterface {
 	public void insertIntoDatabase(List<Marker> markers, String fullURL, String pageContent, SeleniumInterface si) throws Exception {
 		insertIntoDatabase(markers, fullURL, pageContent, System.currentTimeMillis(), si);
 	}
+	
+	public void updateHiddenStatus(UnserialisedMarker marker) throws Exception {
+		String first =
+				"UPDATE marker SET `hidden` = ? WHERE `id` = ?";
+		PreparedStatement stmt = conn.prepareStatement(first, Statement.RETURN_GENERATED_KEYS);
+		stmt.setBoolean(1, marker.hidden);
+		stmt.setLong(2, marker.id);
+		stmt.execute();
+		stmt.close();
+	}
 
 	public void insertIntoDatabase(List<Marker> markers, String fullURL, String pageContent, long timestamp, SeleniumInterface si) throws Exception {
 		insertIntoDatabase(partialiseFullURL(fullURL).getKey(), markers, fullURL, pageContent, timestamp, si);
@@ -152,7 +163,7 @@ public class DatabaseInterface {
 		stmt.close();
 
 		String third =
-				"INSERT INTO marker (`checkpage`, `severity`, `position`, `eleTagName`, `eleTagNumber`, `attribute`, `check`, `desc`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+				"INSERT INTO marker (`checkpage`, `severity`, `position`, `eleTagName`, `eleTagNumber`, `attribute`, `check`, `desc`, `hidden`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, FALSE)";
 		stmt = conn.prepareStatement(third);
 		for (Marker marker : markers) {
 			stmt.setLong(1, checkpageID);

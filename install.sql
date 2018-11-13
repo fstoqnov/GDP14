@@ -40,8 +40,11 @@ CREATE TABLE `marker` (
     CHECK (LENGTH(`attribute`) >= 1),
     `check` VARCHAR(8) NOT NULL,
     `desc` VARCHAR(256),
+    `hidden` boolean,
+    `parent` bigint,
     CHECK (LENGTH(`check`) >= 1),
     CONSTRAINT `XGSQL__marker_PK_marker` PRIMARY KEY (`id`),
-    CONSTRAINT `XGSQL__marker_FK_checkpage` FOREIGN KEY (`checkpage`) REFERENCES `checkpage` (`id`) ON DELETE restrict
+    CONSTRAINT `XGSQL__marker_FK_checkpage` FOREIGN KEY (`checkpage`) REFERENCES `checkpage` (`id`) ON DELETE restrict,
+    CONSTRAINT `XGSQL__marker_FK_parent` FOREIGN KEY (`parent`) REFERENCES `marker` (`id`) ON DELETE restrict
 );
 ALTER TABLE `marker` AUTO_INCREMENT=5500000001;

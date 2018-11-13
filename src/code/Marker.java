@@ -13,6 +13,7 @@ public class Marker {
 	private int type;
 	private Check check;
 	private String desc;
+	private boolean hidden;
 
 	public static final int MARKER_ERROR = 1;
 	public static final int MARKER_AMBIGUOUS = 2;
@@ -20,6 +21,17 @@ public class Marker {
 	public static final int MARKER_SUCCESS = 4;
 
 	//The constructors are coded lazily, I was tired. Feel free to clean them up
+	
+	public Marker(String desc, int type, Check check, WebElement element, String attribute, long position, boolean hidden) {
+		this.desc = desc;
+		this.type = type;
+		this.check = check;
+		this.element = element;
+		this.attribute = attribute;
+		this.position = position;
+		this.hidden = hidden;
+	}
+	
 	public Marker(int type, Check check, WebElement element) {
 		this.element = element;
 		this.position = -1;
@@ -94,6 +106,7 @@ public class Marker {
 	public int getType() { return type; }
 	public Check getCheck() { return check; }
 	public String getDesc() { return desc; }
+	public boolean getHidden() { return hidden; }
 
 	public boolean equals(Object o) {
 

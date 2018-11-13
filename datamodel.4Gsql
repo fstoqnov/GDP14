@@ -147,13 +147,21 @@ database table "marker" with (
         "eleTagNumber" with ( type "eleTagNumber", label "Element Tag Number", optional ),
         "attribute" with ( type "attribute", label "Element Attribute", optional ),
         "check" with ( type "check", label "Check" ),
-        "desc" with ( type "desc", label "Desc" )
+        "desc" with ( type "desc", label "Desc" ),
+        "hidden" with ( type "boolean", label "Hidden" ),
+        "parent" with ( type "marker_id", label "Marker ID", optional )
     ),
     prime key "marker" with columns ( "id" ),
     reference "checkpage" with (
         join to "checkpage" on (
             id = checkpage ),
         label 'Checkpage',
+        prevent on delete
+    ),
+    reference "marker" with (
+        join to "marker" on (
+            id = parent ),
+        label 'Marker',
         prevent on delete
     )
 );

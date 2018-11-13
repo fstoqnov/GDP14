@@ -47,14 +47,14 @@ public class DBPage {
 		stmt.close();
 
 		query =
-				"SELECT `severity`, `position`, `eleTagName`, `eleTagNumber`, `attribute`, `check`, `desc` FROM `marker` WHERE `checkpage` = " + id;
+				"SELECT `id`, `severity`, `position`, `eleTagName`, `eleTagNumber`, `attribute`, `check`, `desc`, `hidden` FROM `marker` WHERE `checkpage` = " + id;
 		stmt = db.getConn().createStatement();
 		rs = stmt.executeQuery(query);
 		markers = new ArrayList<UnserialisedMarker>();
 		List<Check> checks = new ArrayList<Check>();
 		CheckList.addChecks(checks);
 		while (rs.next()) {
-			markers.add(new UnserialisedMarker(rs.getInt("severity"), rs.getString("eleTagName"), rs.getInt("eleTagNumber"), rs.getString("attribute"), rs.getLong("position"), CheckList.getCheckFromCriterionNumber(checks, rs.getString("check")), rs.getString("desc")));
+			markers.add(new UnserialisedMarker(rs.getLong("id"), rs.getInt("severity"), rs.getString("eleTagName"), rs.getInt("eleTagNumber"), rs.getString("attribute"), rs.getLong("position"), CheckList.getCheckFromCriterionNumber(checks, rs.getString("check")), rs.getString("desc"), rs.getBoolean("hidden")));
 		}
 		stmt.close();
 
