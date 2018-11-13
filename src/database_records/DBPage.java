@@ -21,11 +21,15 @@ public class DBPage {
 	public String argURL; // index.php?arg1=val1
 	public long timestamp;
 	public long id;
+	public long parent;
 
 	public DBPage(DatabaseInterface db, long id) throws Exception {
+		if (id == 0) {
+			throw new Exception("Trying to load null page. Are you trying to load a null parent?");
+		}
 		this.id = id;
 		String query =
-				"SELECT `page`, `timestamp`, `source` FROM `checkpage` WHERE `id` = " + id;
+				"SELECT `page`, `timestamp`, `source`, `parent` FROM `checkpage` WHERE `id` = " + id;
 
 		Statement stmt = db.getConn().createStatement();
 		ResultSet rs = stmt.executeQuery(query);
@@ -33,6 +37,7 @@ public class DBPage {
 			content = rs.getString("source");
 			timestamp = rs.getLong("timestamp");
 			page = rs.getString("page");
+			parent = rs.getLong("parent");
 		}
 		stmt.close();
 

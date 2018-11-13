@@ -6,10 +6,12 @@ public class DBSimplePage {
 	public long id;
 	public String page; //index.php
 	public long timestamp;
+	public long parent;
 	
-	public DBSimplePage(long id, String page, long timestamp) {
+	public DBSimplePage(long id, long parent, String page, long timestamp) {
 		this.id = id;
 		this.page = page;
+		this.parent = parent;
 		this.timestamp = timestamp;
 	}
 	

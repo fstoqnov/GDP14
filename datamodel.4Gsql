@@ -102,13 +102,20 @@ database table "checkpage" with (
         "site" with ( type "site_id", label "Site" ),
         "page" with ( type "page", label "Page" ),
         "timestamp" with ( type "timestamp", label "Timestamp" ),
-        "source" with ( type "page_source", label "Source" )
+        "source" with ( type "page_source", label "Source" ),
+        "parent" with ( type "marker_id", label "Marker ID", optional )
     ),
     prime key "checkpage" with columns ( "id" ),
     reference "site" with (
         join to "site" on (
             id = site ),
         label 'Site',
+        prevent on delete
+    ),
+    reference "marker" with (
+        join to "marker" on (
+            id = parent ),
+        label 'Marker',
         prevent on delete
     ),
     optional list "variables" based on reference "variable"."checkpage",
@@ -148,20 +155,13 @@ database table "marker" with (
         "attribute" with ( type "attribute", label "Element Attribute", optional ),
         "check" with ( type "check", label "Check" ),
         "desc" with ( type "desc", label "Desc" ),
-        "hidden" with ( type "boolean", label "Hidden" ),
-        "parent" with ( type "marker_id", label "Marker ID", optional )
+        "hidden" with ( type "boolean", label "Hidden" )
     ),
     prime key "marker" with columns ( "id" ),
     reference "checkpage" with (
         join to "checkpage" on (
             id = checkpage ),
         label 'Checkpage',
-        prevent on delete
-    ),
-    reference "marker" with (
-        join to "marker" on (
-            id = parent ),
-        label 'Marker',
         prevent on delete
     )
 );
