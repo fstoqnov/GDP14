@@ -149,7 +149,7 @@ public class ConformanceReport {
     
     public String getFlagText(UnserialisedMarker usm) {
     	String base = usm.desc != null ? "'" + usm.desc + "' " : "";
-    	String idString = usm.eleID != null ? "(" + usm.eleID + ")" : "";
+    	String idString = usm.eleID != null && usm.eleID.length() > 0 ? "(" + usm.eleID + ")" : "";
     	if (usm.tag != null) {
     		if (usm.attribute != null) {
     			return base + "at tag " + usm.tag + idString + "#" + usm.tagPos + " around attribute " + usm.attribute;
