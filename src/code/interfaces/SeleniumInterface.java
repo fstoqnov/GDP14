@@ -17,9 +17,14 @@ public class SeleniumInterface {
 	public WebDriver driver;
 
 	public SeleniumInterface() {
+		Logger.getLogger("org.openqa.selenium.remote").setLevel(Level.OFF);
+		startChrome();
+	}
+	
+	private void startChrome() {
 		System.setProperty("webdriver.chrome.silentOutput", "true");
 		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
-		Logger.getLogger("org.openqa.selenium.remote").setLevel(Level.OFF);
+
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--headless");
 		driver = new ChromeDriver(options);
@@ -32,7 +37,25 @@ public class SeleniumInterface {
 		while (!js.executeScript("return document.readyState").toString().equals("complete")) {
 			try { Thread.sleep(50); } catch (Exception e) {  }
 		}
+		return getHTML();
+	}
+	
+	public String getHTML() {
 		return this.getElementsByTagName("html")[0].getAttribute("outerHTML");
+	}
+	
+	public String getDomRep() {
+		return getDomRep(this.getElementsByTagName("html")[0]);
+	}
+	
+	public String getDomRep(WebElement parent) {
+		String flattened = "<" + parent.getTagName() + ">";
+		List<WebElement> children = parent.findElements(By.xpath("./*"));
+		for (int i = 0; i < children.size(); i ++) {
+			flattened += getDomRep(children.get(i));
+		}
+		flattened += "</" + parent.getTagName() + ">";
+		return flattened;
 	}
 
 	public int getTagPosition(WebElement ele) {

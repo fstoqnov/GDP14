@@ -9,6 +9,8 @@ ALTER TABLE `site` AUTO_INCREMENT=10000001;
 CREATE TABLE `checkpage` (
     `id` int NOT NULL AUTO_INCREMENT,
     `parent` int NULL,
+    `depth` int,
+    `event` VARCHAR(256) NULL,
     `site` int NOT NULL,
     `page` VARCHAR(256) NOT NULL,
     `timestamp` bigint NOT NULL,
@@ -36,6 +38,7 @@ CREATE TABLE `marker` (
     `severity` smallint NOT NULL,
     `position` bigint,
     `eleTagName` VARCHAR(16),
+    `eleID` VARCHAR(256),
     CHECK (LENGTH(`eleTagName`) >= 1),
     `eleTagNumber` int,
     `attribute` VARCHAR(64),

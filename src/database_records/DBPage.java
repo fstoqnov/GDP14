@@ -22,6 +22,8 @@ public class DBPage {
 	public long timestamp;
 	public long id;
 	public long parent;
+	public String event;
+	public int depth;
 
 	public DBPage(DatabaseInterface db, long id) throws Exception {
 		if (id == 0) {
@@ -29,7 +31,7 @@ public class DBPage {
 		}
 		this.id = id;
 		String query =
-				"SELECT `page`, `timestamp`, `source`, `parent` FROM `checkpage` WHERE `id` = " + id;
+				"SELECT `page`, `timestamp`, `source`, `parent`, `depth`, `event` FROM `checkpage` WHERE `id` = " + id;
 
 		Statement stmt = db.getConn().createStatement();
 		ResultSet rs = stmt.executeQuery(query);
@@ -38,6 +40,8 @@ public class DBPage {
 			timestamp = rs.getLong("timestamp");
 			page = rs.getString("page");
 			parent = rs.getLong("parent");
+			event = rs.getString("event");
+			depth = rs.getInt("depth");
 		}
 		stmt.close();
 
@@ -52,14 +56,14 @@ public class DBPage {
 		stmt.close();
 
 		query =
-				"SELECT `id`, `severity`, `position`, `eleTagName`, `eleTagNumber`, `attribute`, `check`, `desc`, `hidden` FROM `marker` WHERE `checkpage` = " + id;
+				"SELECT `id`, `severity`, `position`, `eleTagName`, `eleTagNumber`, `eleID`, `attribute`, `check`, `desc`, `hidden` FROM `marker` WHERE `checkpage` = " + id;
 		stmt = db.getConn().createStatement();
 		rs = stmt.executeQuery(query);
 		markers = new ArrayList<UnserialisedMarker>();
 		List<Check> checks = new ArrayList<Check>();
 		CheckList.addChecks(checks);
 		while (rs.next()) {
-			markers.add(new UnserialisedMarker(rs.getLong("id"), rs.getInt("severity"), rs.getString("eleTagName"), rs.getInt("eleTagNumber"), rs.getString("attribute"), rs.getLong("position"), CheckList.getCheckFromCriterionNumber(checks, rs.getString("check")), rs.getString("desc"), rs.getBoolean("hidden")));
+			markers.add(new UnserialisedMarker(rs.getLong("id"), rs.getInt("severity"), rs.getString("eleTagName"), rs.getInt("eleTagNumber"), rs.getString("attribute"), rs.getLong("position"), CheckList.getCheckFromCriterionNumber(checks, rs.getString("check")), rs.getString("desc"), rs.getString("eleID"), rs.getBoolean("hidden")));
 		}
 		stmt.close();
 

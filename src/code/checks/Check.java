@@ -28,7 +28,7 @@ public abstract class Check implements Comparable<Check> {
 			m.add(markers.get(i));
 		}
 		if(markers.size() == 0 && passed) {
-			m.add(new Marker(Marker.MARKER_SUCCESS, this, null));
+			m.add(new Marker(Marker.MARKER_SUCCESS, this));
 		}
 		return passed;
 	}

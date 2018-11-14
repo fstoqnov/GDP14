@@ -149,11 +149,12 @@ public class ConformanceReport {
     
     public String getFlagText(UnserialisedMarker usm) {
     	String base = usm.desc != null ? "'" + usm.desc + "' " : "";
+    	String idString = usm.eleID != null ? "(" + usm.eleID + ")" : "";
     	if (usm.tag != null) {
     		if (usm.attribute != null) {
-    			return base + "at tag " + usm.tag + "#" + usm.tagPos + " around attribute " + usm.attribute;
+    			return base + "at tag " + usm.tag + idString + "#" + usm.tagPos + " around attribute " + usm.attribute;
     		} else {
-    			return base + "at tag " + usm.tag + "#" + usm.tagPos;
+    			return base + "at tag " + usm.tag + idString + "#" + usm.tagPos;
     		}
     	}
     	if (usm.position != -1) {

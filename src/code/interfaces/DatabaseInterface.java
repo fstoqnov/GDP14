@@ -9,12 +9,10 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import code.Marker;
 import code.UnserialisedMarker;
-
-import java.util.Properties;
-
 import database_records.DBSimplePage;
 import database_records.DBSite;
 
@@ -106,10 +104,6 @@ public class DatabaseInterface {
 		return siteDB;
 	}
 
-	public void insertIntoDatabase(List<Marker> markers, String fullURL, String pageContent, SeleniumInterface si) throws Exception {
-		insertIntoDatabase(markers, fullURL, pageContent, System.currentTimeMillis(), si);
-	}
-	
 	public void updateHiddenStatus(UnserialisedMarker marker) throws Exception {
 		String first =
 				"UPDATE marker SET `hidden` = ? WHERE `id` = ?";
@@ -120,46 +114,66 @@ public class DatabaseInterface {
 		stmt.close();
 	}
 
-	public void insertIntoDatabase(List<Marker> markers, String fullURL, String pageContent, long timestamp, SeleniumInterface si) throws Exception {
-		insertIntoDatabase(partialiseFullURL(fullURL).getKey(), markers, fullURL, pageContent, timestamp, si);
+	public DBSimplePage insertIntoDatabase(List<Marker> markers, String fullURL, String pageContent, String event, SeleniumInterface si) throws Exception {
+		return insertIntoDatabase(markers, fullURL, pageContent, event, System.currentTimeMillis(), si);
 	}
 
-	public void insertIntoDatabase(String site, List<Marker> markers, String fullURL, String pageContent, SeleniumInterface si) throws Exception {
-		insertIntoDatabase(site, markers, fullURL, pageContent, System.currentTimeMillis(), si);
+	public DBSimplePage insertIntoDatabase(List<Marker> markers, String fullURL, String pageContent, String event, long timestamp, SeleniumInterface si) throws Exception {
+		return insertIntoDatabase(partialiseFullURL(fullURL).getKey(), markers, fullURL, pageContent, event, timestamp, si);
+	}
+	
+	public DBSimplePage insertIntoDatabase(List<Marker> markers, String fullURL, String pageContent, String event, long timestamp, DBSimplePage parent, SeleniumInterface si) throws Exception {
+		return insertIntoDatabase(partialiseFullURL(fullURL).getKey(), markers, fullURL, pageContent, event, timestamp, parent, si);
 	}
 
-	public void insertIntoDatabase(DBSite site, List<Marker> markers, String fullURL, String pageContent, SeleniumInterface si) throws Exception {
-		insertIntoDatabase(site, markers, fullURL, pageContent, System.currentTimeMillis(), si);
+	public DBSimplePage insertIntoDatabase(String site, List<Marker> markers, String fullURL, String pageContent, String event, SeleniumInterface si) throws Exception {
+		return insertIntoDatabase(site, markers, fullURL, pageContent, event, System.currentTimeMillis(), si);
 	}
 
-	public void insertIntoDatabase(String site, List<Marker> markers, String fullURL, String pageContent, long timestamp, SeleniumInterface si) throws Exception {
-		insertIntoDatabase(loadSite(site), markers, fullURL, pageContent, timestamp, si);
+	public DBSimplePage insertIntoDatabase(DBSite site, List<Marker> markers, String fullURL, String pageContent, String event, SeleniumInterface si) throws Exception {
+		return insertIntoDatabase(site, markers, fullURL, pageContent, event, System.currentTimeMillis(), si);
+	}
+
+	public DBSimplePage insertIntoDatabase(String site, List<Marker> markers, String fullURL, String pageContent, String event, long timestamp, SeleniumInterface si) throws Exception {
+		return insertIntoDatabase(loadSite(site), markers, fullURL, pageContent, event, timestamp, si);
+	}
+	
+	public DBSimplePage insertIntoDatabase(String site, List<Marker> markers, String fullURL, String pageContent, String event, long timestamp, DBSimplePage parent, SeleniumInterface si) throws Exception {
+		return insertIntoDatabase(loadSite(site), markers, fullURL, pageContent, event, timestamp, parent, si);
 	}
 
 	//inserts the result of an accessibility check on the website into the database
-	public DBSimplePage insertIntoDatabase(DBSite site, List<Marker> markers, String fullURL, String pageContent, long timestamp, SeleniumInterface si) throws Exception {
-		return insertIntoDatabase(site, markers, fullURL, pageContent, timestamp, 0, si);
+	public DBSimplePage insertIntoDatabase(DBSite site, List<Marker> markers, String fullURL, String pageContent, String event, long timestamp, SeleniumInterface si) throws Exception {
+		return insertIntoDatabase(site, markers, fullURL, pageContent, event, timestamp, null, si);
 	}
 
-	public DBSimplePage insertIntoDatabase(DBSite site, List<Marker> markers, String fullURL, String pageContent, long timestamp, long parent, SeleniumInterface si) throws Exception {
+	public DBSimplePage insertIntoDatabase(DBSite site, List<Marker> markers, String fullURL, String pageContent, String event, long timestamp, DBSimplePage parent, SeleniumInterface si) throws Exception {
 		String page;
 		String first =
-				"INSERT INTO checkpage (`site`, `page`, `timestamp`, `source`, `parent`) VALUES (?, ?, ?, ?, ?)";
+				"INSERT INTO checkpage (`site`, `page`, `timestamp`, `source`, `parent`, `event`, `depth`) VALUES (?, ?, ?, ?, ?, ?, ?)";
 		PreparedStatement stmt = conn.prepareStatement(first, Statement.RETURN_GENERATED_KEYS);
 		stmt.setLong(1, site.id);
 		stmt.setString(2, page = partialiseFullURL(fullURL).getValue());
 		stmt.setLong(3, timestamp);
 		stmt.setString(4, pageContent);
-		if (parent == 0) {
+		if (parent == null) {
 			stmt.setNull(5, java.sql.Types.INTEGER);
+			stmt.setInt(7, 0);
 		} else {
-			stmt.setLong(5, parent);
+			stmt.setLong(5, parent.id);
+			stmt.setInt(7, parent.depth + 1);
 		}
+		stmt.setString(6, event);
 		stmt.execute();
 		ResultSet rs = stmt.getGeneratedKeys();
 		rs.next();
 		int checkpageID = rs.getInt(1);
-		DBSimplePage checkpage = new DBSimplePage(checkpageID, parent, page, timestamp);
+		DBSimplePage checkpage;
+		if (parent != null) {
+			checkpage = new DBSimplePage(checkpageID, parent.id, page, timestamp, parent.depth + 1, event);
+		} else {
+			checkpage = new DBSimplePage(checkpageID, 0, page, timestamp, 0, event);
+		}
 		stmt.close();
 		String second =
 				"INSERT INTO variable (`checkpage`, `name`, `value`) VALUES (?, ?, ?)";
@@ -174,7 +188,7 @@ public class DatabaseInterface {
 		stmt.close();
 
 		String third =
-				"INSERT INTO marker (`checkpage`, `severity`, `position`, `eleTagName`, `eleTagNumber`, `attribute`, `check`, `desc`, `hidden`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, FALSE)";
+				"INSERT INTO marker (`checkpage`, `severity`, `position`, `eleTagName`, `eleTagNumber`, `attribute`, `check`, `desc`, `hidden`, `eleID`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, FALSE, ?)";
 		stmt = conn.prepareStatement(third);
 		for (Marker marker : markers) {
 			stmt.setLong(1, checkpageID);
@@ -202,6 +216,7 @@ public class DatabaseInterface {
 			} else {
 				stmt.setString(8, marker.getDesc());
 			}
+			stmt.setString(9, marker.getEleID());
 			stmt.execute();
 			if (conn.getWarnings() != null) { throw new Exception(conn.getWarnings()); }
 		}
@@ -248,11 +263,11 @@ public class DatabaseInterface {
 	public List<DBSimplePage> getPagesForSite(long site_id) throws Exception {
 		List<DBSimplePage> pages = new ArrayList<DBSimplePage>();
 		String query =
-				"SELECT id, `page`, `timestamp`, `parent` FROM checkpage WHERE site = " + site_id + " ORDER BY timestamp";
+				"SELECT id, `page`, `timestamp`, `parent`, `depth`, `event` FROM checkpage WHERE site = " + site_id + " ORDER BY timestamp";
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery(query);
 		while (rs.next()) {
-			pages.add(new DBSimplePage(rs.getLong("id"), rs.getLong("parent"), rs.getString("page"), rs.getLong("timestamp")));
+			pages.add(new DBSimplePage(rs.getLong("id"), rs.getLong("parent"), rs.getString("page"), rs.getLong("timestamp"), rs.getInt("depth"), rs.getString("event")));
 		}
 		stmt.close();
 		return pages;

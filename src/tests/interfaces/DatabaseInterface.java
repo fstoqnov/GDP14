@@ -70,7 +70,7 @@ public class DatabaseInterface {
 		List<Marker> markers = new ArrayList<Marker>();
 		markers.add(new Marker("Error Message", Marker.MARKER_AMBIGUOUS, new LabelsOrInstructions(), 10));
 		markers.add(new Marker(Marker.MARKER_SUCCESS, new IdentifyInputPurpose(), 2));
-		inter.insertIntoDatabase(markers, testURL, testContent, null);
+		inter.insertIntoDatabase(markers, testURL, testContent, null, null);
 
 		List<DBSite> sites = inter.getSites();
 		correct = RunTests.test("DatabaseInterface(InsertMarkers - site inserted)", 1, sites.size()) && correct;
