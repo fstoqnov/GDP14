@@ -9,13 +9,7 @@ import org.openqa.selenium.WebElement;
 
 import com.google.common.collect.Lists;
 
-import code.checks.Check;
-import code.checks.IdentifyInputPurpose;
-import code.checks.LabelsOrInstructions;
-import code.checks.LanguageOfPage;
-import code.checks.NameRoleVal;
-import code.checks.PageTitled;
-import code.checks.Parsing;
+import code.checks.*;
 import code.interfaces.DatabaseInterface;
 import code.interfaces.SeleniumInterface;
 import database_records.DBSimplePage;
@@ -36,6 +30,7 @@ public class CheckList {
 		checks.add(new LanguageOfPage());
 		checks.add(new PageTitled());
 		checks.add(new NameRoleVal());
+		checks.add(new ContrastMinimum());
 		Collections.sort(checks);
 	}
 
