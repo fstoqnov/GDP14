@@ -20,7 +20,7 @@ public class SeleniumInterface {
 		Logger.getLogger("org.openqa.selenium.remote").setLevel(Level.OFF);
 		startChrome();
 	}
-	
+
 	private void startChrome() {
 		System.setProperty("webdriver.chrome.silentOutput", "true");
 		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
@@ -39,23 +39,66 @@ public class SeleniumInterface {
 		}
 		return getHTML();
 	}
-	
+
 	public String getHTML() {
 		return this.getElementsByTagName("html")[0].getAttribute("outerHTML");
 	}
-	
+
+	public String getTextContentStrict(WebElement ele) {
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		try {
+			return js.executeScript("[].reduce.call(arguments[0].childNodes, function(a, b) { return a + (b.nodeType === 3 ? b.textContent : ''); }, '')", ele).toString();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public String getComputedStyleElement(WebElement ele, String property) {
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		try {
+			return js.executeScript("return window.getComputedStyle(arguments[0])." + property, ele).toString();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public String getParentalComputedStyle(WebElement ele, String property, String nullValue) {
+		WebElement parent = ele;
+		String attr = nullValue;
+		try {
+			do {
+				attr = getComputedStyleElement(parent, property);
+			} while ((parent = parent.findElement(By.xpath(".."))) != null && attr.equals(nullValue));
+		} catch (Exception e) {  }
+		return attr;
+	}
+
 	public String getDomRep() {
 		return getDomRep(this.getElementsByTagName("html")[0]);
 	}
-	
+
 	public String getDomRep(WebElement parent) {
 		String flattened = "<" + parent.getTagName() + ">";
-		List<WebElement> children = parent.findElements(By.xpath("./*"));
+		List<WebElement> children = getSubElements(parent);
 		for (int i = 0; i < children.size(); i ++) {
 			flattened += getDomRep(children.get(i));
 		}
 		flattened += "</" + parent.getTagName() + ">";
 		return flattened;
+	}
+
+	public List<WebElement> getSubElements(WebElement parent) {
+		return parent.findElements(By.xpath("./*"));
+	}
+
+	public boolean containsText(WebElement element) {
+		List<WebElement> children = getSubElements(element);
+		for (int i = 0; i < children.size(); i ++) {
+			if (children.get(i).getText().equals(element.getText())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public int getTagPosition(WebElement ele) {
