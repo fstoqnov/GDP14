@@ -107,7 +107,7 @@ public class CheckList {
 		}
 
 		if(store) {
-			cr.generateReportFromPage(db, DatabaseInterface.partialiseFullURL(urls[0]).getKey());
+			cr.generateReportFromPage(db, urls[0]);
 		}
 
 		System.out.println("Total passed: " + totalPassed + "/" + (totalPassed + totalFailed));

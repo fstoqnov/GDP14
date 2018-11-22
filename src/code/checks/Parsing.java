@@ -118,7 +118,6 @@ public class Parsing extends Check {
         return new String[] {
                 "<!DOCTYPE html><html lang=\"en\"><head><title><div><img /></div></title></head></html>"
         };
-        //return null;
     }
 
     @Override
@@ -128,13 +127,10 @@ public class Parsing extends Check {
                 "<!DOCTYPE html><html><head><p id='id1'><p id='id1'><div><img /></head></div></html>",
                 "<!DOCTYPE html><html><head><div><img /></head></div></html>"
         };
-        //return null;
     }
 
     @Override
     public void initialise() {
-        // TODO Auto-generated method stub
-
     }
 
 }
