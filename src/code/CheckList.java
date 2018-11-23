@@ -29,8 +29,8 @@ public class CheckList {
 		checks.add(new LabelsOrInstructions());
 		checks.add(new LanguageOfPage());
 		checks.add(new PageTitled());
-		checks.add(new NameRoleVal());
-		checks.add(new ContrastMinimum());
+		//checks.add(new NameRoleVal());
+		//checks.add(new ContrastMinimum());
 		Collections.sort(checks);
 	}
 
@@ -52,7 +52,7 @@ public class CheckList {
 	}
 
 	public boolean runChecksAtURLs(String[] urls) throws Exception {
-		return runChecksAtURLs(urls, false, null, false);
+		return runChecksAtURLs(urls, true, new DatabaseInterface(), false);
 	}
 
 	public boolean runChecksAtURLs(String[] urls, boolean store, DatabaseInterface db, boolean dynamic) throws Exception {
@@ -62,6 +62,7 @@ public class CheckList {
 		SeleniumInterface inter = new SeleniumInterface();
 		long curTime = System.currentTimeMillis();
 
+		db.connect("root", "Millyp1892", "localhost", "testdb", 3306);
 		ConformanceReport cr = new ConformanceReport();
 
 		DBSimplePage rootPage;
@@ -101,13 +102,14 @@ public class CheckList {
 			}
 		}
 
-		if(store) {
-			cr.generateReportFromPage(db, urls[0]);
-		}
-
 		System.out.println("Total passed: " + totalPassed + "/" + (totalPassed + totalFailed));
 		System.out.println();
 		inter.close();
+
+		if(store) {
+			cr.generateReportFromPage(db, urls[0], new SeleniumInterface());
+		}
+
 		return passed;
 	}
 
