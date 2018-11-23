@@ -1,9 +1,11 @@
 package code;
 
 import code.interfaces.DatabaseInterface;
+import code.interfaces.SeleniumInterface;
 import com.google.common.collect.Lists;
 import database_records.DBPage;
 import database_records.DBSimplePage;
+import org.openqa.selenium.WebElement;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -19,6 +21,7 @@ public class ConformanceReport {
             "<style>" +
             "body {" +
             "   font-family: arial;" +
+            "   word-wrap: break-word;" +
             "}" +
             "h1 {" +
             "   font-size: 48px;" +
@@ -41,6 +44,8 @@ public class ConformanceReport {
             "   color: #b30000;" +
             "}" +
             "li {" +
+            "   text-decoration: underline;" +
+            "   cursor: pointer;" +
             "   font-size: 18px;" +
             "}" +
             "li.warning {" +
@@ -67,7 +72,28 @@ public class ConformanceReport {
             "metric.warning {" +
             "   color: #715409;" +
             "}" +
+            "xmp {" +
+            "   font-size: 16px;" +
+            "   white-space: pre-wrap;" +
+            "   word-wrap: break-word;" +
+            "}" +
             "</style>";
+
+    private final String script = "" +
+            "<script>" +
+            "var eles = document.getElementsByTagName(\"code\");" +
+            "for(var i=0; i<eles.length; i++) {" +
+            "   eles[i].style.display = \"none\";" +
+            "}" +
+            "function toggleDisplay(x) {" +
+            "   var ele = document.getElementById(x);" +
+            "   if(ele.style.display === \"none\") {" +
+            "       ele.style.display = \"block\";" +
+            "   } else {" +
+            "       ele.style.display = \"none\";" +
+            "   }" +
+            "}" +
+            "</script>";
 
     private final List<String> header = Lists.newArrayList("<h1>", "</h1>");
     private final List<String> title = Lists.newArrayList("<urlTitle>", "</urlTitle>");
@@ -75,18 +101,23 @@ public class ConformanceReport {
     private final List<String> testFail = Lists.newArrayList("<test class=\"fail\">", "</test>");
     private final List<String> listStart = Lists.newArrayList("<ul>");
     private final List<String> listElement = Lists.newArrayList("<li class=\"fail\">", "</li>");
-    private final List<String> listWarningSeriousElement = Lists.newArrayList("<li class=\"warning_serious\">", "</li>");
+    private final List<String> listWarningSeriousElement = Lists.newArrayList();
     private final List<String> listWarningElement = Lists.newArrayList("<li class=\"warning\">", "</li>");
     private final List<String> listEnd = Lists.newArrayList("</ul>");
     private final List<String> metricPass = Lists.newArrayList("<metric class=\"pass\">", "</metric>");
     private final List<String> metricFail = Lists.newArrayList("<metric class=\"fail\">", "</metric>");
     private final List<String> metricWarningSerious = Lists.newArrayList("<metric class=\"warning_serious\">", "</metric>");
     private final List<String> metricWarning = Lists.newArrayList("<metric class=\"warning\">", "</metric>");
+    private final List<String> sourceCode = Lists.newArrayList("<xmp>", "</xmp>");
     private final String newLine = "<br/>";
 
-    private String addURL(String url) { return formatLine("Site: " + url, title);}
+    private String addURL(String url) { return formatLine("Site: " + url, title); }
 
-    private String addPage(String page) { return formatLine("Page: " + page, title);}
+    private String addPage(String page) { return formatLine("Page: " + page, title); }
+
+    private String addSource(String source) {return formatLine(source, sourceCode); }
+
+    private String addSourceID(String source, int ID) { return "<code id=\"" + ID + "\">" + source + "</code>"; }
 
     private String addPageMetrics(int passes, int fails, int warnings_serious, int warnings) {
         String pass = formatLine("Passes: " + passes, metricPass) + newLine;
@@ -103,20 +134,25 @@ public class ConformanceReport {
                 formatLine("", listStart);
     }
 
-    private String addWarningElement(String test, boolean serious) {
+    private String addWarningElement(String test, int ID, boolean serious) {
         String s;
         if(serious) {
-            s = formatLine("Warning (Serious): " + test, listWarningSeriousElement);
+            s = "<li class=\"warning_serious\" onclick=\"toggleDisplay('" + ID +
+                    "')\">Warning (Serious): " + test + "</li>";
         }
         else {
-            s = formatLine("Warning : " + test, listWarningElement);
+            s = "<li class=\"warning\" onclick=\"toggleDisplay('" + ID +
+                    "')\">Warning: " + test + "</li>";
         }
         return s;
     }
 
     private String endList() { return formatLine("", listEnd); }
 
-    private String addFailElement(String element) { return formatLine("Error: " + element, listElement); }
+    private String addFailElement(String test, int ID) {
+        return "<li class=\"fail\" onclick=\"toggleDisplay('" + ID +
+            "')\">Error: " + test + "</li>";
+    }
 
     public String getReport() { return reportFull; }
 
@@ -141,7 +177,7 @@ public class ConformanceReport {
 
     private String addAnchorName(String line, int anchor) { return "<a href=\"#" + anchor + "\">" + line + "</a>"; }
 
-    public void generateReportFromPage(DatabaseInterface db, String url) {
+    public void generateReportFromPage(DatabaseInterface db, String url, SeleniumInterface inter) {
 
         try {
             String site = db.partialiseFullURL(url).getKey();
@@ -172,7 +208,11 @@ public class ConformanceReport {
             int warningsSSite = 0;
 
             for (DBSimplePage simpleP : pages) {
+
                 DBPage dbp = simpleP.loadFullPage(db);
+
+                String filename = writeToFile(dbp.content, "errorSource");
+                inter.getRenderedHtml(filename);
                 pMetBuff.append(addPage(addAnchorName(site + "/" + dbp.argURL, anchorPage)));
                 pMetBuff.append(newLine);
                 pBuff.append(addPage(addAnchorTarget(site + "/" + dbp.argURL, anchorPage)));
@@ -210,12 +250,18 @@ public class ConformanceReport {
                             break;
                         }
                         else if(usm.type == Marker.MARKER_ERROR) {
-                            pBuff.append(addFailElement(getFlagText(usm)));
+                            pBuff.append(addFailElement(getFlagText(usm), anchorError));
+                            pBuff.append(newLine);
+                            pBuff.append(addSourceID(addSource(inter.getElementsByTagName(usm.tag)[usm.tagPos].getText()), anchorError));
+                            anchorError--;
                             fails++;
                         }
                         else {
-                            pBuff.append(addWarningElement(getFlagText(usm),
+                            pBuff.append(addWarningElement(getFlagText(usm), anchorError,
                                     usm.type == Marker.MARKER_AMBIGUOUS_SERIOUS));
+                            pBuff.append(addSourceID(addSource(inter.getElementsByTagName(usm.tag)[usm.tagPos].getAttribute("outerHTML")), anchorError));
+                            pBuff.append(newLine);
+                            anchorError--;
                             if(usm.type == Marker.MARKER_AMBIGUOUS) { warningsA++; }
                             else { warningsS++; }
                         }
@@ -246,10 +292,11 @@ public class ConformanceReport {
             report.append(pMetBuff.toString());
             report.append(pBuff.toString());
             report.append("</body>");
+            report.append(script);
             report.append("</html>");
             reportFull = report.toString();
 
-            writeToFile();
+            writeToFile(reportFull, "report");
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -303,12 +350,13 @@ public class ConformanceReport {
         return passed;
     }
 
-    private void writeToFile() throws Exception{
+    private String writeToFile(String source, String filename) throws Exception{
 
-        File file = new File("report.html");
+        File file = new File(filename + ".html");
         OutputStream outputStream = new FileOutputStream(file.getAbsoluteFile());
         Writer writer = new OutputStreamWriter(outputStream);
-        writer.write(reportFull);
+        writer.write(source);
         writer.close();
+        return file.getAbsolutePath();
     }
 }
