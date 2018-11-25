@@ -56,9 +56,12 @@ public class CheckList {
 	}
 
 	public boolean runChecksAtURLs(String[] urls, boolean store, DatabaseInterface db, boolean dynamic) throws Exception {
-		Boolean passed = true;
-		Integer totalPassed = 0;
-		Integer totalFailed = 0;
+		//Boolean passed = true;
+		//Integer totalPassed = 0;
+		//Integer totalFailed = 0;
+		/*Integers are not mutable, so this previous method won't work
+		need to use CheckResults here.*/
+		CheckResults checkResults = new CheckResults();
 		SeleniumInterface inter = new SeleniumInterface();
 		long curTime = System.currentTimeMillis();
 
@@ -74,7 +77,9 @@ public class CheckList {
 			inter.getRenderedHtml(url);
 			baseURL = inter.driver.getCurrentUrl();
 			domReps.add(inter.getDomRep());
-			rootPage = runCheckAtPermutedPage(inter, url, null, store, db, passed, totalPassed, totalFailed, curTime, null);
+			rootPage = runCheckAtPermutedPage(inter, url, null, store, db, checkResults, curTime, null);
+			//System.out.println("'passed' is " + passed.toString());
+			//System.out.println("totalPassed, totalFailed : " + totalPassed.toString() + ", " + totalFailed.toString());
 			if (dynamic) {
 				List<WebElement> elements = inter.getAllElements();
 				JavascriptExecutor js = (JavascriptExecutor) inter.driver;
@@ -90,7 +95,7 @@ public class CheckList {
 							if (inter.driver.getCurrentUrl().equals(baseURL)) {
 								if (!domReps.contains(rep = inter.getDomRep())) {
 									domReps.add(rep);
-									runCheckAtPermutedPage(inter, url, events.get(j), store, db, passed, totalPassed, totalFailed, curTime, rootPage);
+									runCheckAtPermutedPage(inter, url, events.get(j), store, db, checkResults, curTime, rootPage);
 								}
 							} else {
 								inter.getRenderedHtml(url);
@@ -101,7 +106,7 @@ public class CheckList {
 			}
 		}
 
-		System.out.println("Total passed: " + totalPassed + "/" + (totalPassed + totalFailed));
+		System.out.println("Total passed: " + checkResults.totalPassed + "/" + (checkResults.totalPassed + checkResults.totalFailed));
 		System.out.println();
 		inter.close();
 
@@ -109,29 +114,27 @@ public class CheckList {
 			cr.generateReportFromPage(db, urls[0], new SeleniumInterface());
 		}
 
-		return passed;
+		return checkResults.overallPass;
 	}
 
 	private static final List<String> events = Lists.newArrayList(
 			"onchange", "onclick", "onmouseover",
 			"onmouseout", "onkeyup", "onkeydown");
 
-	public DBSimplePage runCheckAtPermutedPage(SeleniumInterface inter, String url, String event, boolean store, DatabaseInterface db, Boolean passed, Integer totalPassed, Integer totalFailed, long curTime, DBSimplePage parent) throws Exception {
+	public DBSimplePage runCheckAtPermutedPage(SeleniumInterface inter, String url, String event, boolean store, DatabaseInterface db, CheckResults checkResults, long curTime, DBSimplePage parent) throws Exception {
 		List<Marker> markers = new ArrayList<Marker>();
 		System.out.println("Running checks for url: '" + url + "'" + (event != null ? " with event '" + event + "'" : ""));
 		String content = inter.getHTML();
 		boolean curPassed;
 		for (Check c : checks) {
 			curPassed = c.executeCheck(content, markers, inter);
+			checkResults.insertResult(curPassed);
 			if (curPassed) {
 				c.outputPassed();
-				totalPassed ++;
 			}
 			else {
 				c.outputFailed();
-				totalFailed ++;
 			}
-			passed = passed && curPassed;
 		}
 		if (store) {
 			if (parent != null) {
