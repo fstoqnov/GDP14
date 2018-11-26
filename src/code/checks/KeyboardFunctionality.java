@@ -14,7 +14,7 @@ public class KeyboardFunctionality extends Check {
 
 	@Override
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
-		//Initially just want to check that all elements do not have tabIndex greater than 0.
+		//Initially, we check that all elements with tabindex attributes have values <=0
 		System.out.println("Starting Keyboard Functionality Test");
 		WebElement[] tabIndexEle = inter.getElementsWithAttribute("tabindex");
 		System.out.println("Number of 'tabindex' found is " + String.valueOf(tabIndexEle.length));
@@ -28,6 +28,14 @@ public class KeyboardFunctionality extends Check {
 
 			}
 		}
+		
+		//We ensure that server-side image maps are not used.
+		WebElement[] isMapEle = inter.getElementsWithAttribute("ismap");
+		System.out.println("Number of ismap elements found is " + String.valueOf(isMapEle.length));
+		for (int i = 0; i < isMapEle.length; i++) {
+			addFlagToElement(markers, Marker.MARKER_ERROR, isMapEle[i], "Must not use server side image maps ('ismap' attribute)");
+		}
+		
 	}
 
 	@Override
@@ -39,7 +47,9 @@ public class KeyboardFunctionality extends Check {
 	public String[] getHTMLPass() {
 		return new String[] {
 				"<input type=\"button\" tabindex=\"0\" aria-label=\"Close\">",
-				"<input type=\"button\" tabindex=\"-1\" aria-label=\"Skip Link\">"
+				"<input type=\"button\" tabindex=\"-1\" aria-label=\"Skip Link\">",
+				"<img src=\"/images/logo.png\" alt=\"fancyImage\"/>"
+
 		};
 	}
 
@@ -47,7 +57,9 @@ public class KeyboardFunctionality extends Check {
 	public String[] getHTMLFail() {
 		return new String[] {
 				"<input type=\"button\" tabindex=\"1\" aria-label=\"Open\">",
-				"<input type=\"button\" tabindex=\"2\" aria-label=\"Close\">"
+				"<input type=\"button\" tabindex=\"2\" aria-label=\"Close\">",
+				"<img ismap src=\"/images/logo.png\" alt=\"fancyImage\"/>",
+				"<img src=\"/images/logo.png\" alt=\"fancyImage\" ismap/>"
 		};
 	}
 	
