@@ -22,12 +22,16 @@ public class LanguageOfPage extends Check {
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
 		WebElement[] doc = inter.getElementsByTagName("html");
 		for (int i = 0; i < doc.length; i ++) {
-			if(doc[i].getAttribute("lang") == null) {
+			String docLang = doc[i].getAttribute("lang");
+			if(docLang == null) {
 				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i]);
-			} else if(!lang.contains(doc[i].getAttribute("lang"))){
+				System.out.println("No lang attribute");
+			} else if(!lang.contains(docLang)){
 				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i]);
+				System.out.println("Invalid Lang: " + docLang);
 			} else {
 				addFlagToElement(markers, Marker.MARKER_SUCCESS, doc[i]);
+				System.out.println("Succesful lang!");
 			}
 		}
 		
