@@ -40,7 +40,12 @@ public class CheckList {
 					}
 					correct = RunTests.test(c.getName() + "-pass (" + (passTestCount + 1) + "/" + pass.length + ")", true, c.executeCheck(content, inter)) && correct;
 					passTestCount ++;
-				} catch (Exception e) { RunTests.countFailure++; correct = false; e.printStackTrace(); }
+				} catch (Exception e) { 
+					RunTests.countFailure++; 
+					correct = false; 
+					System.err.println("Test on " + c.getName() + " failed. Exception thrown:");
+
+					e.printStackTrace(); }
 			}
 		} else {
 			correct = false;
