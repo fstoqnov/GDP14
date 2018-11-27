@@ -155,6 +155,16 @@ public class SeleniumInterface {
 		}
 		return null; //never reaches here as an exception will be thrown if the element cannot be found
 	}
+	
+	public WebElement[] getElementsWithAttribute(String attrName) {
+		List<WebElement> elements = driver.findElements(By.xpath("//*[@" + attrName + "]"));
+
+		WebElement[] e = new WebElement[elements.size()];
+		for (int i = 0; i < elements.size(); i ++) {
+			e[i] = elements.get(i);
+		}
+		return e;
+	}
 
 	//Gets the first parent with a specified <tagName></tagName>
 	public WebElement getParentWithTag(WebElement ele, String tag) {
@@ -178,7 +188,7 @@ public class SeleniumInterface {
 		}
 		return e;
 	}
-
+	
 	//selects all children with a specified <tagName attrName=attrVal></tagName>
 	public WebElement[] getChildrenWithAttributeAndTag(WebElement ele, String attrName, String attrVal, String tagName) {
 		List<WebElement> elements = ele.findElements(By.xpath("//" + tagName + "[@" + attrName + "='" + attrVal + "']"));
