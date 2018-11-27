@@ -33,6 +33,7 @@ public class CheckList {
 		checks.add(new ContrastMinimum());
 		checks.add(new LanguageOfParts());
 		checks.add(new KeyboardFunctionality());
+		checks.add(new HeadingsAndLabels());
 		Collections.sort(checks);
 	}
 
