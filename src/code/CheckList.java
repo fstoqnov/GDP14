@@ -31,6 +31,7 @@ public class CheckList {
 		checks.add(new PageTitled());
 		checks.add(new NameRoleVal());
 		checks.add(new ContrastMinimum());
+		checks.add(new LanguageOfParts());
 		Collections.sort(checks);
 	}
 
