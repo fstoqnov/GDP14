@@ -15,6 +15,7 @@ import org.openqa.selenium.WebElement;
 
 import code.Marker;
 import code.interfaces.SeleniumInterface;
+import code.structures.Headings;
 import code.structures.TreeNode;
 
 public class HeadingsAndLabels extends Check {
@@ -64,20 +65,21 @@ public class HeadingsAndLabels extends Check {
 		for (int i = 0; i < inputIDs.size(); i++) {
 			System.out.println(inputIDs.get(i));
 		}*/
-		
+		System.err.println("TODO: Finish implementing checkLabelsUnique");
+
 	}
 	
 	//if there is more than one form on a page, ensure the labels for the submit/reset 
 	//buttons of those forms are unique 
 	//[so, it is at least possible that each submit/reset has a good description]
 	private void checkSubmitResetUnique(List<Marker> markers, SeleniumInterface inter) {
-		
+		System.err.println("TODO: Implement checkSubmitResetUnique");
 	}
 
 	//Ensure that text in sibling headings is not duplicated.
 	private void checkSiblingHeadingsUnique(List<Marker> markers, SeleniumInterface inter) {
 		//check that sibling headings are unique,
-		TreeMap<Integer, TreeNode<WebElement>> headingTree = getHeadingTree(inter);
+		TreeMap<Integer, TreeNode<WebElement>> headingTree = Headings.getHeadingTree(inter);
 		ArrayList<TreeNode<WebElement>> headingList = new ArrayList<TreeNode<WebElement>>(headingTree.values());
 		//Iterator<Entry<Integer, TreeNode<WebElement>>> it = (Iterator<Entry<Integer, TreeNode<WebElement>>>) headingTree.entrySet().iterator();
 		
@@ -178,29 +180,6 @@ public class HeadingsAndLabels extends Check {
 		}
 		//else:
 		return true;
-	}
-	
-	
-	//get an Ordered Map (by element ID on page) of all Heading elements (all h1, h2, h3...)
-	//this can be browsed as if it were a tree.
-	private TreeMap<Integer, TreeNode<WebElement>> getHeadingTree(SeleniumInterface inter) {
-		List<WebElement> allElements = inter.getAllElements();
-		
-		TreeMap<Integer, TreeNode<WebElement>> headingsTree = new TreeMap<Integer, TreeNode<WebElement>>();
-		//TreeNode<WebElement> root = new TreeNode<WebElement>(null, null);
-		for (int level = 1; level <= 6; level++) { //h1 to h6
-			String headingLevel = "h" + String.valueOf(level); //eg level1 --> "h1"
-			WebElement[] headings = inter.getElementsByTagName(headingLevel);
-			//System.out.println("Found " + String.valueOf(headings.length) + " headings at level " + headingLevel);
-			for (int i = 0; i < headings.length; i++) {
-				int eleIndex = allElements.indexOf(headings[i]);
-				//TreeNode headingNode = new TreeNode(eleIndex, headings[i]);
-				TreeNode headingNode = new TreeNode(level, headings[i]);
-				headingsTree.put(eleIndex, headingNode);
-			}
-		}
-		return headingsTree;
-		
 	}
 	
 
