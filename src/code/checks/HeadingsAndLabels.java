@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+
 import java.util.TreeMap;
 import java.util.TreeSet;
 import org.apache.commons.lang3.mutable.MutableInt;
@@ -33,9 +34,42 @@ public class HeadingsAndLabels extends Check {
 	}
 	
 	private void checkLabelsUnique(List<Marker> markers, SeleniumInterface inter) {
+		WebElement[] inputEles = inter.getElementsByTagName("input");
+		WebElement[] labelEles = inter.getElementsByTagName("label");
+		
+		
+		ArrayList<String> labelTexts = new ArrayList<String>();
+		for (int i = 0; i < labelEles.length; i++) {
+			labelTexts.add(labelEles[i].getText());
+		}
+		
+		System.out.println("All labels: ");
+		for (int i = 0; i < labelTexts.size(); i++) {
+			System.out.println(labelTexts.get(i));
+		}
+		/*
+		ArrayList<String> labelledElementIDs = new ArrayList<String>();
+		for (int i = 0; i < labelEles.length; i++) {
+			labelledElementIDs.add(labelEles[i].getAttribute("for"));
+		}
+		System.out.println("All labelled elements: ");
+		for (int i = 0; i < labelledElementIDs.size(); i++) {
+			System.out.println(labelledElementIDs.get(i));
+		}
+		ArrayList<String> inputIDs = new ArrayList<String>();
+		for (int i = 0; i < inputEles.length; i++) {
+			inputIDs.add(inputEles[i].getAttribute("id"));
+		}
+		System.out.println("All ID'd inputs: ");
+		for (int i = 0; i < inputIDs.size(); i++) {
+			System.out.println(inputIDs.get(i));
+		}*/
 		
 	}
 	
+	//if there is more than one form on a page, ensure the labels for the submit/reset 
+	//buttons of those forms are unique 
+	//[so, it is at least possible that each submit/reset has a good description]
 	private void checkSubmitResetUnique(List<Marker> markers, SeleniumInterface inter) {
 		
 	}
@@ -127,12 +161,18 @@ public class HeadingsAndLabels extends Check {
 		}
 		if (duplicatesFound > 0) {
 			//mark all the elements as duplicates.
-			Iterator<WebElement> it = duplicateHeadings.iterator();
-			while (it.hasNext()) {
-				WebElement dupl = it.next();
+			Iterator<WebElement> failIt = duplicateHeadings.iterator();
+			while (failIt.hasNext()) {
+				WebElement dupl = failIt.next();
 				addFlagToElement(markers, Marker.MARKER_ERROR, dupl, "Sibling headings must not be duplicates");
 				System.out.println("Added failure marker to element: " + dupl.getText());
 				//System.out.println(x);
+			}
+			eleList.removeAll(duplicateHeadings);
+			Iterator<WebElement> succIt = eleList.iterator();
+			while (succIt.hasNext()) {
+				WebElement passEle = succIt.next();
+				addFlagToElement(markers, Marker.MARKER_SUCCESS, passEle, "Not a duplicate with sibling headings");
 			}
 			return false;
 		}
