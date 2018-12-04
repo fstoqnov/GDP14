@@ -26,33 +26,20 @@ public class HeadingsAndLabels extends Check {
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
 
 		checkSiblingHeadingsUnique(markers, inter);
+		checkLabelsUnique(markers, inter);
+		checkSubmitResetUnique(markers, inter);
+		
 
 	}
 	
-
-	
-	private TreeMap<Integer, TreeNode<WebElement>> getHeadingTree(SeleniumInterface inter) {
-		List<WebElement> allElements = inter.getAllElements();
-		
-		TreeMap<Integer, TreeNode<WebElement>> headingsTree = new TreeMap<Integer, TreeNode<WebElement>>();
-		//TreeNode<WebElement> root = new TreeNode<WebElement>(null, null);
-		for (int level = 1; level <= 6; level++) { //h1 to h6
-			String headingLevel = "h" + String.valueOf(level); //eg level1 --> "h1"
-			WebElement[] headings = inter.getElementsByTagName(headingLevel);
-			//System.out.println("Found " + String.valueOf(headings.length) + " headings at level " + headingLevel);
-			for (int i = 0; i < headings.length; i++) {
-				int eleIndex = allElements.indexOf(headings[i]);
-				//TreeNode headingNode = new TreeNode(eleIndex, headings[i]);
-				TreeNode headingNode = new TreeNode(level, headings[i]);
-				headingsTree.put(eleIndex, headingNode);
-			}
-		}
-		
-		return headingsTree;
-		
+	private void checkLabelsUnique(List<Marker> markers, SeleniumInterface inter) {
 		
 	}
 	
+	private void checkSubmitResetUnique(List<Marker> markers, SeleniumInterface inter) {
+		
+	}
+
 	//Ensure that text in sibling headings is not duplicated.
 	private void checkSiblingHeadingsUnique(List<Marker> markers, SeleniumInterface inter) {
 		//check that sibling headings are unique,
@@ -86,10 +73,11 @@ public class HeadingsAndLabels extends Check {
 			WebElement headingEle = node.getElement();
 			String heading = headingEle.getText();
 			
-			System.out.println("Current level: " + String.valueOf(level)
+			/*System.out.println("Current level: " + String.valueOf(level)
 				+ ", Found heading with level: " + String.valueOf(headingLevel)
-				+ ", with text: " + heading + "-----String of length " + String.valueOf(heading.length()));
-	
+				+ ", with text: " + heading 
+				+ "-----String of length " + String.valueOf(heading.length()));*/
+			
 			if (headingLevel == level) {
 				//this is part of the current group of siblings
 				siblingHeadings.add(headingEle);
@@ -111,21 +99,10 @@ public class HeadingsAndLabels extends Check {
 		}
 
 		//check for duplicate Strings.
-		System.out.println("BCalling checkUnique with: " + String.valueOf(level) + ": ");
-		this.printSiblingHeadingsList(siblingHeadings);
 		this.checkUniqueText(markers, siblingHeadings);
 		
 	}
 	
-	private void printSiblingHeadingsList(ArrayList<WebElement> sh) {
-		if (sh == null) {
-			System.out.println("null");
-			return;
-		}
-		for (int i = 0; i < sh.size(); i++) {
-			System.out.println("Element " + String.valueOf(i) + " - " + sh.get(i).getText());
-		}
-	}
 	
 	//check that the list of WebElements all have unique 'getText' values.
 	//markup errors on elements if they are not unique.
@@ -161,10 +138,33 @@ public class HeadingsAndLabels extends Check {
 		//else:
 		return true;
 	}
+	
+	
+	//get an Ordered Map (by element ID on page) of all Heading elements (all h1, h2, h3...)
+	//this can be browsed as if it were a tree.
+	private TreeMap<Integer, TreeNode<WebElement>> getHeadingTree(SeleniumInterface inter) {
+		List<WebElement> allElements = inter.getAllElements();
+		
+		TreeMap<Integer, TreeNode<WebElement>> headingsTree = new TreeMap<Integer, TreeNode<WebElement>>();
+		//TreeNode<WebElement> root = new TreeNode<WebElement>(null, null);
+		for (int level = 1; level <= 6; level++) { //h1 to h6
+			String headingLevel = "h" + String.valueOf(level); //eg level1 --> "h1"
+			WebElement[] headings = inter.getElementsByTagName(headingLevel);
+			//System.out.println("Found " + String.valueOf(headings.length) + " headings at level " + headingLevel);
+			for (int i = 0; i < headings.length; i++) {
+				int eleIndex = allElements.indexOf(headings[i]);
+				//TreeNode headingNode = new TreeNode(eleIndex, headings[i]);
+				TreeNode headingNode = new TreeNode(level, headings[i]);
+				headingsTree.put(eleIndex, headingNode);
+			}
+		}
+		return headingsTree;
+		
+	}
+	
 
 	@Override
 	public void initialise() {
-		// TODO Auto-generated method stub
 		
 	}
 
