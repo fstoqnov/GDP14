@@ -16,8 +16,9 @@ public class UnserialisedMarker {
 	public String desc;
 	public boolean hidden;
 	public String eleID;
+	public String outerHTML;
 
-	public UnserialisedMarker(long id, int type, String tag, int tagPos, String attribute, long position, Check check, String desc, String eleID, boolean hidden) {
+	public UnserialisedMarker(long id, int type, String tag, int tagPos, String attribute, long position, Check check, String desc, String eleID, boolean hidden, String outerHTML) {
 		this.id = id;
 		this.type = type;
 		this.tag = tag;
@@ -28,6 +29,7 @@ public class UnserialisedMarker {
 		this.desc = desc;
 		this.hidden = hidden;
 		this.eleID = eleID;
+		this.outerHTML = outerHTML;
 	}
 	
 	public void setHidden(DatabaseInterface db) throws Exception {

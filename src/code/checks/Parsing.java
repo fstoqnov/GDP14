@@ -10,6 +10,7 @@ import code.Marker;
 import code.interfaces.SeleniumInterface;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.log4j.PropertyConfigurator;
+import org.openqa.selenium.WebElement;
 
 public class Parsing extends Check {
 
@@ -33,6 +34,9 @@ public class Parsing extends Check {
                         urlContent);
             }
 
+            List<WebElement> eles = inter.getAllElements();
+            List<WebElement> elesContaining = new ArrayList<>();
+
             for(JsonElement je : jsonResponse) {
                 JsonObject jo = je.getAsJsonObject();
 
@@ -42,37 +46,39 @@ public class Parsing extends Check {
                 message = message.replace('\u201C', '"');
                 message = message.replace('\u201D', '"');
                 String extract = "";
+                WebElement ele = null;
 
                 String[] filtersArray = {"tag seen", "Stray end tag", "Bad start tag", "violates nesting rules",
                         "Duplicate ID", "first occurrence of ID", "Unclosed element", "not allowed as child of element",
                         "unclosed elements", "not allowed on element", "unquoted attribute value",
                         "Duplicate attribute"};
-                if(Arrays.stream(filtersArray).parallel().anyMatch(message::contains)) {
+                if(Arrays.stream(filtersArray).parallel().noneMatch(message::contains)) {
                     continue;
                 }
 
                 if ((type.equals("error") || type.equals("warning")) && jo.has("extract")) {
                     int start = jo.get("hiliteStart").getAsInt();
                     int end = start + jo.get("hiliteLength").getAsInt();
-                    extract = jo.get("extract").getAsString().substring(start, end);
+                    extract = jo.get("extract").getAsString();//.substring(start, end);
+
                 }
 
                 if (type.equals("error")) {
-                    markers.add(new Marker(message, Marker.MARKER_ERROR, this, null));
+                    markers.add(new Marker(message, Marker.MARKER_ERROR, this, extract));
                     success = false;
                 }
                 else if (type.equals("warning")) {
-                    markers.add(new Marker(message, Marker.MARKER_AMBIGUOUS, this, null));
+                    markers.add(new Marker(message, Marker.MARKER_AMBIGUOUS, this, extract));
                     success = false;
                 }
             }
 
             if(success) {
-                markers.add(new Marker(Marker.MARKER_SUCCESS, this, null));
+                markers.add(new Marker(Marker.MARKER_SUCCESS, this));
             }
         }
         catch(UnirestException e) {
-            markers.add(new Marker(Marker.MARKER_ERROR, this, null));
+            markers.add(new Marker("Could not connect to W3C Markup Validation service - check not run", Marker.MARKER_ERROR, this, -1));
         }
     }
 

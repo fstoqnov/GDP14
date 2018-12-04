@@ -46,6 +46,7 @@ CREATE TABLE `marker` (
     `check` VARCHAR(8) NOT NULL,
     `desc` VARCHAR(256),
     `hidden` boolean,
+    `outerHTML` mediumblob,
     CHECK (LENGTH(`check`) >= 1),
     CONSTRAINT `XGSQL__marker_PK_marker` PRIMARY KEY (`id`),
     CONSTRAINT `XGSQL__marker_FK_checkpage` FOREIGN KEY (`checkpage`) REFERENCES `checkpage` (`id`) ON DELETE restrict

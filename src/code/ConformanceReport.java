@@ -5,11 +5,18 @@ import code.interfaces.SeleniumInterface;
 import com.google.common.collect.Lists;
 import database_records.DBPage;
 import database_records.DBSimplePage;
-import org.openqa.selenium.WebElement;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.*;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 
 public class ConformanceReport {
 
@@ -117,6 +124,8 @@ public class ConformanceReport {
 
     private String addSource(String source) {return formatLine(source, sourceCode); }
 
+    private String addImage(String path, String alt) {return "<img src=\"" + path + "\" alt=\"" + alt + "\">"; }
+
     private String addSourceID(String source, int ID) { return "<code id=\"" + ID + "\">" + source + "</code>"; }
 
     private String addPageMetrics(int passes, int fails, int warnings_serious, int warnings) {
@@ -211,8 +220,6 @@ public class ConformanceReport {
 
                 DBPage dbp = simpleP.loadFullPage(db);
 
-                String filename = writeToFile(dbp.content, "errorSource");
-                inter.getRenderedHtml(filename);
                 pMetBuff.append(addPage(addAnchorName(site + "/" + dbp.argURL, anchorPage)));
                 pMetBuff.append(newLine);
                 pBuff.append(addPage(addAnchorTarget(site + "/" + dbp.argURL, anchorPage)));
@@ -241,6 +248,9 @@ public class ConformanceReport {
                     }
 
                     for(UnserialisedMarker usm : currentCheck) {
+                        String path = "images/" + simpleP.id + "/" + usm.id + ".png";
+                        File img = new File(path);
+                        boolean image = img.exists();
 
                         if(passed) {
                             pBuff.append(addPassTest(check));
@@ -251,15 +261,28 @@ public class ConformanceReport {
                         }
                         else if(usm.type == Marker.MARKER_ERROR) {
                             pBuff.append(addFailElement(getFlagText(usm), anchorError));
-                            pBuff.append(newLine);
-                            pBuff.append(addSourceID(addSource(inter.getElementsByTagName(usm.tag)[usm.tagPos].getText()), anchorError));
+                            if(image) {
+                                String alt = usm.tag + " tag number " + usm.tagPos + ": " + usm.desc;
+                                pBuff.append(addSourceID(newLine + addImage(path, alt) + addSource(usm.outerHTML),
+                                        anchorError));
+                            }
+                            else {
+                                pBuff.append(addSourceID(addSource(usm.outerHTML), anchorError));
+                            }
                             anchorError--;
                             fails++;
                         }
                         else {
                             pBuff.append(addWarningElement(getFlagText(usm), anchorError,
                                     usm.type == Marker.MARKER_AMBIGUOUS_SERIOUS));
-                            pBuff.append(addSourceID(addSource(inter.getElementsByTagName(usm.tag)[usm.tagPos].getAttribute("outerHTML")), anchorError));
+                            if (image) {
+                                String alt = usm.tag + " tag number " + usm.tagPos + ": " + usm.desc;
+                                pBuff.append(addSourceID(newLine + addImage(path, alt) + addSource(usm.outerHTML),
+                                        anchorError));
+                            }
+                            else {
+                                pBuff.append(addSourceID(addSource(usm.outerHTML), anchorError));
+                            }
                             pBuff.append(newLine);
                             anchorError--;
                             if(usm.type == Marker.MARKER_AMBIGUOUS) { warningsA++; }
@@ -303,7 +326,7 @@ public class ConformanceReport {
         }
     }
 
-    private HashMap<String, ArrayList<UnserialisedMarker>> pagePerformance(DBPage dbp, DatabaseInterface db) throws Exception{
+    public HashMap<String, ArrayList<UnserialisedMarker>> pagePerformance(DBPage dbp, DatabaseInterface db) throws Exception{
 
         HashMap<String, ArrayList<UnserialisedMarker>> checkMarkers = new HashMap<>();
 
@@ -358,5 +381,91 @@ public class ConformanceReport {
         writer.write(source);
         writer.close();
         return file.getAbsolutePath();
+    }
+
+    public void addCheckImages(DatabaseInterface db, String url, SeleniumInterface inter) throws Exception{
+
+        String site = db.partialiseFullURL(url).getKey();
+        List<DBSimplePage> pages;
+        List<List<DBSimplePage>> groupedPages = db.groupPagesByTimestamp(db.getPagesForSite(site));
+        pages = groupedPages.get(groupedPages.size() - 1);
+        DBSimplePage simpleP = pages.get(pages.size() - 1);
+
+        DBPage dbp = simpleP.loadFullPage(db);
+
+        HashMap<String, ArrayList<UnserialisedMarker>> checkMarkers = pagePerformance(dbp, db);
+
+        List<String> keys = new ArrayList<>(checkMarkers.size());
+        keys.addAll(checkMarkers.keySet());
+        Collections.sort(keys);
+
+        String path = "images/" + simpleP.id + "/";
+        File directory = new File(path);
+        if(!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        for(String check : keys) {
+
+            ArrayList<UnserialisedMarker> currentCheck = checkMarkers.get(check);
+
+            int maxH = 1080;
+            int maxW = 1920;
+            int imgBuffer = 25;
+
+            for(UnserialisedMarker usm : currentCheck) {
+                if(usm.tag != null) {
+                    WebElement ele = inter.getElementsByTagName(usm.tag)[usm.tagPos];
+                    if(ele.getLocation().x + ele.getSize().width + (2 * imgBuffer) > maxW) {
+                        maxW = ele.getLocation().x + ele.getSize().width + (2 * imgBuffer);
+                    }
+                    if(ele.getLocation().y + ele.getSize().height + (2 * imgBuffer) > maxH) {
+                        maxH = ele.getLocation().y + ele.getSize().height + (2 * imgBuffer);
+                    }
+                }
+            }
+
+            inter.driver.manage().window().setSize(new Dimension(maxW, maxH));
+
+            for(UnserialisedMarker usm : currentCheck) {
+
+                if(usm.tag != null) {
+                    WebElement ele = inter.getElementsByTagName(usm.tag)[usm.tagPos];
+
+                    Point p = ele.getLocation();
+                    int eleW = ele.getSize().width;
+                    int eleH = ele.getSize().height;
+                    int px = p.x;
+                    int py = p.y;
+                    int rectX = 0;
+                    int rectY = 0;
+
+                    if(px > 0 && py > 0 && eleH > 0 && eleW > 0) {
+                        File screesnshot = ((TakesScreenshot)inter.driver).getScreenshotAs(OutputType.FILE);
+                        BufferedImage bImg = ImageIO.read(screesnshot);
+                        if(px - imgBuffer > 0) {
+                            px -= imgBuffer;
+                            rectX = imgBuffer;
+                        }
+                        if(py - imgBuffer > 0) {
+                            py -= imgBuffer;
+                            rectY = imgBuffer;
+                        }
+                        if(p.y + eleH + imgBuffer < inter.driver.manage().window().getSize().height) {
+                            eleH += 2 * imgBuffer;
+                        }
+                        if(p.x + eleW +  imgBuffer < inter.driver.manage().window().getSize().width) {
+                            eleW += 2 * imgBuffer;
+                        }
+                        BufferedImage eleSS = bImg.getSubimage(px, py, eleW, eleH);
+                        Graphics2D g = eleSS.createGraphics();
+                        g.setColor(Color.RED);
+                        g.drawRect(rectX, rectY, ele.getSize().width, ele.getSize().height);
+                        ImageIO.write(eleSS, "png", screesnshot);
+                        FileUtils.copyFile(screesnshot, new File(path + usm.id + ".png"));
+                    }
+                }
+            }
+        }
     }
 }

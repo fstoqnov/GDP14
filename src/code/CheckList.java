@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 
 import com.google.common.collect.Lists;
 
@@ -25,7 +24,7 @@ public class CheckList {
 
 	public static void addChecks(List<Check> checks) {
 		checks.add(new IdentifyInputPurpose());
-		//checks.add(new Parsing());
+		checks.add(new Parsing());
 		checks.add(new LabelsOrInstructions());
 		checks.add(new LanguageOfPage());
 		checks.add(new PageTitled());
@@ -54,7 +53,7 @@ public class CheckList {
 	}
 
 	public boolean runChecksAtURLs(String[] urls) throws Exception {
-		return runChecksAtURLs(urls, false, null, false);
+		return runChecksAtURLs(urls, true, new DatabaseInterface(), false);
 	}
 
 	public boolean runChecksAtURLs(String[] urls, boolean store, DatabaseInterface db, boolean dynamic) throws Exception {
@@ -67,6 +66,7 @@ public class CheckList {
 		SeleniumInterface inter = new SeleniumInterface();
 		long curTime = System.currentTimeMillis();
 
+		db.connect("root", "Millyp1892", "localhost", "testdb", 3306);
 		ConformanceReport cr = new ConformanceReport();
 
 		DBSimplePage rootPage;
@@ -79,9 +79,8 @@ public class CheckList {
 			inter.getRenderedHtml(url);
 			baseURL = inter.driver.getCurrentUrl();
 			domReps.add(inter.getDomRep());
-			rootPage = runCheckAtPermutedPage(inter, url, null, store, db, checkResults, curTime, null);
-			//System.out.println("'passed' is " + passed.toString());
-			//System.out.println("totalPassed, totalFailed : " + totalPassed.toString() + ", " + totalFailed.toString());
+			rootPage = runCheckAtPermutedPage(inter, url, null, store, db, passed, totalPassed, totalFailed, curTime, null);
+            cr.addCheckImages(db, url, inter);
 			if (dynamic) {
 				List<WebElement> elements = inter.getAllElements();
 				JavascriptExecutor js = (JavascriptExecutor) inter.driver;
@@ -114,6 +113,7 @@ public class CheckList {
 
 		if(store) {
 			cr.generateReportFromPage(db, urls[0], new SeleniumInterface());
+
 		}
 
 		return checkResults.overallPass;

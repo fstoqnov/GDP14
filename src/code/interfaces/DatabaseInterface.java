@@ -1,10 +1,6 @@
 package code.interfaces;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -188,7 +184,7 @@ public class DatabaseInterface {
 		stmt.close();
 
 		String third =
-				"INSERT INTO marker (`checkpage`, `severity`, `position`, `eleTagName`, `eleTagNumber`, `attribute`, `check`, `desc`, `hidden`, `eleID`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, FALSE, ?)";
+				"INSERT INTO marker (`checkpage`, `severity`, `position`, `eleTagName`, `eleTagNumber`, `attribute`, `check`, `desc`, `hidden`, `eleID`, `outerHTML`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, FALSE, ?, ?)";
 		stmt = conn.prepareStatement(third);
 		for (Marker marker : markers) {
 			stmt.setLong(1, checkpageID);
@@ -217,6 +213,12 @@ public class DatabaseInterface {
 				stmt.setString(8, marker.getDesc());
 			}
 			stmt.setString(9, marker.getEleID());
+			if (marker.getOuterHTML() == null) {
+				stmt.setNull(10, java.sql.Types.BLOB);
+			}
+			else {
+				stmt.setString(10, marker.getOuterHTML());
+			}
 			stmt.execute();
 			if (conn.getWarnings() != null) { throw new Exception(conn.getWarnings()); }
 		}

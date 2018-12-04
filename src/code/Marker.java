@@ -15,6 +15,7 @@ public class Marker {
 	private String desc;
 	private boolean hidden;
 	private String id;
+	private String outerHTML;
 
 	public static final int MARKER_ERROR = 1;
 	public static final int MARKER_AMBIGUOUS = 2;
@@ -29,6 +30,7 @@ public class Marker {
 		this.type = type;
 		this.check = check;
 		id = element.getAttribute("id");
+		this.outerHTML = element.getAttribute("outerHTML");
 	}
 	
 	public Marker(int type, Check check) {
@@ -47,6 +49,7 @@ public class Marker {
 		this.check = check;
 		this.desc = desc;
 		id = element.getAttribute("id");
+		this.outerHTML = element.getAttribute("outerHTML");
 	}
 
 	public Marker(String desc, int type, Check check, WebElement element, String attribute) {
@@ -57,6 +60,7 @@ public class Marker {
 		this.check = check;
 		this.desc = desc;
 		id = element.getAttribute("id");
+		this.outerHTML = element.getAttribute("outerHTML");
 	}
 	
 	public Marker(int type, Check check, WebElement element, String attribute) {
@@ -66,6 +70,7 @@ public class Marker {
 		this.type = type;
 		this.check = check;
 		id = element.getAttribute("id");
+		this.outerHTML = element.getAttribute("outerHTML");
 	}
 	
 	public Marker(String desc, int type, Check check, WebElement element, long position) {
@@ -76,6 +81,7 @@ public class Marker {
 		this.check = check;
 		this.desc = desc;
 		id = element.getAttribute("id");
+		this.outerHTML = element.getAttribute("outerHTML");
 	}
 
 	public Marker(int type, Check check, WebElement element, long position) {
@@ -85,6 +91,7 @@ public class Marker {
 		this.type = type;
 		this.check = check;
 		id = element.getAttribute("id");
+		this.outerHTML = element.getAttribute("outerHTML");
 	}
 
 	public Marker(int type, Check check, long position) {
@@ -104,6 +111,16 @@ public class Marker {
 		this.desc = desc;
 	}
 
+	public Marker(String desc, int type, Check check, String outerHTML) {
+		this.element = null;
+		this.position = -1;
+		this.attribute = null;
+		this.type = type;
+		this.check = check;
+		this.desc = desc;
+		this.outerHTML = outerHTML;
+	}
+
 	public WebElement getElement() { return element; }
 	public String getAttribute() { return attribute; }
 	public long getPosition() { return position; }
@@ -112,6 +129,7 @@ public class Marker {
 	public String getDesc() { return desc; }
 	public boolean getHidden() { return hidden; }
 	public String getEleID() { return id; }
+	public String getOuterHTML() { return outerHTML; }
 
 	public boolean equals(Object o) {
 
