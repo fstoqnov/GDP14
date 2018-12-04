@@ -63,7 +63,7 @@ public class HeadingsAndLabels extends Check {
 			ArrayList<TreeNode<WebElement>> headingList,
 			SeleniumInterface inter
 	) {
-		System.out.println("Entering with level: " + String.valueOf(level));
+		//System.out.println("Entering with level: " + String.valueOf(level));
 		ArrayList<WebElement> siblingHeadings = new ArrayList<WebElement>();
 		
 		while (sharedIndex.getValue() < headingList.size()) {
@@ -110,7 +110,7 @@ public class HeadingsAndLabels extends Check {
 		if (eleList == null) {
 			return true;
 		}
-		HashSet<WebElement> duplicateHeadings = new HashSet<WebElement>();
+		ArrayList<WebElement> duplicateHeadings = new ArrayList<WebElement>();
 		int duplicatesFound = 0;
 		HashMap<String, WebElement> uniqueStrings = new HashMap<String, WebElement>();
 		for (int i = 0; i < eleList.size(); i++) {
@@ -132,6 +132,7 @@ public class HeadingsAndLabels extends Check {
 				WebElement dupl = it.next();
 				addFlagToElement(markers, Marker.MARKER_ERROR, dupl, "Sibling headings must not be duplicates");
 				System.out.println("Added failure marker to element: " + dupl.getText());
+				//System.out.println(x);
 			}
 			return false;
 		}
