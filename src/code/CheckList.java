@@ -53,7 +53,7 @@ public class CheckList {
 	}
 
 	public boolean runChecksAtURLs(String[] urls) throws Exception {
-		return runChecksAtURLs(urls, true, new DatabaseInterface(), false);
+		return runChecksAtURLs(urls, false, null, false);
 	}
 
 	public boolean runChecksAtURLs(String[] urls, boolean store, DatabaseInterface db, boolean dynamic) throws Exception {
@@ -66,7 +66,6 @@ public class CheckList {
 		SeleniumInterface inter = new SeleniumInterface();
 		long curTime = System.currentTimeMillis();
 
-		db.connect("root", "Millyp1892", "localhost", "testdb", 3306);
 		ConformanceReport cr = new ConformanceReport();
 
 		DBSimplePage rootPage;
@@ -79,7 +78,7 @@ public class CheckList {
 			inter.getRenderedHtml(url);
 			baseURL = inter.driver.getCurrentUrl();
 			domReps.add(inter.getDomRep());
-			rootPage = runCheckAtPermutedPage(inter, url, null, store, db, passed, totalPassed, totalFailed, curTime, null);
+			rootPage = runCheckAtPermutedPage(inter, url, null, store, db, checkResults, curTime, null);
             cr.addCheckImages(db, url, inter);
 			if (dynamic) {
 				List<WebElement> elements = inter.getAllElements();
