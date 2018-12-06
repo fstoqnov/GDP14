@@ -23,6 +23,9 @@ public class HeadingsAndLabels extends Check {
 	public HeadingsAndLabels() {
 		super("Criterion 2.4.6 Headings and Labels");
 	}
+	//There is also a requirement within 2.4.6 that Headings and Labels are fit-for-purpose, 
+	//obviously we can't check this. So SUCCESS is probably not really possible to raise
+	//we can raise a warning on all these elements --> Need to be checked manually.	
 
 	@Override
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
@@ -37,7 +40,8 @@ public class HeadingsAndLabels extends Check {
 	private void checkLabelsUnique(List<Marker> markers, SeleniumInterface inter) {
 		WebElement[] inputEles = inter.getElementsByTagName("input");
 		WebElement[] labelEles = inter.getElementsByTagName("label");
-		
+		WebElement[] ariaLabelEles = inter.getElementsWithAttribute("aria-label");
+		//WebElement[] ariaLabelledBy
 		
 		ArrayList<String> labelTexts = new ArrayList<String>();
 		for (int i = 0; i < labelEles.length; i++) {
@@ -48,6 +52,7 @@ public class HeadingsAndLabels extends Check {
 		for (int i = 0; i < labelTexts.size(); i++) {
 			System.out.println(labelTexts.get(i));
 		}
+		
 		/*
 		ArrayList<String> labelledElementIDs = new ArrayList<String>();
 		for (int i = 0; i < labelEles.length; i++) {
