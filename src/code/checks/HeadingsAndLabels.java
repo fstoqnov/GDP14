@@ -30,11 +30,8 @@ public class HeadingsAndLabels extends Check {
 
 	@Override
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
-		System.out.println("Running checks on HeadingsAndLabels");
 		checkSiblingHeadingsUnique(markers, inter);
-		System.out.println("Checked sibling headings");
 		checkLabelsUnique(markers, inter);
-		System.out.println("Checked unique labels");
 		
 
 	}
@@ -49,8 +46,6 @@ public class HeadingsAndLabels extends Check {
 		WebElement[] labelEles = inter.getElementsByTagName("label");
 		WebElement[] fieldsetEles = inter.getElementsByTagName("fieldset");
 
-		System.out.println("found elements: input: " + inputEles.length + ", select: " + selectEles.length + ", button: " + buttonEles.length +
-				", textarea: " + textareaEles.length + ", label: " + labelEles.length + ", fieldset: " + fieldsetEles.length);
 		ArrayList<LabelledWebElement> formControlLabels = new ArrayList<LabelledWebElement>();
 		for (int i = 0; i < inputEles.length; i++) {
 			//if input type="hidden", then we ignore this.
@@ -76,11 +71,13 @@ public class HeadingsAndLabels extends Check {
 			formControlLabels.add(this.getElementLabel(markers, textareaEles[i], eleLabel, labelEles, fieldsetEles, inter));
 		}
 		
-		System.out.println("Found the following form control elements, with their labels");
+		/*
+		Display all elements with the labels that were found for them
+		 
 		for (int i = 0; i < formControlLabels.size(); i++) {
 			System.out.println(this.getWebElementString(formControlLabels.get(i).getEle()));
 			System.out.println(formControlLabels.get(i));
-		}
+		}*/
 		
 		
 		//firstly: We know that we have to check that each label is a good description manually.
@@ -107,7 +104,7 @@ public class HeadingsAndLabels extends Check {
 		for (int i = 0 ; i != formCtrlCnt; i++) {
 			for (int j = i+1; j != formCtrlCnt; j++) {
 				if (formControlLabels.get(i).checkEqualityWith(formControlLabels.get(j))) {
-					System.out.println("Found two elements with matching labels: " + "\n" + formControlLabels.get(i).toString() + "\n" + formControlLabels.get(j).toString());
+					//found two form control elements with duplicate labels
 					duplicateLabels.add(formControlLabels.get(i));
 					duplicateLabels.add(formControlLabels.get(j));
 				}
@@ -117,7 +114,6 @@ public class HeadingsAndLabels extends Check {
 		for (int i = 0; i < duplicateLabels.size(); i++) {
 			addFlagToElement(markers, Marker.MARKER_ERROR, duplicateLabels.get(i).getEle(),
 					"Element label is not unique");
-			System.out.println("Marking error as label is duplicated");
 		}
 		
 		formControlLabels.removeAll(duplicateLabels);
@@ -151,7 +147,6 @@ public class HeadingsAndLabels extends Check {
 		//or use of 'title' in place of a label
 		
 		//then we call getSecondaryLabels to look for other valid additions to the labelling
-		System.out.println("Looking at an element: " + this.getWebElementString(ele));
 
 		//primary label comes from 'aria-labelledby', or 'aria-label', or <label>, or 'title'
 		String labelledby;
@@ -162,14 +157,12 @@ public class HeadingsAndLabels extends Check {
 				WebElement labelElement = inter.getElementById(labelID);
 				if (labelElement != null) {
 					eleLabel.addLabel(labelElement.getText());
-					System.out.println("Found aria-labelledby");
 
 				}
 			}
 		}
 		if ((ariaLabelText = ele.getAttribute("aria-label")) != null) {
 			eleLabel.addLabel(ariaLabelText);
-			System.out.println("Found aria-label");
 		}
 		
 
@@ -180,8 +173,6 @@ public class HeadingsAndLabels extends Check {
 				if ((labelForID = labelEles[i].getAttribute("for")) != null) {
 					if (labelForID.equals(eleID)) {
 						this.getLabelEleLabels(markers, labelEles[i], eleLabel);
-						System.out.println("Found label with 'for'");
-
 					}
 				}
 			}
@@ -191,10 +182,8 @@ public class HeadingsAndLabels extends Check {
 		//check for parent elements that are labels.
 		WebElement checkForParentLabels = ele;
 		while ((checkForParentLabels = checkForParentLabels.findElement(By.xpath(".."))) != null) {
-			//System.out.println("Next parent element: TEXT:{" + this.getWebElementString(checkForParentLabels) + "}:TEXT");
 			if (checkForParentLabels.getTagName().equals("label")) {
 				this.getLabelEleLabels(markers, checkForParentLabels, eleLabel);
-				System.out.println("Found parent label");
 
 				break;
 			}
@@ -213,7 +202,6 @@ public class HeadingsAndLabels extends Check {
 				WebElement descElement = inter.getElementById(descID);
 				if (descElement != null) {
 					eleLabel.addLabel(descElement.getText());
-					System.out.println("Found aria-describedby");
 
 				}
 			}
@@ -230,10 +218,7 @@ public class HeadingsAndLabels extends Check {
 				//if the 'label' is blank ("") then no label is added.
 				//this tests for that case, and if not: this is the primary label so raises the error.
 				addFlagToElement(markers, Marker.MARKER_ERROR, ele, "Primary label for this element is a 'title' attribute, which is not always accessible to all users");
-				System.out.println("Adding error - title attribute only label");
 			}
-
-			System.out.println("Found 'title'");
 
 		}
 
@@ -248,8 +233,6 @@ public class HeadingsAndLabels extends Check {
 				WebElement legend;
 				if ((legend = checkForParentFieldset.findElement(By.xpath("legend"))) != null) {
 					eleLabel.addLabel(legend.getText());
-					System.out.println("Found parent fieldset with legend");
-
 				}
 				break;
 			}
@@ -268,8 +251,6 @@ public class HeadingsAndLabels extends Check {
 			if (parent.getAttribute("role") != null) {
 				if (parent.getAttribute("role").equals("group")) {
 					getElementLabel(markers, parent, eleLabel, labelEles, fieldsetEles, inter);
-					System.out.println("Found parent role='group'");
-
 					break;
 				}
 			}
@@ -296,7 +277,6 @@ public class HeadingsAndLabels extends Check {
 			List<Marker> markers, WebElement inputEle, 
 			LabelledWebElement eleLabel, WebElement[] labelEles, 
 			WebElement[] fieldsetEles, SeleniumInterface inter) {
-		System.out.println("Looking at an input element:");
 
 		//there are a some special cases to handle for 'input' elements.
 		String type = inputEle.getAttribute("type");
@@ -343,13 +323,11 @@ public class HeadingsAndLabels extends Check {
 				}
 				this.checkUniqueText(markers, options, "<option> elements in same <optgroup> have duplicate labels", 
 					"", "<option> elements in this <optgroup> have distinct labels");
-				System.out.println("This optgroup had a label of " + optgroupLabel + ", which has length: " + optgroupLabel.length());
 			}
 			else {
 				nullOptgroupLabel = true;
 			}
 			if (nullOptgroupLabel) {
-				System.out.println("optgroup had a null label so it's useless.");
 				baseOptions.addAll(options);
 			}
 		}
@@ -417,7 +395,6 @@ public class HeadingsAndLabels extends Check {
 			ArrayList<TreeNode<WebElement>> headingList,
 			SeleniumInterface inter
 	) {
-		//System.out.println("Entering with level: " + String.valueOf(level));
 		ArrayList<WebElement> siblingHeadings = new ArrayList<WebElement>();
 		
 		while (sharedIndex.getValue() < headingList.size()) {
@@ -426,11 +403,6 @@ public class HeadingsAndLabels extends Check {
 			int headingLevel = node.getLevel();
 			WebElement headingEle = node.getElement();
 			String heading = headingEle.getText();
-			
-			/*System.out.println("Current level: " + String.valueOf(level)
-				+ ", Found heading with level: " + String.valueOf(headingLevel)
-				+ ", with text: " + heading 
-				+ "-----String of length " + String.valueOf(heading.length()));*/
 			
 			if (headingLevel == level) {
 				//this is part of the current group of siblings
@@ -491,7 +463,6 @@ public class HeadingsAndLabels extends Check {
 			while (failIt.hasNext()) {
 				WebElement dupl = failIt.next();
 				addFlagToElement(markers, Marker.MARKER_ERROR, dupl, errorMsg);
-				System.out.println("Added failure marker to element: " + dupl.getTagName() + ": " + dupl.getAttribute(attr));
 			}
 			eleList.removeAll(duplicates);
 			Iterator<WebElement> succIt = eleList.iterator();
@@ -532,8 +503,6 @@ public class HeadingsAndLabels extends Check {
 			while (failIt.hasNext()) {
 				WebElement dupl = failIt.next();
 				addFlagToElement(markers, Marker.MARKER_ERROR, dupl, errorMsg);
-				System.out.println("Added failure marker to element: " + dupl.getText());
-				//System.out.println(x);
 			}
 			eleList.removeAll(duplicateTexts);
 			Iterator<WebElement> succIt = eleList.iterator();

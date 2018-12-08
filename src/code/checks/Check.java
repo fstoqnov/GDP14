@@ -30,11 +30,6 @@ public abstract class Check implements Comparable<Check> {
 		if(markers.size() == 0 && passed) {
 			m.add(new Marker(Marker.MARKER_SUCCESS, this));
 		}
-		System.out.println("WILL RETURN " + passed);
-		System.out.println("Markers are: ");
-		for (int i = 0; i < m.size(); i++) {
-			System.out.println(m.get(i).getType());
-		}
 		return passed;
 	}
 
