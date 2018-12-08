@@ -12,11 +12,17 @@ public class LabelledWebElement {
 	
 	public LabelledWebElement(WebElement we) {
 		this.webEle = we;
+		this.labels = new ArrayList<String>();
 	}
 	
 	public void addLabel(String s) {
+		if (s.equals("")) {
+			System.out.println("Not adding blank label");
+			return;
+		}
 		this.labels.add(s);
 		Collections.sort(this.labels);
+		System.out.println("Adding label with text: " + s);
 	}
 	
 	public WebElement getEle() {
@@ -40,9 +46,9 @@ public class LabelledWebElement {
 	}
 	
 	public String toString() {
-		String labelsString = "";
+		String labelsString = "Labels: ";
 		for (String s: labels) {
-			labelsString.concat(s + ", ");
+			labelsString = labelsString.concat(s + ", ");
 		}
 		return labelsString;
 	}

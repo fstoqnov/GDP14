@@ -30,9 +30,11 @@ public class HeadingsAndLabels extends Check {
 
 	@Override
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
-
+		System.out.println("Running checks on HeadingsAndLabels");
 		checkSiblingHeadingsUnique(markers, inter);
+		System.out.println("Checked sibling headings");
 		checkLabelsUnique(markers, inter);
+		System.out.println("Checked unique labels");
 		
 
 	}
@@ -47,9 +49,17 @@ public class HeadingsAndLabels extends Check {
 		WebElement[] labelEles = inter.getElementsByTagName("label");
 		WebElement[] fieldsetEles = inter.getElementsByTagName("fieldset");
 
-		
+		System.out.println("found elements: input: " + inputEles.length + ", select: " + selectEles.length + ", button: " + buttonEles.length +
+				", textarea: " + textareaEles.length + ", label: " + labelEles.length + ", fieldset: " + fieldsetEles.length);
 		ArrayList<LabelledWebElement> formControlLabels = new ArrayList<LabelledWebElement>();
 		for (int i = 0; i < inputEles.length; i++) {
+			//if input type="hidden", then we ignore this.
+			String inputType;
+			if ((inputType = inputEles[i].getAttribute("type")) != null) {
+				if (inputType.equals("hidden")) {
+					continue;
+				}
+			}
 			LabelledWebElement eleLabel = new LabelledWebElement(inputEles[i]);
 			formControlLabels.add(this.getInputLabel(markers, inputEles[i], eleLabel, labelEles, fieldsetEles, inter));
 		}
@@ -74,9 +84,19 @@ public class HeadingsAndLabels extends Check {
 		
 		
 		//firstly: We know that we have to check that each label is a good description manually.
-		for (int i = 0; i < formControlLabels.size(); i++) {
-			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, formControlLabels.get(i).getEle(),
+		Iterator<LabelledWebElement> formControlIt = formControlLabels.iterator();
+		while(formControlIt.hasNext()) {
+			LabelledWebElement formControlLabel = formControlIt.next();
+			WebElement formControlEle = formControlLabel.getEle();
+				
+			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, formControlEle,
 					"Manual Check: does this label properly describes the form control element");
+			if (formControlLabel.getLabelsSize() ==0) {
+				formControlIt.remove(); //this should be handled elsewhere. Don't want to highlight duplicate lacking labels.
+			}
+		}
+		for (int i = 0; i < formControlLabels.size(); i++) {
+			
 			
 		}
 		
@@ -85,9 +105,9 @@ public class HeadingsAndLabels extends Check {
 		int formCtrlCnt = formControlLabels.size();
 		//compare each pair (once) of formControlLabels - if equal, mark as failures.
 		for (int i = 0 ; i != formCtrlCnt; i++) {
-			for (int j = i; j != formCtrlCnt; j++) {
+			for (int j = i+1; j != formCtrlCnt; j++) {
 				if (formControlLabels.get(i).checkEqualityWith(formControlLabels.get(j))) {
-					System.out.println("Found two matching label elements: " + "\n" + formControlLabels.get(i).toString() + "\n" + formControlLabels.get(j).toString());
+					System.out.println("Found two elements with matching labels: " + "\n" + formControlLabels.get(i).toString() + "\n" + formControlLabels.get(j).toString());
 					duplicateLabels.add(formControlLabels.get(i));
 					duplicateLabels.add(formControlLabels.get(j));
 				}
@@ -97,6 +117,7 @@ public class HeadingsAndLabels extends Check {
 		for (int i = 0; i < duplicateLabels.size(); i++) {
 			addFlagToElement(markers, Marker.MARKER_ERROR, duplicateLabels.get(i).getEle(),
 					"Element label is not unique");
+			System.out.println("Marking error as label is duplicated");
 		}
 		
 		formControlLabels.removeAll(duplicateLabels);
@@ -109,7 +130,14 @@ public class HeadingsAndLabels extends Check {
 	}
 	
 	private String getWebElementString(WebElement ele) {
-		return "tag: " + ele.getTagName() + "text: " + ele.getText();
+		String id;
+		if ((id = ele.getAttribute("id")) != null) {
+			return "tag: " + ele.getTagName() + ", id: " + id;
+		}
+		else {
+			return "tag: " + ele.getTagName() + ", no id.";
+		}
+		//return "tag: " + ele.getTagName() + "; text: " + ele.getText();
 	}
 	
 	private LabelledWebElement getElementLabel(
@@ -123,7 +151,7 @@ public class HeadingsAndLabels extends Check {
 		//or use of 'title' in place of a label
 		
 		//then we call getSecondaryLabels to look for other valid additions to the labelling
-		
+		System.out.println("Looking at an element: " + this.getWebElementString(ele));
 
 		//primary label comes from 'aria-labelledby', or 'aria-label', or <label>, or 'title'
 		String labelledby;
@@ -134,12 +162,17 @@ public class HeadingsAndLabels extends Check {
 				WebElement labelElement = inter.getElementById(labelID);
 				if (labelElement != null) {
 					eleLabel.addLabel(labelElement.getText());
+					System.out.println("Found aria-labelledby");
+
 				}
 			}
 		}
 		if ((ariaLabelText = ele.getAttribute("aria-label")) != null) {
 			eleLabel.addLabel(ariaLabelText);
+			System.out.println("Found aria-label");
 		}
+		
+
 		String eleID = ele.getAttribute("id");
 		if (eleID != null) { //might be referenced by labels
 			for (int i = 0; i < labelEles.length; i++) {
@@ -147,21 +180,32 @@ public class HeadingsAndLabels extends Check {
 				if ((labelForID = labelEles[i].getAttribute("for")) != null) {
 					if (labelForID.equals(eleID)) {
 						this.getLabelEleLabels(markers, labelEles[i], eleLabel);
+						System.out.println("Found label with 'for'");
+
 					}
 				}
 			}
 		}
+
+
 		//check for parent elements that are labels.
 		WebElement checkForParentLabels = ele;
-		while (checkForParentLabels.findElement(By.xpath("..")) != null) {
-			if (checkForParentLabels.getTagName() == "label") {
+		while ((checkForParentLabels = checkForParentLabels.findElement(By.xpath(".."))) != null) {
+			//System.out.println("Next parent element: TEXT:{" + this.getWebElementString(checkForParentLabels) + "}:TEXT");
+			if (checkForParentLabels.getTagName().equals("label")) {
 				this.getLabelEleLabels(markers, checkForParentLabels, eleLabel);
+				System.out.println("Found parent label");
+
+				break;
+			}
+			else if (checkForParentLabels.getTagName().equals("html")) {
+				//this is the parent  <html> tag - no labels outside this.
 				break;
 			}
 		}
+
 		
 		//there are other ways the element could be labelled too:
-		//'title', 'aria-describedby', Parent: <fieldset> with a <legend>; parent: role="group" and then aria-labelledby=...
 		String describedby;
 		if ((describedby = ele.getAttribute("aria-describedby")) != null) {
 			String[] descIDs = describedby.split(" ");
@@ -169,46 +213,72 @@ public class HeadingsAndLabels extends Check {
 				WebElement descElement = inter.getElementById(descID);
 				if (descElement != null) {
 					eleLabel.addLabel(descElement.getText());
+					System.out.println("Found aria-describedby");
+
 				}
 			}
 		}
+		
+
 
 		String elementTitle;
 		if ((elementTitle = ele.getAttribute("title"))!= null ) {
-			if (eleLabel.getLabelsSize() == 0) {
-				//raise an issue, as the primary label is a 'title' which is not always accessible.
-				addFlagToElement(markers, Marker.MARKER_ERROR, ele, "Primary label for this element is a 'title' attribute, which is not always accessible to all users");
-			}
+			int prevLabelsSize = eleLabel.getLabelsSize();
 			eleLabel.addLabel(elementTitle);
+			int newLabelsSize = eleLabel.getLabelsSize();
+			if (newLabelsSize == 1 && prevLabelsSize == 0) {
+				//if the 'label' is blank ("") then no label is added.
+				//this tests for that case, and if not: this is the primary label so raises the error.
+				addFlagToElement(markers, Marker.MARKER_ERROR, ele, "Primary label for this element is a 'title' attribute, which is not always accessible to all users");
+				System.out.println("Adding error - title attribute only label");
+			}
+
+			System.out.println("Found 'title'");
+
 		}
+
 		
 		if (eleLabel.getLabelsSize() == 0) {
 			System.out.println("Should have found an error on LabelsOrInstructions -- NO LABEL for this element: " + ele.getTagName() + "; ID: " + ele.getAttribute("id"));
 		}
 		
 		WebElement checkForParentFieldset = ele;
-		while (checkForParentFieldset.findElement(By.xpath("..")) != null) {
-			if (checkForParentFieldset.getTagName() == "fieldset") {
+		while ((checkForParentFieldset = checkForParentFieldset.findElement(By.xpath(".."))) != null) {
+			if (checkForParentFieldset.getTagName().equals("fieldset")) {
 				WebElement legend;
 				if ((legend = checkForParentFieldset.findElement(By.xpath("legend"))) != null) {
 					eleLabel.addLabel(legend.getText());
+					System.out.println("Found parent fieldset with legend");
+
 				}
 				break;
 			}
+			else if (checkForParentLabels.getTagName().equals("html")) {
+				//this is the parent  <html> tag - no labels outside this.
+				break;
+			}
 		}
+
 		
 		//you can nest groups in other groups.
 		//in order to find the label for a group, we recursively call this function.
 		WebElement checkForParentGroup = ele;
-		while (checkForParentGroup.findElement(By.xpath("..")) != null) {
+		while ((checkForParentGroup = checkForParentGroup.findElement(By.xpath(".."))) != null) {
 			WebElement parent = checkForParentGroup;
 			if (parent.getAttribute("role") != null) {
 				if (parent.getAttribute("role").equals("group")) {
 					getElementLabel(markers, parent, eleLabel, labelEles, fieldsetEles, inter);
+					System.out.println("Found parent role='group'");
+
 					break;
 				}
 			}
+			if (parent.getTagName().equals("html")) {
+				//this is the parent  <html> tag - no labels outside this.
+				break;
+			}
 		}
+
 
 		
 		
@@ -226,6 +296,8 @@ public class HeadingsAndLabels extends Check {
 			List<Marker> markers, WebElement inputEle, 
 			LabelledWebElement eleLabel, WebElement[] labelEles, 
 			WebElement[] fieldsetEles, SeleniumInterface inter) {
+		System.out.println("Looking at an input element:");
+
 		//there are a some special cases to handle for 'input' elements.
 		String type = inputEle.getAttribute("type");
 		if (type != null) {
@@ -264,11 +336,20 @@ public class HeadingsAndLabels extends Check {
 		for (WebElement optgroup: optgroups) {
 			List<WebElement> options = optgroup.findElements(By.xpath("option"));
 			String optgroupLabel = optgroup.getAttribute("label");
+			boolean nullOptgroupLabel = false;
 			if (optgroupLabel != null) {
+				if (optgroupLabel.equals("")) {
+					nullOptgroupLabel = true;
+				}
 				this.checkUniqueText(markers, options, "<option> elements in same <optgroup> have duplicate labels", 
 					"", "<option> elements in this <optgroup> have distinct labels");
+				System.out.println("This optgroup had a label of " + optgroupLabel + ", which has length: " + optgroupLabel.length());
 			}
 			else {
+				nullOptgroupLabel = true;
+			}
+			if (nullOptgroupLabel) {
+				System.out.println("optgroup had a null label so it's useless.");
 				baseOptions.addAll(options);
 			}
 		}
@@ -303,7 +384,7 @@ public class HeadingsAndLabels extends Check {
 		List<WebElement> childrenElements = ele.findElements(By.xpath(".//*"));
 		
 		for (WebElement child: childrenElements) {
-			if (child.getTagName() == "img") {
+			if (child.getTagName().equals("img")) {
 				//add the 'alt' tag of any images that are children of this button 
 				String alt = child.getAttribute("alt");
 				if (alt != null) {
@@ -475,12 +556,43 @@ public class HeadingsAndLabels extends Check {
 	@Override
 	public String[] getHTMLPass() {
 		return new String[] {
+			
 			"<h1>My Pass Heading</h1>",
 			"<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>",
 			"<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>\n"
-			+ "<h1>My-Diff Pass Heading</h1>\n<h2>My Pass Heading</h2>"
+					+ "<h1>My-Diff Pass Heading</h1>\n<h2>My Pass Heading</h2>",
+			//one label 
+			"<label for=\"request_subject\">Subject</label>\n"
+				+ "<input type=\"text\"  id=\"request_subject\">",
+			//matching labels, but one is inside a fieldset with a <legend>
+			"<label for=\"size\">Red</label>\n"
+				+ "<input type=\"text\"  id=\"size\">\n"
+				+ "<fieldset>\n <legend>Choose colour of car</legend>\n"
+				+ "<label for=\"b\">Blue</label>\n"
+				+ "<label for=\"g\">Green</label>\n"
+				+ "<label for=\"r\">Red</label>\n"
+				+ "<input id =\"b\" type=\"checkbox\"Blue>\n"
+				+ "<input id=\"g\" type=\"checkbox\"Green>\n"
+				+ "<input id=\"r\" type=\"checkbox\"Red>\n"
+				+ "</fieldset>",
+			//select with no duplicates
 			
-			
+			"<select>\n"
+				+ "<option>A</option>\n"
+				+ "<option>B</option<\n>"
+				+ "<option>C</option>\n"
+				+ "</select>",
+			//select with duplicates, but optgroups make them unique.
+			"<select>\n"
+				+ "<optgroup label=\"German\">"
+				+ "<option>A</option>\n"
+				+ "<option>B</option>\n"
+				+ "</optgroup>"
+				+ "<optgroup label=\"Spanish\">"
+				+ "<option>A</option>\n"
+				+ "<option>B</option>\n"
+				+ "</optgroup>\n"
+				+ "</select>",
 		};
 	}
 
@@ -492,7 +604,31 @@ public class HeadingsAndLabels extends Check {
 			"<h1>My Pass Heading</h1>\n<h2>My Fail Heading</h2>\n<h2>My Fail Heading</h2>",
 			"<h1>Cool</h1>\n<h2>NotVeryCool</h2>\n<h3>Bewildering</h3>\n<h3>Bewildering</h3>",
 			"<h1>Cool</h1>\n<h1>Not cool</h1>\n<h1>Cool</h1>",
-			"<h1>A</h1>\n<h2>B</h2>\n<h3>C</h3>\n<h1>A</h1>"
+			"<h1>A</h1>\n<h2>B</h2>\n<h3>C</h3>\n<h1>A</h1>",
+			//duplicate labels:
+			" <label for=\"request_subject\">Duplicate Label</label>\r\n"
+					+ "<input type=\"text\" id=\"request_subject\">\n"
+					+ "<label for=\"request_duplicate\">Duplicate Label</label>\r\n"
+					+ "<input type=\"text\" id=\"request_duplicate\">",
+			//duplicate labels from different origins
+			" <label for=\"request_subject\">Duplicate Label</label>\r\n"
+					+ "<input type=\"text\" id=\"request_subject\">\n"
+					+ "<input type=\"text\" id=\"other\" aria-label=\"Duplicate Label\">",
+			//duplicate two labels
+			"<p id =\"long_desc1\">\"There are many options to input into this form\"</p>\n"
+				+ "<p id=\"long_desc2\">\"There are many options to input into this form\"</p>\n"
+				+ "<input id=\"a\" type=\"button\" aria-label=\"Default\" aria-describedby=\"long_desc1\">\n"
+				+ "<input id=\"b\" type=\"button\" aria-label=\"Default\" aria-labelledby=\"long_desc2\">",
+			//select with duplicate options (optgroup with no labels doesn't help)
+			"<select>\n"
+				+ "<option>A</option>"
+				+ "<option>B</option>"
+				+ "<optgroup>"
+				+ "<option>A</option>"
+				+ "</select>",
+			//only using title as primary label
+			"<textarea title=\"My Fancy Title\"</textarea>",
+		
 		};
 	}
 
