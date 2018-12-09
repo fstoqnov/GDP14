@@ -210,6 +210,7 @@ public class HeadingsAndLabels extends Check {
 		
 		WebElement checkForParentFieldset = ele;
 		while ((checkForParentFieldset = checkForParentFieldset.findElement(By.xpath(".."))) != null) {
+
 			if (checkForParentFieldset.getTagName().equals("fieldset")) {
 				WebElement legend;
 				if ((legend = checkForParentFieldset.findElement(By.xpath("legend"))) != null) {
@@ -217,7 +218,7 @@ public class HeadingsAndLabels extends Check {
 				}
 				break;
 			}
-			else if (checkForParentLabels.getTagName().equals("html")) {
+			else if (checkForParentFieldset.getTagName().equals("html")) {
 				//this is the parent  <html> tag - no labels outside this.
 				break;
 			}
