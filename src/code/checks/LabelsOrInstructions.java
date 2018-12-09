@@ -121,8 +121,6 @@ public class LabelsOrInstructions extends Check {
 			String optionText = optionEles.get(i).getAttribute("textContent");
 			if (optionText.equals("")) {
 				addFlagToElement(markers, Marker.MARKER_ERROR, optionEles.get(i), ERR_OPTION_NO_TEXT);
-				System.out.println(LabelledWebElement.getWebElementString(optionEles.get(i)));
-				System.out.println("Option found with no text");
 			}
 		}
 		
@@ -185,15 +183,11 @@ public class LabelsOrInstructions extends Check {
 					//can't use getText() as that Fails with 'hidden' element in css, in cases where the text should still be accessible.
 				}
 				else {
-					System.out.println(LabelledWebElement.getWebElementString(ele));
-					System.out.println("Did not find an element with that id, aria-labelledby");
 					addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_LABELLED_BY_MISSING);
 			
 				}
 			}
 			if (labelIDs.length == 0) {
-				System.out.println(LabelledWebElement.getWebElementString(ele));
-				System.out.println("Empty aria-labelledby");
 				addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_LABELLED_BY_EMPTY);
 			}
 		}
@@ -240,14 +234,10 @@ public class LabelsOrInstructions extends Check {
 					eleLabel.addLabel(descElement.getAttribute("textContent")); 
 				}
 				else {
-					System.out.println(LabelledWebElement.getWebElementString(ele));
-					System.out.println("Did not find element by that id, aria-describedby");
 					addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_DESCRIBED_BY_MISSING);
 				}
 			}
 			if (descIDs.length == 0) {
-				System.out.println(LabelledWebElement.getWebElementString(ele));
-				System.out.println("Aria-descriebdby empty");
 				addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_DESCRIBED_BY_EMPTY);
 			}
 		}
@@ -263,8 +253,7 @@ public class LabelsOrInstructions extends Check {
 				//if the 'label' is blank ("") then no label is added.
 				//this tests for that case, and if not: this is the primary label so raises the error.
 				addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_TITLE_ONLY);
-				System.out.println(LabelledWebElement.getWebElementString(ele));
-				System.out.println("Using title only");
+
 			}
 
 		}
@@ -272,8 +261,7 @@ public class LabelsOrInstructions extends Check {
 		
 		if (eleLabel.getLabelsSize() == 0) {
 			addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_LABEL_MISSING);
-			System.out.println(LabelledWebElement.getWebElementString(ele));
-			System.out.println("NO LABEL FOUND");
+
 		}
 	}
 
