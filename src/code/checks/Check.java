@@ -22,7 +22,7 @@ public abstract class Check implements Comparable<Check> {
 		runCheck(urlContent, markers, inter);
 		boolean passed = true;
 		for (int i = 0; i < markers.size(); i ++) {
-			if (markers.get(i).getType() != Marker.MARKER_SUCCESS) {
+			if (markers.get(i).getType() == Marker.MARKER_ERROR) {
 				passed = false;
 			}
 			m.add(markers.get(i));

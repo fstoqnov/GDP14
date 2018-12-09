@@ -36,7 +36,9 @@ public class LanguageOfParts extends Check {
 			e.printStackTrace();
 		}
 		
+		System.out.println("Given text content: "+ htmlHead[0].getText());
 		for(Result asd : results) {
+			System.out.println("Found language " + asd.language);
 			languagesFound.add(asd.language);
 		}
 		

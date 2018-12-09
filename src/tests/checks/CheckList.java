@@ -53,7 +53,7 @@ public class CheckList {
 			RunTests.countFailure++;
 		}
 		c.initialise();
-		if (pass != null) {
+		if (fail != null) { //is this supposed to be 'fail'? Does this matter?
 			for (String failHTML : fail) {
 				try {
 					TestsServer ts = new TestsServer(failHTML);
