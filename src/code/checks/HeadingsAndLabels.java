@@ -75,7 +75,7 @@ public class HeadingsAndLabels extends Check {
 		Display all elements with the labels that were found for them
 		 
 		for (int i = 0; i < formControlLabels.size(); i++) {
-			System.out.println(this.getWebElementString(formControlLabels.get(i).getEle()));
+			System.out.println(LabelledWebElement.getWebElementString(formControlLabels.get(i).getEle()));
 			System.out.println(formControlLabels.get(i));
 		}*/
 		
@@ -91,10 +91,6 @@ public class HeadingsAndLabels extends Check {
 			if (formControlLabel.getLabelsSize() ==0) {
 				formControlIt.remove(); //this should be handled elsewhere. Don't want to highlight duplicate lacking labels.
 			}
-		}
-		for (int i = 0; i < formControlLabels.size(); i++) {
-			
-			
 		}
 		
 		
@@ -124,17 +120,7 @@ public class HeadingsAndLabels extends Check {
 		}
 		
 	}
-	
-	private String getWebElementString(WebElement ele) {
-		String id;
-		if ((id = ele.getAttribute("id")) != null) {
-			return "tag: " + ele.getTagName() + ", id: " + id;
-		}
-		else {
-			return "tag: " + ele.getTagName() + ", no id.";
-		}
-		//return "tag: " + ele.getTagName() + "; text: " + ele.getText();
-	}
+
 	
 	private LabelledWebElement getElementLabel(
 			List<Marker> markers, WebElement ele, 
@@ -156,7 +142,7 @@ public class HeadingsAndLabels extends Check {
 			for (String labelID: labelIDs) {
 				WebElement labelElement = inter.getElementById(labelID);
 				if (labelElement != null) {
-					eleLabel.addLabel(labelElement.getText());
+					eleLabel.addLabel(labelElement.getAttribute("textContent"));
 
 				}
 			}
@@ -201,7 +187,7 @@ public class HeadingsAndLabels extends Check {
 			for (String descID: descIDs) {
 				WebElement descElement = inter.getElementById(descID);
 				if (descElement != null) {
-					eleLabel.addLabel(descElement.getText());
+					eleLabel.addLabel(descElement.getAttribute("textContent"));
 
 				}
 			}
@@ -221,18 +207,13 @@ public class HeadingsAndLabels extends Check {
 			}
 
 		}
-
-		
-		if (eleLabel.getLabelsSize() == 0) {
-			System.out.println("Should have found an error on LabelsOrInstructions -- NO LABEL for this element: " + ele.getTagName() + "; ID: " + ele.getAttribute("id"));
-		}
 		
 		WebElement checkForParentFieldset = ele;
 		while ((checkForParentFieldset = checkForParentFieldset.findElement(By.xpath(".."))) != null) {
 			if (checkForParentFieldset.getTagName().equals("fieldset")) {
 				WebElement legend;
 				if ((legend = checkForParentFieldset.findElement(By.xpath("legend"))) != null) {
-					eleLabel.addLabel(legend.getText());
+					eleLabel.addLabel(legend.getAttribute("textContent"));
 				}
 				break;
 			}
@@ -267,9 +248,9 @@ public class HeadingsAndLabels extends Check {
 		
 	}
 	
-	//a label element can have labels from getText() or from images inside the label element.
+	//a label element can have labels from textContent, or from images inside the label element.
 	private void getLabelEleLabels(List<Marker> markers, WebElement labelEle, LabelledWebElement eleLabel) {
-		eleLabel.addLabel(labelEle.getText());
+		eleLabel.addLabel(labelEle.getAttribute("textContent"));
 		this.addContainedImageLabels(labelEle, eleLabel);
 	}
 	
@@ -345,7 +326,7 @@ public class HeadingsAndLabels extends Check {
 			List<Marker> markers, WebElement buttonEle, 
 			LabelledWebElement eleLabel, WebElement[] labelEles, 
 			WebElement[] fieldsetEles, SeleniumInterface inter) {
-		eleLabel.addLabel(buttonEle.getText());
+		eleLabel.addLabel(buttonEle.getAttribute("textContent"));
 		//if a button contains an <img> element, an alt tag for that image becomes part of the effective label.
 
 		//
@@ -402,7 +383,7 @@ public class HeadingsAndLabels extends Check {
 			TreeNode<WebElement> node = headingList.get(sharedIndex.getValue());
 			int headingLevel = node.getLevel();
 			WebElement headingEle = node.getElement();
-			String heading = headingEle.getText();
+			String heading = headingEle.getAttribute("textContent");
 			
 			if (headingLevel == level) {
 				//this is part of the current group of siblings
@@ -475,7 +456,7 @@ public class HeadingsAndLabels extends Check {
 		return true;
 	}
 	
-	//check that the list of WebElements all have unique 'getText' values.
+	//check that the list of WebElements all have unique 'textContent' values.
 	//markup errors on elements if they are not unique.
 	private boolean checkUniqueText(List<Marker> markers, List<WebElement> eleList,
 			String errorMsg, String warningMsg, String successMsg) {
@@ -487,14 +468,14 @@ public class HeadingsAndLabels extends Check {
 		HashMap<String, WebElement> uniqueStrings = new HashMap<String, WebElement>();
 		for (int i = 0; i < eleList.size(); i++) {
 			WebElement ele_i = eleList.get(i);
-			uniqueStrings.put(ele_i.getText(), ele_i);
+			uniqueStrings.put(ele_i.getAttribute("textContent"), ele_i);
 			if (uniqueStrings.keySet().size() != (i+1)-duplicatesFound) {
 				//the previously added string was a duplicate.
 				duplicatesFound++;
 				
 				//must mark both headings as duplicates.
 				duplicateTexts.add(ele_i);
-				duplicateTexts.add(uniqueStrings.get(ele_i.getText()));
+				duplicateTexts.add(uniqueStrings.get(ele_i.getAttribute("textContent")));
 			}
 		}
 		if (duplicatesFound > 0) {

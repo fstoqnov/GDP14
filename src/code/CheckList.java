@@ -26,7 +26,7 @@ public class CheckList {
 	public static void addChecks(List<Check> checks) {
 		//checks.add(new IdentifyInputPurpose());
 		//checks.add(new Parsing());
-		//checks.add(new LabelsOrInstructions());
+		checks.add(new LabelsOrInstructions());
 		//checks.add(new LanguageOfPage());
 		//checks.add(new PageTitled());
 		//checks.add(new NameRoleVal());

@@ -51,4 +51,14 @@ public class LabelledWebElement {
 		return labelsString;
 	}
 	
+	public static String getWebElementString(WebElement ele) {
+		String id;
+		if ((id = ele.getAttribute("id")) != null) {
+			return "tag: " + ele.getTagName() + ", id: " + id;
+		}
+		else {
+			return "tag: " + ele.getTagName() + ", no id.";
+		}
+		//return "tag: " + ele.getTagName() + "; text: " + ele.getText();
+	}
 }
