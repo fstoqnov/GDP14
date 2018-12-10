@@ -25,6 +25,16 @@ public abstract class Check implements Comparable<Check> {
 	
 	ResultSet r;
 
+	
+	public boolean noFailExecuteCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
+		this.executeCheck(urlContent, markers, inter);
+		for (Marker m: markers) {
+			if (m.getType() == Marker.MARKER_ERROR) {
+				return false;
+			}
+		}
+		return true;
+	}
 	//runs the check on the url content and the selenium interface to the page. Adds markers to the checklist marker page
 	public ArrayList<ResultSet> executeCheck(String urlContent, List<Marker> m, SeleniumInterface inter) {
 		ArrayList<ResultSet> resultsReceived = new ArrayList<ResultSet>();

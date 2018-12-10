@@ -135,7 +135,7 @@ public class CheckList {
 		String content = inter.getHTML();
 		boolean curPassed;
 		for (Check c : checks) {
-			curPassed = c.executeCheck(content, markers, inter);
+			curPassed = c.noFailExecuteCheck(content, markers, inter);
 			checkResults.insertResult(curPassed);
 			if (curPassed) {
 				c.outputPassed();
