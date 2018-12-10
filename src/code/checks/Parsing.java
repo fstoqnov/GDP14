@@ -14,6 +14,13 @@ import org.openqa.selenium.WebElement;
 
 public class Parsing extends Check {
 
+	private static enum Result implements ResultSet {
+		ERROR,
+		SUCCESS,
+		WARNING_HTML,
+		WARNING_CONNECTION_FAILURE
+	}
+	
     public Parsing() { super("Criterion 4.1.1 Parsing"); }
 
     @Override
@@ -64,21 +71,21 @@ public class Parsing extends Check {
                 }
 
                 if (type.equals("error")) {
-                    markers.add(new Marker(message, Marker.MARKER_ERROR, this, extract));
+                    markers.add(new Marker(message, Marker.MARKER_ERROR, this, extract, Result.ERROR));
                     success = false;
                 }
                 else if (type.equals("warning")) {
-                    markers.add(new Marker(message, Marker.MARKER_AMBIGUOUS, this, extract));
+                    markers.add(new Marker(message, Marker.MARKER_AMBIGUOUS, this, extract, Result.WARNING_HTML));
                     success = false;
                 }
             }
 
             if(success) {
-                markers.add(new Marker(Marker.MARKER_SUCCESS, this));
+                markers.add(new Marker(Marker.MARKER_SUCCESS, this, Result.SUCCESS));
             }
         }
         catch(UnirestException e) {
-            markers.add(new Marker("Could not connect to W3C Markup Validation service - check not run", Marker.MARKER_ERROR, this, -1));
+            markers.add(new Marker("Could not connect to W3C Markup Validation service - check not run", Marker.MARKER_AMBIGUOUS, this, -1, Result.WARNING_CONNECTION_FAILURE));
         }
     }
 

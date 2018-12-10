@@ -9,6 +9,14 @@ import code.interfaces.SeleniumInterface;
 
 public class PageTitled extends Check {
 
+	private static String ERR_NO_TITLE() { return "Document does not have a title"; }
+	private static String WARNING_TITLE_FOUND(String title) { return "Ensure that this title is a good title for the document. Title found: " + title; }
+	
+	private static enum Result implements ResultSet {
+		ERROR,
+		SUCCESS,
+		WARNING_TITLE_FOUND
+	}
 	public PageTitled() {
 		super("Criterion 2.4.2 Page Titled");
 	}
@@ -27,9 +35,9 @@ public class PageTitled extends Check {
 		}
 		
 		if(titleExists == false) {
-			addFlagToElement(markers, Marker.MARKER_ERROR, doc[0]); //title not found on the page
+			addFlagToElement(markers, Marker.MARKER_ERROR, doc[0], ERR_NO_TITLE(), Result.ERROR); //title not found on the page
 		} else {
-			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, titlehead); //title found at titlehead location, might not be described, can't tell
+			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, titlehead, WARNING_TITLE_FOUND(titlehead.getText()), Result.WARNING_TITLE_FOUND); //title found at titlehead location, might not be described, can't tell
 		}							  
 	}
 	

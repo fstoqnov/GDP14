@@ -32,6 +32,7 @@ public class SeleniumInterface {
 
 	//Navigates to url and returns it's rendered form
 	public String getRenderedHtml(String url) {
+		System.out.println(driver);
 		driver.get(url);
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		while (!js.executeScript("return document.readyState").toString().equals("complete")) {

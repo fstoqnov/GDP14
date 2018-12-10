@@ -21,7 +21,7 @@ public class InfoAndRelationships extends Check {
 	private static String SUCC_HEADING_NEST() {return "Correctly nested heading";}
 	private static String ERR_HEADING_NEST(int initialLevel, int newLevel) {return "Incorrectly nested heading - jumped from " + initialLevel + " to " + newLevel;}
 
-	private static enum Result {
+	private static enum Result implements ResultSet{
 		ERROR,
 		SUCCESS,
 		ERR_HEADING_NEST

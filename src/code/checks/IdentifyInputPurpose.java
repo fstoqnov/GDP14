@@ -20,7 +20,7 @@ public class IdentifyInputPurpose extends Check {
 	private static String SUCC_AUTOCOMPLETE() {return "autocomplete attribute in defined list";}
 	private static String WARNING_NO_AUTOCOMPLETE_ATTR() {return "no autocomplete attribute";}
 
-	private static enum Result {
+	private static enum Result implements ResultSet {
 		ERROR,
 		SUCCESS,
 		WARNING_INVALID_AC,

@@ -25,7 +25,7 @@ public class LabelsOrInstructions extends Check {
 	
 	private static String WARNING_RECAPTCHA_TEXTAREA() { return "Recaptcha is not WCAG2.1 compliant - this <textarea> element has no accessible label";}
 	
-	private static enum Result {
+	private static enum Result implements ResultSet {
 		ERROR,
 		SUCCESS,
 		WARNING_RECAPTCHA_TEXTAREA

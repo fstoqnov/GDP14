@@ -19,6 +19,7 @@ import code.structures.Headings;
 import code.structures.LabelledWebElement;
 import code.structures.TreeNode;
 import nu.validator.messages.Result;
+import tests.Test;
 
 public class HeadingsAndLabels extends Check {
 
@@ -26,15 +27,16 @@ public class HeadingsAndLabels extends Check {
 		super("Criterion 2.4.6 Headings and Labels");
 	}
 	
-	private static String ERR_TITLE() {return "Primary label for this element is a 'title' attribute, which is not always accessible to all users";}
+	private static String WARNING_SRS_TITLE_ONLY() {return "Primary label for this element is a 'title' attribute, which is not always accessible to all users";}
 	private static String WARNING_LABEL_GENERAL() {return "Manual Check: does this label properly describes the form control element";}
 	private static String ERR_LABEL_DUPL() {return "Element label is not unique";}
 	private static String SUCC_LABEL_DUPL() {return "Element label is not duplicated on this page";}
 	
-	private static enum Result {
+	private static enum Result implements ResultSet {
 		ERROR,
 		SUCCESS,
-		WARNING_LABEL_GENERAL
+		WARNING_LABEL_GENERAL,
+		WARNING_SRS_TITLE_ONLY
 	}
 	
 	//There is also a requirement within 2.4.6 that Headings and Labels are fit-for-purpose, 
@@ -43,6 +45,8 @@ public class HeadingsAndLabels extends Check {
 
 	@Override
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
+		System.out.println("Running check in HeadingsAndLabels");
+		
 		checkSiblingHeadingsUnique(markers, inter);
 		checkLabelsUnique(markers, inter);
 		
@@ -216,7 +220,7 @@ public class HeadingsAndLabels extends Check {
 			if (newLabelsSize == 1 && prevLabelsSize == 0) {
 				//if the 'label' is blank ("") then no label is added.
 				//this tests for that case, and if not: this is the primary label so raises the error.
-				addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_TITLE(), Result.ERROR);
+				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, ele, WARNING_SRS_TITLE_ONLY(), Result.WARNING_SRS_TITLE_ONLY);
 			}
 
 		}
@@ -371,6 +375,7 @@ public class HeadingsAndLabels extends Check {
 	private void checkSiblingHeadingsUnique(List<Marker> markers, SeleniumInterface inter) {
 		//check that sibling headings are unique,
 		TreeMap<Integer, TreeNode<WebElement>> headingTree = Headings.getHeadingTree(inter);
+		System.out.println("headingTree size is " + headingTree.size());
 		ArrayList<TreeNode<WebElement>> headingList = new ArrayList<TreeNode<WebElement>>(headingTree.values());
 		//Iterator<Entry<Integer, TreeNode<WebElement>>> it = (Iterator<Entry<Integer, TreeNode<WebElement>>>) headingTree.entrySet().iterator();
 		
@@ -451,8 +456,7 @@ public class HeadingsAndLabels extends Check {
 				duplicates.add(uniqueAttrs.get(attrValue));
 			}
 		}
-		
-		//mark all duplicates
+
 		if (duplicatesFound > 0) {
 			Iterator<WebElement> failIt = duplicates.iterator();
 			while (failIt.hasNext()) {
@@ -492,22 +496,36 @@ public class HeadingsAndLabels extends Check {
 				duplicateTexts.add(uniqueStrings.get(ele_i.getAttribute("textContent")));
 			}
 		}
+		
+		System.out.println("Reached marking stage");
+		System.out.println("Size of eleList is " + eleList.size());
+		//mark all duplicates
 		if (duplicatesFound > 0) {
 			//mark all the elements as duplicates.
 			Iterator<WebElement> failIt = duplicateTexts.iterator();
 			while (failIt.hasNext()) {
+				System.out.println("Marking failure");
 				WebElement dupl = failIt.next();
 				addFlagToElement(markers, Marker.MARKER_ERROR, dupl, errorMsg, Result.ERROR);
+
 			}
 			eleList.removeAll(duplicateTexts);
 			Iterator<WebElement> succIt = eleList.iterator();
 			while (succIt.hasNext()) {
+				System.out.println("Marking success");
 				WebElement passEle = succIt.next();
 				addFlagToElement(markers, Marker.MARKER_SUCCESS, passEle, successMsg, Result.SUCCESS);
+
 			}
 			return false;
 		}
 		//else:
+		Iterator<WebElement> successIt = eleList.iterator();
+		while (successIt.hasNext()) {
+			System.out.println("Marking success");
+			WebElement passEle = successIt.next();
+			addFlagToElement(markers, Marker.MARKER_SUCCESS, passEle, successMsg, Result.SUCCESS);
+		}
 		return true;
 	}
 	
@@ -517,24 +535,24 @@ public class HeadingsAndLabels extends Check {
 		
 	}
 
-	public void getTests() { //template
-		String pass1 = "<h1>My Pass Heading</h1>";
-		Result[] expectedPass1 = { Result.SUCCESS, Result.error5_bad, Result.error3 };
-		this.addNewTest(pass1, expectedPass1);
-	}
-	@Override
-	public String[] getHTMLPass() {
-		return new String[] {
-			
-			"<h1>My Pass Heading</h1>",
-			"<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>",
-			"<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>\n"
-					+ "<h1>My-Diff Pass Heading</h1>\n<h2>My Pass Heading</h2>",
-			//one label 
-			"<label for=\"request_subject\">Subject</label>\n"
-				+ "<input type=\"text\"  id=\"request_subject\">",
-			//matching labels, but one is inside a fieldset with a <legend>
-			"<label for=\"size\">Red</label>\n"
+	
+	public void setupTests() {
+		this.tests.add(new Test("<h1>My Pass Heading</h1>", 
+				new ResultSet[] {Result.SUCCESS}));
+		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>", 
+				new ResultSet[] {Result.SUCCESS}));
+		
+		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>\n"
+				+ "<h1>My-Diff Pass Heading</h1>\n<h2>My Pass Heading</h2>", 
+				new ResultSet[] {Result.SUCCESS}));
+		
+		//using one label:
+		this.tests.add(new Test("<label for=\"request_subject\">Subject</label>\n"
+				+ "<input type=\"text\"  id=\"request_subject\">", 
+				new ResultSet[] {Result.SUCCESS, Result.WARNING_LABEL_GENERAL}));
+		
+		//matching labels, but one is inside a fieldset with a <legend>
+		this.tests.add(new Test("<label for=\"size\">Red</label>\n"
 				+ "<input type=\"text\"  id=\"size\">\n"
 				+ "<fieldset>\n <legend>Choose colour of car</legend>\n"
 				+ "<label for=\"b\">Blue</label>\n"
@@ -543,16 +561,19 @@ public class HeadingsAndLabels extends Check {
 				+ "<input id =\"b\" type=\"checkbox\"Blue>\n"
 				+ "<input id=\"g\" type=\"checkbox\"Green>\n"
 				+ "<input id=\"r\" type=\"checkbox\"Red>\n"
-				+ "</fieldset>",
-			//select with no duplicates
-			
-			"<select>\n"
+				+ "</fieldset>", 
+				new ResultSet[] {Result.SUCCESS, Result.WARNING_LABEL_GENERAL}));
+
+		//select with no duplicates
+		this.tests.add(new Test("<select>\n"
 				+ "<option>A</option>\n"
 				+ "<option>B</option<\n>"
 				+ "<option>C</option>\n"
 				+ "</select>",
-			//select with duplicates, but optgroups make them unique.
-			"<select>\n"
+				new ResultSet[] {Result.SUCCESS, Result.WARNING_LABEL_GENERAL}));
+		
+		//select with duplicates, but optgroups make them unique.
+		this.tests.add(new Test("<select>\n"
 				+ "<optgroup label=\"German\">"
 				+ "<option>A</option>\n"
 				+ "<option>B</option>\n"
@@ -561,44 +582,56 @@ public class HeadingsAndLabels extends Check {
 				+ "<option>A</option>\n"
 				+ "<option>B</option>\n"
 				+ "</optgroup>\n"
-				+ "</select>",
-		};
-	}
+				+ "</select>", 
+				new ResultSet[] {Result.SUCCESS, Result.WARNING_LABEL_GENERAL}));
 
-	@Override
-	public String[] getHTMLFail() {
-		return new String[] {
-			"<h1>My Fail Heading</h1>\n<h1>My Fail Heading</h1>",
-			"<h1>My Fail Heading</h1>\n<h2>My Pass Heading</h2>\n<h1>My Fail Heading</h1>",
-			"<h1>My Pass Heading</h1>\n<h2>My Fail Heading</h2>\n<h2>My Fail Heading</h2>",
-			"<h1>Cool</h1>\n<h2>NotVeryCool</h2>\n<h3>Bewildering</h3>\n<h3>Bewildering</h3>",
-			"<h1>Cool</h1>\n<h1>Not cool</h1>\n<h1>Cool</h1>",
-			"<h1>A</h1>\n<h2>B</h2>\n<h3>C</h3>\n<h1>A</h1>",
-			//duplicate labels:
-			" <label for=\"request_subject\">Duplicate Label</label>\r\n"
-					+ "<input type=\"text\" id=\"request_subject\">\n"
-					+ "<label for=\"request_duplicate\">Duplicate Label</label>\r\n"
-					+ "<input type=\"text\" id=\"request_duplicate\">",
-			//duplicate labels from different origins
-			" <label for=\"request_subject\">Duplicate Label</label>\r\n"
-					+ "<input type=\"text\" id=\"request_subject\">\n"
-					+ "<input type=\"text\" id=\"other\" aria-label=\"Duplicate Label\">",
-			//duplicate two labels
-			"<p id =\"long_desc1\">\"There are many options to input into this form\"</p>\n"
+		this.tests.add(new Test("<h1>My Fail Heading</h1>\n<h1>My Fail Heading</h1>", 
+				new ResultSet[] {Result.ERROR}));
+		this.tests.add(new Test("<h1>My Fail Heading</h1>\n<h2>My Pass Heading</h2>\n<h1>My Fail Heading</h1>", 
+				new ResultSet[] {Result.ERROR}));
+		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h2>My Fail Heading</h2>\n<h2>My Fail Heading</h2>", 
+				new ResultSet[] {Result.ERROR}));
+		this.tests.add(new Test("<h1>Cool</h1>\n<h2>NotVeryCool</h2>\n<h3>Bewildering</h3>\n<h3>Bewildering</h3>", 
+				new ResultSet[] {Result.ERROR}));
+		this.tests.add(new Test("<h1>Cool</h1>\n<h1>Not cool</h1>\n<h1>Cool</h1>", 
+				new ResultSet[] {Result.ERROR}));
+		this.tests.add(new Test("<h1>A</h1>\n<h2>B</h2>\n<h3>C</h3>\n<h1>A</h1>", 
+				new ResultSet[] {Result.ERROR}));
+		
+		//duplicate labels:
+		this.tests.add(new Test(" <label for=\"request_subject\">Duplicate Label</label>\r\n"
+				+ "<input type=\"text\" id=\"request_subject\">\n"
+				+ "<label for=\"request_duplicate\">Duplicate Label</label>\r\n"
+				+ "<input type=\"text\" id=\"request_duplicate\">", 
+				new ResultSet[] {Result.ERROR, Result.WARNING_LABEL_GENERAL}));
+		
+		//duplicate labels from different origins
+		this.tests.add(new Test(" <label for=\"request_subject\">Duplicate Label</label>\r\n"
+				+ "<input type=\"text\" id=\"request_subject\">\n"
+				+ "<input type=\"text\" id=\"other\" aria-label=\"Duplicate Label\">", 
+				new ResultSet[] {Result.ERROR, Result.WARNING_LABEL_GENERAL}));
+		
+		//duplicate two labels
+		this.tests.add(new Test("<p id =\"long_desc1\">\"There are many options to input into this form\"</p>\n"
 				+ "<p id=\"long_desc2\">\"There are many options to input into this form\"</p>\n"
 				+ "<input id=\"a\" type=\"button\" aria-label=\"Default\" aria-describedby=\"long_desc1\">\n"
-				+ "<input id=\"b\" type=\"button\" aria-label=\"Default\" aria-labelledby=\"long_desc2\">",
-			//select with duplicate options (optgroup with no labels doesn't help)
-			"<select>\n"
+				+ "<input id=\"b\" type=\"button\" aria-label=\"Default\" aria-labelledby=\"long_desc2\">", 
+				new ResultSet[] {Result.ERROR, Result.WARNING_LABEL_GENERAL}));
+		
+		//select with duplicate options (optgroup with no labels doesn't help)
+		this.tests.add(new Test("<select>\n"
 				+ "<option>A</option>"
 				+ "<option>B</option>"
 				+ "<optgroup>"
 				+ "<option>A</option>"
-				+ "</select>",
-			//only using title as primary label
-			"<textarea title=\"My Fancy Title\"</textarea>",
+				+ "</select>", 
+				new ResultSet[] {Result.ERROR, Result.WARNING_LABEL_GENERAL}));
 		
-		};
+		//only using title as primary label
+		this.tests.add(new Test("<textarea title=\"My Fancy Title\"</textarea>", new ResultSet[] {Result.WARNING_SRS_TITLE_ONLY}));
+
 	}
+	
+
 
 }

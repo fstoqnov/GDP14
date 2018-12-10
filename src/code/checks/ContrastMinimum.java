@@ -9,6 +9,7 @@ import org.openqa.selenium.WebElement;
 
 import code.Marker;
 import code.interfaces.SeleniumInterface;
+import tests.Test;
 
 public class ContrastMinimum extends Check {
 
@@ -19,7 +20,7 @@ public class ContrastMinimum extends Check {
 	private static String SUCCESS_CONTRAST() { return "contrast ratio adequate for font size and weight";}
 	private static String WARNING_SRS_INADEQUATE_CONTRAST(String contrastString, double requiredRatio) { return "contrast ratio inadequate (" + contrastString + "). Should be " + requiredRatio; }
 
-	private static enum Result {
+	private static enum Result implements ResultSet {
 		ERROR,
 		SUCCESS,
 		WARNING_SRS_INADEQUATE_CONTRAST
@@ -65,24 +66,18 @@ public class ContrastMinimum extends Check {
 		// TODO Auto-generated method stub
 
 	}
+	
+	public void setupTests() {
+		this.tests.add(new Test("<div style=\"background:black; color:white\">Test text</div>", new ResultSet[] {Result.SUCCESS}));
+		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:white\">Test text</div></div>", new ResultSet[] {Result.SUCCESS}));
+		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:black; display:none\">Test text</div></div>", new ResultSet[] {Result.SUCCESS}));
+		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:black\"></div></div>", new ResultSet[] {Result.SUCCESS}));
+		this.tests.add(new Test("<div>Test text</div>", new ResultSet[] {Result.SUCCESS}));
 
-	@Override
-	public String[] getHTMLPass() {
-		return new String[] {
-				"<div style=\"background:black; color:white\">Test text</div>",
-				"<div style=\"background:black\"><div style=\"color:white\">Test text</div></div>",
-				"<div style=\"background:black\"><div style=\"color:black; display:none\">Test text</div></div>",
-				"<div style=\"background:black\"><div style=\"color:black\"></div></div>",
-				"<div>Test text</div>"
-		};
-	}
+		
+		this.tests.add(new Test("<div style=\"background:red; color:orange\">Test text</div>", new ResultSet[] {Result.ERROR}));
+		this.tests.add(new Test("<div style=\"background:red\"><div style=\"color:orange\">Test text</div></div>", new ResultSet[] {Result.ERROR}));
 
-	@Override
-	public String[] getHTMLFail() {
-		return new String[] {
-				"<div style=\"background:red; color:orange\">Test text</div>",
-				"<div style=\"background:red\"><div style=\"color:orange\">Test text</div></div>"
-		};
 	}
 
 	public double calculateContrastRatio(WebElement element, SeleniumInterface inter) {

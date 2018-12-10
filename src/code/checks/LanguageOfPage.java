@@ -9,6 +9,7 @@ import org.openqa.selenium.WebElement;
 
 import code.Marker;
 import code.interfaces.SeleniumInterface;
+import tests.Test;
 
 public class LanguageOfPage extends Check {
 	
@@ -18,7 +19,7 @@ public class LanguageOfPage extends Check {
 	private static String ERR_INVALID_LANG(String givenLang) {return "Found Invalid lang: " + givenLang;}
 	private static String SUCC_LANG() { return "Found valid lang"; }
 	
-	private static enum Result {
+	private static enum Result implements ResultSet {
 		ERROR,
 		SUCCESS
 	}
@@ -45,20 +46,21 @@ public class LanguageOfPage extends Check {
 		}
 		
 	}
+	
 
-	@Override
-	public String[] getHTMLPass() {
-		return new String[] {
-				"<html lang=\"en-GB\"></html>"
-		};
-	}
+	public void setupTests() {
+		String pass1 = "<html lang=\"en-GB\"></html>";
+		ResultSet[] expectedPass1 = {Result.SUCCESS};
+		this.tests.add(new Test(pass1, expectedPass1));
+		
+		String fail1 = "<html lang=\"not-included\"></html>";
+		ResultSet[] expectedFail1 = {Result.ERROR};
+		this.tests.add(new Test(fail1, expectedFail1));
+		
+		String fail2 = "<html>I have no lang tag specified</html>";
+		ResultSet[] expectedFail2 = {Result.ERROR};
+		this.tests.add(new Test(fail2, expectedFail2));
 
-	@Override
-	public String[] getHTMLFail() {
-		return new String[] {
-				"<html lang=\"not-included\"></html>",
-				"<html>I have no lang tag specified</html>"
-		};
 	}
 
 	@Override

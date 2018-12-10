@@ -11,12 +11,20 @@ import code.interfaces.SeleniumInterface;
 
 public class NonTextContent extends Check {
 
-	private static final String WARNING_CHECK_DECORATIVE = "Non-Text element is marked up as if it is purely decorative - there is no accessible label. Check that this is accurate";
-	private static final String WARNING_HAS_LABEL = "Non-Text element has been marked up with a label. Check that this label is sufficiently detailed.";
-	private static final String ERROR_NO_LABEL = "Non-Text element has no accessible label, but is not hidden to screen-readers.";
-	private static final String WARNING_SRS_LABEL_LENGTH = "Label length is longer than 100 - try to keep accessible labels short.";
-	private static final String WARNING_DESCRIPTION = "Non-Text element references a long description. Ensure that this is suitable for describing the image";
+	private static final String WARNING_CHECK_DECORATIVE() {return "Non-Text element is marked up as if it is purely decorative - there is no accessible label. Check that this is accurate"; }
+	private static final String WARNING_HAS_LABEL(String label) { return "Non-Text element has been marked up with a label. Check that this label is sufficiently detailed. Label found: " + label; }
+	private static final String ERR_NO_LABEL() { return "Non-Text element has no accessible label, but is not hidden to screen-readers."; }
+	private static final String WARNING_SRS_LABEL_LENGTH(String label) { return "Label length is longer than 100 - try to keep accessible labels short. Label found: " + label; }
+	private static final String WARNING_DESCRIPTION(String description) { return "Non-Text element references a long description. Ensure that this is suitable for describing the image - Description found: " + description; }
 	
+	private static enum Result implements ResultSet {
+		ERROR,
+		SUCCESS,
+		WARNING_CHECK_DECORATIVE,
+		WARNING_HAS_LABEL,
+		WARNING_SRS_LABEL_LENGTH,
+		WARNING_DESCRIPTION
+	}
 	public NonTextContent() {
 		super("Criterion 1.1.1 Non-Text Content");
 	}
@@ -131,7 +139,12 @@ public class NonTextContent extends Check {
 		//check the alt tag and the 'longdesc' tag, which are unique to these elements, then pass it along
 		
 		if (altEles.contains(ele)) {
-			ntl.setAlt(ele.getAttribute("alt"));
+			String altTag = ele.getAttribute("alt");
+			if (altTag.equals("")) {
+				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_CHECK_DECORATIVE(), Result.WARNING_CHECK_DECORATIVE);
+				return;
+			}
+			ntl.setAlt(ele.getAttribute(altTag));
 		}
 		/*This doesn't work due to a strange quirk either of Selenium, or ChromeDriver
 		 * All img elements don't show up as having an 'alt' attribute when searching for it, but
@@ -177,7 +190,7 @@ public class NonTextContent extends Check {
 			if (eleRole.equals("presentation")) {
 				System.out.println("DECORATIVE role");
 				//this is a sign for a decoration image - accessible tools will ignore this element.
-				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_CHECK_DECORATIVE);
+				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_CHECK_DECORATIVE(), Result.WARNING_CHECK_DECORATIVE);
 				return;
 			}
 		}
@@ -244,18 +257,21 @@ public class NonTextContent extends Check {
 			System.out.println("description!");
 			ArrayList<String> descriptions = ntl.getDescriptions();
 			for (int i=0; i < descriptions.size(); i++) {
-				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_DESCRIPTION + ": " + descriptions.get(i));
+				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_DESCRIPTION(descriptions.get(i)), Result.WARNING_DESCRIPTION);
 			}
 		}
 		else {
 			System.out.println("no labels!");
-			addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERROR_NO_LABEL);
+			addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_NO_LABEL(), Result.ERROR);
 		}
 	}
 	
 	private void checkLabel(List<Marker> markers, WebElement ele, String label, SeleniumInterface inter) {
 		if (label.length() > 100) {
-			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, ele, WARNING_SRS_LABEL_LENGTH + ": " + label);
+			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, ele, WARNING_SRS_LABEL_LENGTH(label), Result.WARNING_SRS_LABEL_LENGTH);
+		}
+		else {
+			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_HAS_LABEL(label), Result.WARNING_HAS_LABEL);
 		}
 	}
 	

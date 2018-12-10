@@ -1,5 +1,9 @@
 package tests;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
+import code.checks.ResultSet;
 import tests.checks.CheckList;
 import tests.interfaces.DatabaseInterface;
 import tests.interfaces.SeleniumInterface;
@@ -43,32 +47,32 @@ public class RunTests {
 		return correct;
 	}
 
-	public static boolean test(String testName, long expectedValue, long testValue) {
+	/*public static boolean test(String testName, long expectedValue, long testValue) {
 		return test(testName, expectedValue + "", testValue + "");
-	}
+	}*/
 	
-	public static boolean test(String testName, int expectedValue, int testValue) {
+	/*public static boolean test(String testName, int expectedValue, int testValue) {
 		return test(testName, expectedValue + "", testValue + "");
-	}
+	}*/
 	
-	public static boolean test(String testName, String expectedValue, String testValue) {
-		boolean result;
-		if (expectedValue == null || testValue == null) {
-			result = expectedValue == null && testValue == null;
-		} else {
-			result = expectedValue.equals(testValue);
+	public static boolean test(String testName, ResultSet[] expectedResults, ArrayList<ResultSet> receivedResults) {
+		boolean result = true;
+		
+		HashSet<ResultSet> setRecResults = new HashSet<ResultSet>(receivedResults);
+		HashSet<ResultSet> setExpResults = new HashSet<ResultSet>();
+		for (int i=0; i < expectedResults.length; i++) {
+			setExpResults.add(expectedResults[i]);
 		}
-		if (result) {
-			countPass++;
-			System.out.println("Test: " + testName + " passed");
-		} else {
+		if (!setRecResults.equals(setExpResults)) {
+			result = false;
 			countFailure++;
-			System.err.println("Test: " + testName + " failed. Expected: '" + expectedValue + "', Received: '" + testValue + "'");
+			System.err.println("Test : " + testName + " failed. Expected: set{" + setExpResults + "}, Received: set{" + setRecResults + "}");
 		}
+
 		return result;
 	}
 
-	public static boolean test(String testName, boolean expectedValue, boolean testValue) {
+	/*public static boolean test(String testName, boolean expectedValue, boolean testValue) {
 		return test(testName, String.valueOf(expectedValue), String.valueOf(testValue));
-	}
+	}*/
 }
