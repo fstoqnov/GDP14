@@ -24,6 +24,12 @@ public class LabelsOrInstructions extends Check {
 	private static String ERR_TITLE_ONLY() { return "Primary label for this element is a 'title' attribute, which is not always accessible to all users";}
 	
 	private static String WARNING_RECAPTCHA_TEXTAREA() { return "Recaptcha is not WCAG2.1 compliant - this <textarea> element has no accessible label";}
+	
+	private static enum Result {
+		ERROR,
+		SUCCESS,
+		WARNING_RECAPTCHA_TEXTAREA
+	}
 	public LabelsOrInstructions() {
 		super("Criterion 3.3.2 Labels or Instructions");
 	}
@@ -120,7 +126,7 @@ public class LabelsOrInstructions extends Check {
 		for (int i = 0;i < optionEles.size(); i++) {
 			String optionText = optionEles.get(i).getAttribute("textContent");
 			if (optionText.equals("")) {
-				addFlagToElement(markers, Marker.MARKER_ERROR, optionEles.get(i), ERR_OPTION_NO_TEXT);
+				addFlagToElement(markers, Marker.MARKER_ERROR, optionEles.get(i), ERR_OPTION_NO_TEXT(), Result.ERROR);
 			}
 		}
 		
@@ -183,12 +189,12 @@ public class LabelsOrInstructions extends Check {
 					//can't use getText() as that Fails with 'hidden' element in css, in cases where the text should still be accessible.
 				}
 				else {
-					addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_LABELLED_BY_MISSING);
+					addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_LABELLED_BY_MISSING(), Result.ERROR);
 			
 				}
 			}
 			if (labelIDs.length == 0) {
-				addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_LABELLED_BY_EMPTY);
+				addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_LABELLED_BY_EMPTY(), Result.ERROR);
 			}
 		}
 			
@@ -234,11 +240,11 @@ public class LabelsOrInstructions extends Check {
 					eleLabel.addLabel(descElement.getAttribute("textContent")); 
 				}
 				else {
-					addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_DESCRIBED_BY_MISSING);
+					addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_DESCRIBED_BY_MISSING(), Result.ERROR);
 				}
 			}
 			if (descIDs.length == 0) {
-				addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_DESCRIBED_BY_EMPTY);
+				addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_DESCRIBED_BY_EMPTY(), Result.ERROR);
 			}
 		}
 		
@@ -252,7 +258,7 @@ public class LabelsOrInstructions extends Check {
 			if (newLabelsSize == 1 && prevLabelsSize == 0) {
 				//if the 'label' is blank ("") then no label is added.
 				//this tests for that case, and if not: this is the primary label so raises the error.
-				addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_TITLE_ONLY);
+				addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_TITLE_ONLY(), Result.ERROR);
 
 			}
 
@@ -260,7 +266,7 @@ public class LabelsOrInstructions extends Check {
 
 		
 		if (eleLabel.getLabelsSize() == 0) {
-			addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_LABEL_MISSING);
+			addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_LABEL_MISSING(), Result.ERROR);
 
 		}
 	}

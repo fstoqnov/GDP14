@@ -14,6 +14,15 @@ public class LanguageOfPage extends Check {
 	
 	private ArrayList<String> lang;
 	
+	private static String ERR_NO_LANG() {return "No lang attribute";}
+	private static String ERR_INVALID_LANG(String givenLang) {return "Found Invalid lang: " + givenLang;}
+	private static String SUCC_LANG() { return "Found valid lang"; }
+	
+	private static enum Result {
+		ERROR,
+		SUCCESS
+	}
+	
 	public LanguageOfPage() {
 		super("Criterion 3.1.1 Language of Page");
 	}
@@ -24,13 +33,13 @@ public class LanguageOfPage extends Check {
 		for (int i = 0; i < doc.length; i ++) {
 			String docLang = doc[i].getAttribute("lang");
 			if(docLang == null) {
-				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i]);
+				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i], ERR_NO_LANG(), Result.ERROR);
 				System.out.println("No lang attribute");
 			} else if(!lang.contains(docLang)){
-				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i]);
+				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i], ERR_INVALID_LANG(docLang), Result.ERROR);
 				System.out.println("Invalid Lang: " + docLang);
 			} else {
-				addFlagToElement(markers, Marker.MARKER_SUCCESS, doc[i]);
+				addFlagToElement(markers, Marker.MARKER_SUCCESS, doc[i], SUCC_LANG(), Result.SUCCESS);
 				System.out.println("Succesful lang!");
 			}
 		}

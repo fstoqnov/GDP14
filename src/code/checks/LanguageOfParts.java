@@ -15,6 +15,8 @@ import code.interfaces.SeleniumInterface;
 
 public class LanguageOfParts extends Check {
 	
+	private static String SUCC_CORRECT_LANGUAGES_FOUND() {return "Correct language attributes are found on this page";}
+	prviate static String ERR_
 	public LanguageOfParts() {
 		super("Criterion 3.1.2 Language of Parts");
 	}
@@ -49,6 +51,7 @@ public class LanguageOfParts extends Check {
 		}
 		
 		ArrayList<String> languageTagsFound = new ArrayList<String>(langTags);
+		
 		languageTagsFound.remove(0);
 		
 				
