@@ -190,7 +190,7 @@ public class SeleniumInterface {
 
 	//selects all children with a specified <* attrName=attrVal></*>
 	public WebElement[] getChildrenWithAttribute(WebElement ele, String attrName, String attrVal) {
-		List<WebElement> elements = ele.findElements(By.xpath("//*[@" + attrName + "='" + attrVal + "']"));
+		List<WebElement> elements = ele.findElements(By.xpath(".//*[@" + attrName + "='" + attrVal + "']"));
 		WebElement[] e = new WebElement[elements.size()];
 		for (int i = 0; i < elements.size(); i ++) {
 			e[i] = elements.get(i);
@@ -200,7 +200,7 @@ public class SeleniumInterface {
 	
 	//selects all children with a specified <tagName attrName=attrVal></tagName>
 	public WebElement[] getChildrenWithAttributeAndTag(WebElement ele, String attrName, String attrVal, String tagName) {
-		List<WebElement> elements = ele.findElements(By.xpath("//" + tagName + "[@" + attrName + "='" + attrVal + "']"));
+		List<WebElement> elements = ele.findElements(By.xpath(".//" + tagName + "[@" + attrName + "='" + attrVal + "']"));
 		WebElement[] e = new WebElement[elements.size()];
 		for (int i = 0; i < elements.size(); i ++) {
 			e[i] = elements.get(i);
