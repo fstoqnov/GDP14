@@ -22,7 +22,7 @@ public class InfoAndRelationships extends Check {
 	private static String SUCC_HEADING_NEST() {return "Correctly nested heading";}
 	private static String ERR_HEADING_NEST(int initialLevel, int newLevel) {return "Incorrectly nested heading - jumped from " + initialLevel + " to " + newLevel;}
 
-	private static enum Result implements ResultSet{
+	private static enum ResultType implements Result{
 		ERROR,
 		SUCCESS,
 	}
@@ -50,19 +50,19 @@ public class InfoAndRelationships extends Check {
 			
 			if (headingLevel == level) {
 				//this heading element is correctly nested
-				addFlagToElement(markers, Marker.MARKER_SUCCESS, headingEle, SUCC_HEADING_NEST(), Result.SUCCESS);
+				addFlagToElement(markers, Marker.MARKER_SUCCESS, headingEle, SUCC_HEADING_NEST(), ResultType.SUCCESS);
 				sharedIndex.increment();
 			}
 			else if (headingLevel > level) {
 				if (headingLevel-level ==1) {
 					//correctly nested new heading level
-					addFlagToElement(markers, Marker.MARKER_SUCCESS, headingEle, SUCC_HEADING_NEST(), Result.SUCCESS);
+					addFlagToElement(markers, Marker.MARKER_SUCCESS, headingEle, SUCC_HEADING_NEST(), ResultType.SUCCESS);
 					sharedIndex.increment();
 					checkHeadingNestingAtLevel(headingLevel, headingList, sharedIndex, markers, inter);
 				}
 				else {
 					//a jump of more than one in heading level is invalid.
-					addFlagToElement(markers, Marker.MARKER_ERROR, headingEle, ERR_HEADING_NEST(level, headingLevel), Result.ERROR);
+					addFlagToElement(markers, Marker.MARKER_ERROR, headingEle, ERR_HEADING_NEST(level, headingLevel), ResultType.ERROR);
 					sharedIndex.increment();
 					checkHeadingNestingAtLevel(headingLevel, headingList, sharedIndex, markers, inter);
 				}
@@ -83,13 +83,13 @@ public class InfoAndRelationships extends Check {
 	}
 
 	public void setupTests() {
-		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>\n<h3>My Pass Heading</h3>", new ResultSet[] {Result.SUCCESS}));
-		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>\n<h3>My Pass Heading</h3>\n<h1>Another Pass Heading</h1>", new ResultSet[] {Result.SUCCESS}));
+		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>\n<h3>My Pass Heading</h3>", new Result[] {ResultType.SUCCESS}));
+		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>\n<h3>My Pass Heading</h3>\n<h1>Another Pass Heading</h1>", new Result[] {ResultType.SUCCESS}));
 
 
 		
-		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h3>My Fail Heading</h3>", new ResultSet[] {Result.ERROR, Result.SUCCESS}));
-		this.tests.add(new Test("<h2>My Fail Heading</h2>", new ResultSet[] {Result.ERROR}));
+		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h3>My Fail Heading</h3>", new Result[] {ResultType.ERROR, ResultType.SUCCESS}));
+		this.tests.add(new Test("<h2>My Fail Heading</h2>", new Result[] {ResultType.ERROR}));
 
 	}
 }

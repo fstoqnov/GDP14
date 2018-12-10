@@ -13,7 +13,7 @@ public class OnInput extends Check {
 	private static final String WARNING_SRS_NO_SUBMIT() { return "Ensure that <form> elements do not initiate a 'change-of-context without the user's knowledge - this form has no submit button. This may also make it unclear for the user how to submit the values entered in the form fields."; }
 	private static final String WARNING_SUBMIT_PRESENT() { return "Ensure that <form> elements other than explicit submit buttons do not initiate a 'change-of-context' for the user"; }
 	
-	private static enum Result implements ResultSet {
+	private static enum ResultType implements Result {
 		ERROR,
 		SUCCESS,
 		WARNING_SRS_NO_SUBMIT,
@@ -39,10 +39,10 @@ public class OnInput extends Check {
 			int formRoleButtonCount = inter.getChildrenWithAttribute(form, "role", "button").length;
 			if (formButtonCount+formInputSubmitCount+formInputButtonCount+formInputImageCount+formRoleButtonCount > 0) {
 				//there is an element that could be a submit button in this element.
-				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, form, WARNING_SUBMIT_PRESENT(), Result.WARNING_SUBMIT_PRESENT);
+				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, form, WARNING_SUBMIT_PRESENT(), ResultType.WARNING_SUBMIT_PRESENT);
 			}
 			else {
-				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, form, WARNING_SRS_NO_SUBMIT(), Result.WARNING_SRS_NO_SUBMIT);
+				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, form, WARNING_SRS_NO_SUBMIT(), ResultType.WARNING_SRS_NO_SUBMIT);
 
 			}
 			
@@ -60,13 +60,13 @@ public class OnInput extends Check {
 	
 	public void setupTests() {
 		//form with input and button
-		this.tests.add(new Test("<form><input type=\"text\"><button type=\"button\">CLICK HERE TO SUBMIT</button></form>", new ResultSet[] {Result.WARNING_SUBMIT_PRESENT}));
+		this.tests.add(new Test("<form><input type=\"text\"><button type=\"button\">CLICK HERE TO SUBMIT</button></form>", new Result[] {ResultType.WARNING_SUBMIT_PRESENT}));
 		//form with no button
-		this.tests.add(new Test("<form><input type=\"text\"></form>", new ResultSet[] {Result.WARNING_SRS_NO_SUBMIT}));
+		this.tests.add(new Test("<form><input type=\"text\"></form>", new Result[] {ResultType.WARNING_SRS_NO_SUBMIT}));
 		
 		//both
 		this.tests.add(new Test("<form><input type=\"text\"></form>\n<form><input type=\"text\"><button type=\"button\">CLICK HERE TO SUBMIT</button></form>", 
-				new ResultSet[] {Result.WARNING_SUBMIT_PRESENT, Result.WARNING_SRS_NO_SUBMIT}));
+				new Result[] {ResultType.WARNING_SUBMIT_PRESENT, ResultType.WARNING_SRS_NO_SUBMIT}));
 
 		
 		

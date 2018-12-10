@@ -13,7 +13,7 @@ public class PageTitled extends Check {
 	private static String ERR_NO_TITLE() { return "Document does not have a title"; }
 	private static String WARNING_TITLE_FOUND(String title) { return "Ensure that this title is a good title for the document. Title found: " + title; }
 	
-	private static enum Result implements ResultSet {
+	private static enum ResultType implements Result {
 		ERROR,
 		SUCCESS,
 		WARNING_TITLE_FOUND
@@ -36,15 +36,15 @@ public class PageTitled extends Check {
 		}
 		
 		if(titleExists == false) {
-			addFlagToElement(markers, Marker.MARKER_ERROR, doc[0], ERR_NO_TITLE(), Result.ERROR); //title not found on the page
+			addFlagToElement(markers, Marker.MARKER_ERROR, doc[0], ERR_NO_TITLE(), ResultType.ERROR); //title not found on the page
 		} else {
-			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, titlehead, WARNING_TITLE_FOUND(titlehead.getText()), Result.WARNING_TITLE_FOUND); //title found at titlehead location, might not be described, can't tell
+			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, titlehead, WARNING_TITLE_FOUND(titlehead.getText()), ResultType.WARNING_TITLE_FOUND); //title found at titlehead location, might not be described, can't tell
 		}							  
 	}
 	
 	public void setupTests() {
-		tests.add(new Test("<html>No Title present in document</html>", new ResultSet[] {Result.ERROR}));
-		tests.add(new Test("<html> <head> <title>Hello everyone</title> </head> <body> wow lots going on today </body> </html>", new ResultSet[] {Result.WARNING_TITLE_FOUND}));
+		tests.add(new Test("<html>No Title present in document</html>", new Result[] {ResultType.ERROR}));
+		tests.add(new Test("<html> <head> <title>Hello everyone</title> </head> <body> wow lots going on today </body> </html>", new Result[] {ResultType.WARNING_TITLE_FOUND}));
 
 	}
 

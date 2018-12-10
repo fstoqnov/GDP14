@@ -28,7 +28,7 @@ public class LabelsOrInstructions extends Check {
 	
 	private static String WARNING_HAS_LABEL() { return "Ensure that this label is sufficient to identify the associated form control field: "; }
 	
-	private static enum Result implements ResultSet {
+	private static enum ResultType implements Result {
 		ERROR,
 		SUCCESS,
 		WARNING_RECAPTCHA_TEXTAREA,
@@ -73,7 +73,7 @@ public class LabelsOrInstructions extends Check {
 			String elementID = textareaEles[i].getAttribute("id");
 			if (elementID != null) {
 				if (elementID.equals("g-recaptcha-response")) {
-					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, textareaEles[i], WARNING_RECAPTCHA_TEXTAREA(), Result.WARNING_RECAPTCHA_TEXTAREA);
+					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, textareaEles[i], WARNING_RECAPTCHA_TEXTAREA(), ResultType.WARNING_RECAPTCHA_TEXTAREA);
 					continue;
 				}
 			}
@@ -131,7 +131,7 @@ public class LabelsOrInstructions extends Check {
 		for (int i = 0;i < optionEles.size(); i++) {
 			String optionText = optionEles.get(i).getAttribute("textContent");
 			if (optionText.equals("")) {
-				addFlagToElement(markers, Marker.MARKER_ERROR, optionEles.get(i), ERR_OPTION_NO_TEXT(), Result.ERROR);
+				addFlagToElement(markers, Marker.MARKER_ERROR, optionEles.get(i), ERR_OPTION_NO_TEXT(), ResultType.ERROR);
 			}
 		}
 		
@@ -194,12 +194,12 @@ public class LabelsOrInstructions extends Check {
 					//can't use getText() as that Fails with 'hidden' element in css, in cases where the text should still be accessible.
 				}
 				else {
-					addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_LABELLED_BY_MISSING(), Result.ERROR);
+					addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_LABELLED_BY_MISSING(), ResultType.ERROR);
 			
 				}
 			}
 			if (labelIDs.length == 0) {
-				addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_LABELLED_BY_EMPTY(), Result.ERROR);
+				addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_LABELLED_BY_EMPTY(), ResultType.ERROR);
 			}
 		}
 			
@@ -245,11 +245,11 @@ public class LabelsOrInstructions extends Check {
 					eleLabel.addLabel(descElement.getAttribute("textContent")); 
 				}
 				else {
-					addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_DESCRIBED_BY_MISSING(), Result.ERROR);
+					addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_DESCRIBED_BY_MISSING(), ResultType.ERROR);
 				}
 			}
 			if (descIDs.length == 0) {
-				addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_DESCRIBED_BY_EMPTY(), Result.ERROR);
+				addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_ARIA_DESCRIBED_BY_EMPTY(), ResultType.ERROR);
 			}
 		}
 		
@@ -263,7 +263,7 @@ public class LabelsOrInstructions extends Check {
 			if (newLabelsSize == 1 && prevLabelsSize == 0) {
 				//if the 'label' is blank ("") then no label is added.
 				//this tests for that case, and if not: this is the primary label so raises the error.
-				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, ele, WARNING_SRS_TITLE_ONLY(), Result.WARNING_SRS_TITLE_ONLY);
+				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, ele, WARNING_SRS_TITLE_ONLY(), ResultType.WARNING_SRS_TITLE_ONLY);
 
 			}
 
@@ -271,30 +271,30 @@ public class LabelsOrInstructions extends Check {
 
 		
 		if (eleLabel.getLabelsSize() == 0) {
-			addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_LABEL_MISSING(), Result.ERROR);
+			addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_LABEL_MISSING(), ResultType.ERROR);
 		}
 		else {
-			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_HAS_LABEL(), Result.WARNING_HAS_LABEL);
+			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_HAS_LABEL(), ResultType.WARNING_HAS_LABEL);
 		}
 	}
 
 	public void setupTests() {
 		//using label 'for='
 		this.tests.add(new Test("<label for=\"inputId\">description</label><input id=\"inputId\">", 
-				new ResultSet[] {Result.WARNING_HAS_LABEL}));
+				new Result[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//aria described by
 		this.tests.add(new Test("<input id=\"inputId\" aria-describedby=\"description\"><div id=\"description\">A quick description</div>", 
-				new ResultSet[] {Result.WARNING_HAS_LABEL}));
+				new Result[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//aria labelled by
 		this.tests.add(new Test("<input id=\"inputId\" aria-labelledby=\"description other\">\n"
 				+ "<div id=\"description\">A quick description</div><span id=\"other\">extended</span>", 
-				new ResultSet[] {Result.WARNING_HAS_LABEL}));
+				new Result[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//aria labelled by hidden - should not make a difference
 		this.tests.add(new Test("<input id=\"inputId\" aria-labelledby=\"description\"><div style=\"display:none\" id=\"description\">A quick description</div>", 
-				new ResultSet[] {Result.WARNING_HAS_LABEL}));
+				new Result[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//using 'aria-label' and an encapsulating <label>., 
 		this.tests.add(new Test("<fieldset><legend>Car Details</legend>\n"
@@ -302,35 +302,35 @@ public class LabelsOrInstructions extends Check {
 				+ "<input type=\"checkbox\" aria-label=\"Ford\"FORD></fieldset>\n"
 				+ "<label>Click when happy with selection\n"
 				+ "<input type=\"submit\">", 
-				new ResultSet[] {Result.WARNING_HAS_LABEL}));
+				new Result[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//one good, one missing
 		this.tests.add(new Test("<form> <input> <label for=\"inputId\">description</label><input id=\"inputId\"> </form>", 
-				new ResultSet[] {Result.ERROR, Result.WARNING_HAS_LABEL}));
+				new Result[] {ResultType.ERROR, ResultType.WARNING_HAS_LABEL}));
 		this.tests.add(new Test("<input>", 
-				new ResultSet[] {Result.ERROR}));
+				new Result[] {ResultType.ERROR}));
 		
 		//aria described by missing
 		this.tests.add(new Test("<input id=\"inputId\" aria-describedby=\"description\">", 
-				new ResultSet[] {Result.ERROR}));
+				new Result[] {ResultType.ERROR}));
 		
 		//aria labelled by missing
 		this.tests.add(new Test("<input id=\"inputId\" aria-labelledby=\"description other\"><div id=\"description\">A quick description</div>", 
-				new ResultSet[] {Result.ERROR, Result.WARNING_HAS_LABEL}));
+				new Result[] {ResultType.ERROR, ResultType.WARNING_HAS_LABEL}));
 		
 		//aria labelled by empty
 		this.tests.add(new Test("<input id=\"inputId\" aria-labelledby=\"\">", 
-				new ResultSet[] {Result.ERROR}));
+				new Result[] {ResultType.ERROR}));
 		
 		//using checkboxes with text, but no accessible label.
 		this.tests.add(new Test("<fieldset><legend>Car Brands</legend>\n"
 				+ "<input type=\"checkbox\"AUDI>\n"
 				+ "<input type=\"checkbox\"FORD></fieldset>", 
-				new ResultSet[] {Result.ERROR}));
+				new Result[] {ResultType.ERROR}));
 		
 		//only label is a 'title' attribute
 		this.tests.add(new Test("<input id=\"inputId\" type=\"text\" title=\"Enter your registration no. here\">", 
-				new ResultSet[] {Result.WARNING_SRS_TITLE_ONLY, Result.WARNING_HAS_LABEL}));
+				new Result[] {ResultType.WARNING_SRS_TITLE_ONLY, ResultType.WARNING_HAS_LABEL}));
 	}
 	
 

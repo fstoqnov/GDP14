@@ -23,7 +23,7 @@ public abstract class Check implements Comparable<Check> {
 		this.setupTests();
 	}
 	
-	ResultSet r;
+	Result r;
 
 	
 	public boolean noFailExecuteCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
@@ -36,8 +36,8 @@ public abstract class Check implements Comparable<Check> {
 		return true;
 	}
 	//runs the check on the url content and the selenium interface to the page. Adds markers to the checklist marker page
-	public ArrayList<ResultSet> executeCheck(String urlContent, List<Marker> m, SeleniumInterface inter) {
-		ArrayList<ResultSet> resultsReceived = new ArrayList<ResultSet>();
+	public ArrayList<Result> executeCheck(String urlContent, List<Marker> m, SeleniumInterface inter) {
+		ArrayList<Result> resultsReceived = new ArrayList<Result>();
 		List<Marker> markers = new ArrayList<Marker>();
 		runCheck(urlContent, markers, inter);
 		boolean passed = true;
@@ -50,7 +50,7 @@ public abstract class Check implements Comparable<Check> {
 	}
 
 	//runs the check on the url content and the selenium interface to the page. Adds markers to the checklist marker page
-	public ArrayList<ResultSet> executeCheck(String urlContent, SeleniumInterface inter) {
+	public ArrayList<Result> executeCheck(String urlContent, SeleniumInterface inter) {
 		return executeCheck(urlContent, new ArrayList<Marker>(), inter);
 	}
 
@@ -76,7 +76,7 @@ public abstract class Check implements Comparable<Check> {
 		return this.tests;
 	}
 
-	public void addFlagToElement(List<Marker> markers, int type, WebElement ele, String desc, ResultSet result) {
+	public void addFlagToElement(List<Marker> markers, int type, WebElement ele, String desc, Result result) {
 		markers.add(new Marker(desc, type, this, ele, result));
 	}
 	

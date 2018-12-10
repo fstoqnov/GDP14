@@ -18,7 +18,7 @@ public class NonTextContent extends Check {
 	private static final String WARNING_SRS_LABEL_LENGTH(String label) { return "Label length is longer than 100 - try to keep accessible labels short. Label found: " + label; }
 	private static final String WARNING_DESCRIPTION(String description) { return "Non-Text element references a long description. Ensure that this is suitable for describing the image - Description found: " + description; }
 	
-	private static enum Result implements ResultSet {
+	private static enum ResultType implements Result {
 		ERROR,
 		SUCCESS,
 		WARNING_CHECK_DECORATIVE,
@@ -141,7 +141,7 @@ public class NonTextContent extends Check {
 		if (altEles.contains(ele)) {
 			String altTag = ele.getAttribute("alt");
 			if (altTag.equals("")) {
-				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_CHECK_DECORATIVE(), Result.WARNING_CHECK_DECORATIVE);
+				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_CHECK_DECORATIVE(), ResultType.WARNING_CHECK_DECORATIVE);
 				return;
 			}
 			ntl.setAlt(altTag);
@@ -188,7 +188,7 @@ public class NonTextContent extends Check {
 		if (eleRole != null) {
 			if (eleRole.equals("presentation")) {
 				//this is a sign for a decoration image - accessible tools will ignore this element.
-				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_CHECK_DECORATIVE(), Result.WARNING_CHECK_DECORATIVE);
+				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_CHECK_DECORATIVE(), ResultType.WARNING_CHECK_DECORATIVE);
 				return;
 			}
 		}
@@ -251,22 +251,22 @@ public class NonTextContent extends Check {
 		else if (ntl.hasDescriptions()) {
 			ArrayList<String> descriptions = ntl.getDescriptions();
 			for (int i=0; i < descriptions.size(); i++) {
-				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_DESCRIPTION(descriptions.get(i)), Result.WARNING_DESCRIPTION);
+				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_DESCRIPTION(descriptions.get(i)), ResultType.WARNING_DESCRIPTION);
 			}
 		}
 		else {
-			addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_NO_LABEL(), Result.ERROR);
+			addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_NO_LABEL(), ResultType.ERROR);
 		}
 	}
 	
 	private void checkLabel(List<Marker> markers, WebElement ele, String label, SeleniumInterface inter) {
 		if (label.length() > 100) {
-			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, ele, WARNING_SRS_LABEL_LENGTH(label), Result.WARNING_SRS_LABEL_LENGTH);
-			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_HAS_LABEL(label), Result.WARNING_HAS_LABEL);
+			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, ele, WARNING_SRS_LABEL_LENGTH(label), ResultType.WARNING_SRS_LABEL_LENGTH);
+			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_HAS_LABEL(label), ResultType.WARNING_HAS_LABEL);
 
 		}
 		else {
-			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_HAS_LABEL(label), Result.WARNING_HAS_LABEL);
+			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_HAS_LABEL(label), ResultType.WARNING_HAS_LABEL);
 		}
 	}
 	
@@ -282,20 +282,20 @@ public class NonTextContent extends Check {
 		
 		//using alt
 		this.tests.add(new Test("<img src=\"smiley.gif\" alt=\"Smiley face\">", 
-				new ResultSet[] {Result.WARNING_HAS_LABEL}));
+				new Result[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//using title
 		this.tests.add(new Test("<img src=\"smiley.gif\" title=\"Smiley face\">", 
-				new ResultSet[] {Result.WARNING_HAS_LABEL}));
+				new Result[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//using aria-labelledby
 		this.tests.add(new Test("<p id=\"mydesc\">DescriptionRightHere</p>\n<p id=\"betterdesc\">There are many facets to a good accessible description</p>\n"
 				+ "<img src=\"smiley.gif\" aria-labelledby=\"mydesc betterdesc\">", 
-				new ResultSet[] {Result.WARNING_HAS_LABEL}));
+				new Result[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//using aria-describedby
 		this.tests.add(new Test("<img src=\"smiley.gif\" aria-describedby=\"Somethingexternal.com/my_image_label\">", 
-				new ResultSet[] {Result.WARNING_DESCRIPTION}));
+				new Result[] {ResultType.WARNING_DESCRIPTION}));
 		
 		//using <area> and alt
 		this.tests.add(new Test("<img src=\"planets.gif\" width=\"145\" height=\"126\" alt=\"Planets\"\r\n" + 
@@ -304,29 +304,29 @@ public class NonTextContent extends Check {
 				"<map name=\"planetmap\">\r\n" + 
 				"  <area shape=\"rect\" coords=\"0,0,82,126\" href=\"sun.htm\" alt=\"Sun\">\r\n" + 
 				"</map>", 
-				new ResultSet[] {Result.WARNING_HAS_LABEL}));
+				new Result[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//using longdesc
 		this.tests.add(new Test("<img src=\"sculpture.png\" longdesc=\"https://en.wikipedia.org/wiki/Desiderio_da_Settignano\">", 
-				new ResultSet[] {Result.WARNING_DESCRIPTION}));
+				new Result[] {ResultType.WARNING_DESCRIPTION}));
 		
 		//a decorative smiley gif
 		this.tests.add(new Test("<img src=\"smiley.gif\" alt=\"\">" , 
-				new ResultSet[] {Result.WARNING_CHECK_DECORATIVE}));
+				new Result[] {ResultType.WARNING_CHECK_DECORATIVE}));
 
 		//a decorative <object> smiley gif
 		this.tests.add(new Test("<object src=\"smiley.gif\" role=\"presentation\">", 
-				new ResultSet[] {Result.WARNING_CHECK_DECORATIVE}));
+				new Result[] {ResultType.WARNING_CHECK_DECORATIVE}));
 
 		//using role="img" with a suitable label with 'aria-label'
 		this.tests.add(new Test("<div class=\"sprite card_icons visa\" role=\"img\" aria-label=\"Visa\"></div>", 
-				new ResultSet[] {Result.WARNING_HAS_LABEL}));
+				new Result[] {ResultType.WARNING_HAS_LABEL}));
 
 		
 		
 		//no description given
 		this.tests.add(new Test("<img src=\"smiley.gif\" height=\"42\" width=\"42\">", 
-				new ResultSet[] {Result.ERROR}));
+				new Result[] {ResultType.ERROR}));
 
 		//<area> with no description given (despite img above having description)
 		this.tests.add(new Test("<img src=\"planets.gif\" width=\"145\" height=\"126\" alt=\"Planets\"\r\n" + 
@@ -335,7 +335,7 @@ public class NonTextContent extends Check {
 				"<map name=\"planetmap\">\r\n" + 
 				"  <area shape=\"rect\" coords=\"0,0,82,126\" href=\"sun.htm\">\r\n" + 
 				"</map>", 
-				new ResultSet[] {Result.ERROR, Result.WARNING_HAS_LABEL}));
+				new Result[] {ResultType.ERROR, ResultType.WARNING_HAS_LABEL}));
 
 		 //an overly long alt text. doesn't currently fail as its only an ambiguous_serious.
 		this.tests.add(new Test("<img src=\"smiley.gif\" alt=\"This alt text is way too long. This alt text is way too long. "
@@ -343,7 +343,7 @@ public class NonTextContent extends Check {
 				+ "This alt text is way too long.This alt text is way too long.This alt text is way too long.This alt text is way too long."
 				+ "This alt text is way too long.This alt text is way too long. This alt text is way too long. "
 				+ "This alt text is way too long. This alt text is way too long\">",
-				new ResultSet[] {Result.WARNING_SRS_LABEL_LENGTH, Result.WARNING_HAS_LABEL}));
+				new Result[] {ResultType.WARNING_SRS_LABEL_LENGTH, ResultType.WARNING_HAS_LABEL}));
 	}
 
 }

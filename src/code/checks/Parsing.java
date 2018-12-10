@@ -16,7 +16,7 @@ import org.openqa.selenium.WebElement;
 
 public class Parsing extends Check {
 
-	private static enum Result implements ResultSet {
+	private static enum ResultType implements Result {
 		ERROR,
 		SUCCESS,
 		WARNING_HTML,
@@ -73,21 +73,21 @@ public class Parsing extends Check {
                 }
 
                 if (type.equals("error")) {
-                    markers.add(new Marker(message, Marker.MARKER_ERROR, this, extract, Result.ERROR));
+                    markers.add(new Marker(message, Marker.MARKER_ERROR, this, extract, ResultType.ERROR));
                     success = false;
                 }
                 else if (type.equals("warning")) {
-                    markers.add(new Marker(message, Marker.MARKER_AMBIGUOUS, this, extract, Result.WARNING_HTML));
+                    markers.add(new Marker(message, Marker.MARKER_AMBIGUOUS, this, extract, ResultType.WARNING_HTML));
                     success = false;
                 }
             }
 
             if(success) {
-                markers.add(new Marker("HTML succesfully validated by parser", Marker.MARKER_SUCCESS, this, Result.SUCCESS));
+                markers.add(new Marker("HTML succesfully validated by parser", Marker.MARKER_SUCCESS, this, ResultType.SUCCESS));
             }
         }
         catch(UnirestException e) {
-            markers.add(new Marker("Could not connect to W3C Markup Validation service - check not run", Marker.MARKER_AMBIGUOUS, this, Result.WARNING_CONNECTION_FAILURE));
+            markers.add(new Marker("Could not connect to W3C Markup Validation service - check not run", Marker.MARKER_AMBIGUOUS, this, ResultType.WARNING_CONNECTION_FAILURE));
         }
     }
 
@@ -132,13 +132,13 @@ public class Parsing extends Check {
 
     
     public void setupTests() {
-    	this.tests.add(new Test("<!DOCTYPE html><html lang=\"en\"><head><title><div><img /></div></title></head></html>", new ResultSet[] {Result.SUCCESS}));
+    	this.tests.add(new Test("<!DOCTYPE html><html lang=\"en\"><head><title><div><img /></div></title></head></html>", new Result[] {ResultType.SUCCESS}));
     	
-    	this.tests.add(new Test("<!DOCTYPE html><html><head><div><img></img></div></html>", new ResultSet[] {Result.ERROR}));
+    	this.tests.add(new Test("<!DOCTYPE html><html><head><div><img></img></div></html>", new Result[] {ResultType.ERROR}));
 
-    	this.tests.add(new Test("<!DOCTYPE html><html><head><p id='id1'><p id='id1'><div><img /></head></div></html>", new ResultSet[] {Result.ERROR}));
+    	this.tests.add(new Test("<!DOCTYPE html><html><head><p id='id1'><p id='id1'><div><img /></head></div></html>", new Result[] {ResultType.ERROR}));
 
-    	this.tests.add(new Test( "<!DOCTYPE html><html><head><div><img /></head></div></html>", new ResultSet[] {Result.ERROR}));
+    	this.tests.add(new Test( "<!DOCTYPE html><html><head><div><img /></head></div></html>", new Result[] {ResultType.ERROR}));
 
     }
 

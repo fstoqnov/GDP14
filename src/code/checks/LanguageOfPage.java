@@ -19,7 +19,7 @@ public class LanguageOfPage extends Check {
 	private static String ERR_INVALID_LANG(String givenLang) {return "Found Invalid lang: " + givenLang;}
 	private static String SUCC_LANG() { return "Found valid lang"; }
 	
-	private static enum Result implements ResultSet {
+	private static enum ResultType implements Result {
 		ERROR,
 		SUCCESS
 	}
@@ -34,11 +34,11 @@ public class LanguageOfPage extends Check {
 		for (int i = 0; i < doc.length; i ++) {
 			String docLang = doc[i].getAttribute("lang");
 			if(docLang == null) {
-				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i], ERR_NO_LANG(), Result.ERROR);
+				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i], ERR_NO_LANG(), ResultType.ERROR);
 			} else if(!lang.contains(docLang)){
-				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i], ERR_INVALID_LANG(docLang), Result.ERROR);
+				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i], ERR_INVALID_LANG(docLang), ResultType.ERROR);
 			} else {
-				addFlagToElement(markers, Marker.MARKER_SUCCESS, doc[i], SUCC_LANG(), Result.SUCCESS);
+				addFlagToElement(markers, Marker.MARKER_SUCCESS, doc[i], SUCC_LANG(), ResultType.SUCCESS);
 			}
 		}
 		
@@ -47,15 +47,15 @@ public class LanguageOfPage extends Check {
 
 	public void setupTests() {
 		String pass1 = "<html lang=\"en-GB\"></html>";
-		ResultSet[] expectedPass1 = {Result.SUCCESS};
+		Result[] expectedPass1 = {ResultType.SUCCESS};
 		this.tests.add(new Test(pass1, expectedPass1));
 		
 		String fail1 = "<html lang=\"not-included\"></html>";
-		ResultSet[] expectedFail1 = {Result.ERROR};
+		Result[] expectedFail1 = {ResultType.ERROR};
 		this.tests.add(new Test(fail1, expectedFail1));
 		
 		String fail2 = "<html>I have no lang tag specified</html>";
-		ResultSet[] expectedFail2 = {Result.ERROR};
+		Result[] expectedFail2 = {ResultType.ERROR};
 		this.tests.add(new Test(fail2, expectedFail2));
 
 	}

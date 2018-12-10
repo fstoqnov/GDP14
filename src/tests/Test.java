@@ -1,13 +1,13 @@
 package tests;
 
-import code.checks.ResultSet;
+import code.checks.Result;
 
 public class Test {
 
 	public String html;
-	public ResultSet[] expectedResults;
+	public Result[] expectedResults;
 	
-	public Test(String html, ResultSet[] expectedR) {
+	public Test(String html, Result[] expectedR) {
 		this.html = html;
 		this.expectedResults = expectedR;
 	}
@@ -16,7 +16,7 @@ public class Test {
 		return this.html;
 	}
 	
-	public ResultSet[] getExpectedResults() {
+	public Result[] getExpectedResults() {
 		return this.expectedResults;
 	}
 }

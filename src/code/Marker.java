@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.openqa.selenium.WebElement;
 
 import code.checks.Check;
-import code.checks.ResultSet;
+import code.checks.Result;
 
 public class Marker {
 	private WebElement element;
@@ -17,7 +17,7 @@ public class Marker {
 	private boolean hidden;
 	private String id;
 	private String outerHTML;
-	private ResultSet result;
+	private Result result;
 
 	public static final int MARKER_ERROR = 1;
 	public static final int MARKER_AMBIGUOUS = 2;
@@ -25,7 +25,7 @@ public class Marker {
 	public static final int MARKER_SUCCESS = 4;
 
 	//primary constructor used in Check subclasses
-	public Marker(String desc, int type, Check check, WebElement element, ResultSet result) {
+	public Marker(String desc, int type, Check check, WebElement element, Result result) {
 		this.element = element;
 		this.position = -1;
 		this.attribute = null;
@@ -37,7 +37,7 @@ public class Marker {
 		this.result = result;
 	}
 	
-	public Marker(String desc, int type, Check check, ResultSet result) {
+	public Marker(String desc, int type, Check check, Result result) {
 		this.element=null;
 		this.position = -1;
 		this.attribute = null;
@@ -129,7 +129,7 @@ public class Marker {
 		this.desc = desc;
 	}
 
-	public Marker(String desc, int type, Check check, String outerHTML, ResultSet result) {
+	public Marker(String desc, int type, Check check, String outerHTML, Result result) {
 		this.element = null;
 		this.position = -1;
 		this.attribute = null;
@@ -149,7 +149,7 @@ public class Marker {
 	public boolean getHidden() { return hidden; }
 	public String getEleID() { return id; }
 	public String getOuterHTML() { return outerHTML; }
-	public ResultSet getResult() { return result; }
+	public Result getResult() { return result; }
 
 	public boolean equals(Object o) {
 
