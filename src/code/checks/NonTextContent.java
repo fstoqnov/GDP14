@@ -1,6 +1,7 @@
 package code.checks;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.openqa.selenium.WebElement;
@@ -87,10 +88,10 @@ public class NonTextContent extends Check {
 	private void checkVisualAlts(List<Marker> markers, SeleniumInterface inter) {
 		
 		WebElement[] elementsWithAlt = inter.getElementsWithAttributeAnyValue("alt");
-		for (int i = 0; i< elementsWithAlt.length; i++) {
-			System.out.println("Element with an alt: " + elementsWithAlt[i].getTagName() + ", alt=" + elementsWithAlt[i].getAttribute("alt") + ", which has length: " + elementsWithAlt[i].getAttribute("alt").length());
+		HashSet<WebElement> altEles = new HashSet<WebElement>();
+		for (int i=0; i < elementsWithAlt.length; i++) {
+			altEles.add(elementsWithAlt[i]);
 		}
-		
 		
 		//<input type="image" elemenets will be handled by 2.4.6[HeadingsAndLabels] and 3.2.2[LabelsOrInstructions]
 		WebElement[] imgEles = inter.getElementsByTagName("img");
@@ -109,11 +110,11 @@ public class NonTextContent extends Check {
 		System.out.println("Found: img: " + imgEles.length + ", area: " + areaEles.length + ", imageRole: " + imageRoleEles.length + ", object: " + objectEles.length);
 		for (int i = 0; i < imgEles.length; i++) {
 			NonTextLabel ntl = new NonTextLabel(imgEles[i]);
-			this.findImgLabel(markers, imgEles[i], ntl, inter);
+			this.findImgLabel(markers, imgEles[i], ntl, altEles, inter);
 		}
 		for (int i=0; i < areaEles.length; i++) {
 			NonTextLabel ntl = new NonTextLabel(areaEles[i]);
-			this.findImgLabel(markers, areaEles[i], ntl, inter);
+			this.findImgLabel(markers, areaEles[i], ntl, altEles, inter);
 		}
 		for (int i=0; i < imageRoleEles.length; i++) {
 			NonTextLabel ntl = new NonTextLabel(imageRoleEles[i]);
@@ -126,11 +127,18 @@ public class NonTextContent extends Check {
 		
 	}
 	
-	private void findImgLabel(List<Marker> markers, WebElement ele, NonTextLabel ntl, SeleniumInterface inter) {
+	private void findImgLabel(List<Marker> markers, WebElement ele, NonTextLabel ntl, HashSet<WebElement> altEles, SeleniumInterface inter) {
 		//check the alt tag and the 'longdesc' tag, which are unique to these elements, then pass it along
-		String altTag = ele.getAttribute("alt");
-		System.out.println("altTag here is " + altTag + " which has length: " + altTag.length());
-		if (altTag != null) {
+		
+		if (altEles.contains(ele)) {
+			ntl.setAlt(ele.getAttribute("alt"));
+		}
+		/*This doesn't work due to a strange quirk either of Selenium, or ChromeDriver
+		 * All img elements don't show up as having an 'alt' attribute when searching for it, but
+		 * if you call getAttribute("alt") on any element, it will add a blank alt="" attribute - which destroys this method.
+		 * This doesn't happen for other attributes (eg 'aria-label') - only for 'alt'.
+		 * 
+		 * if (altTag != null) {
 			if (altTag.equals("")) {
 				System.out.println("DECORATIVE alt");
 				//this is a sign for a decoration image - accessible tools will ignore this element.
@@ -140,7 +148,7 @@ public class NonTextContent extends Check {
 			else {
 				ntl.setAlt(altTag);
 			}
-		}
+		}*/
 		String longDesc = ele.getAttribute("longdesc");
 		if (longDesc != null) {
 			if (!longDesc.equals("")) {
@@ -181,7 +189,6 @@ public class NonTextContent extends Check {
 		//look for aria-labelledby attribute
 		String ariaLabelledby = ele.getAttribute("aria-labelledby");
 		if (ariaLabelledby != null) {
-			System.out.println("GOT AN ARIA-LABELLEDBY HERE!");
 			if (!ariaLabelledby.equals("")) {
 				String[] labelledIDs = ariaLabelledby.split(" ");
 				for (String id: labelledIDs) {
@@ -275,7 +282,7 @@ public class NonTextContent extends Check {
 			"usemap=\"#planetmap\">\r\n" + 
 			"\r\n" + 
 			"<map name=\"planetmap\">\r\n" + 
-			"  <area shape=\"rect\" coords=\"0,0,82,126\" href=\"sun.htm\" aria-label=\"Sun\">\r\n" + 
+			"  <area shape=\"rect\" coords=\"0,0,82,126\" href=\"sun.htm\" alt=\"Sun\">\r\n" + 
 			"</map>"
 			, //using <area> and aria-label
 			"<img src=\"sculpture.png\" longdesc=\"https://en.wikipedia.org/wiki/Desiderio_da_Settignano\">" 
@@ -285,7 +292,7 @@ public class NonTextContent extends Check {
 			"<object src=\"smiley.gif\" role=\"presentation\">"
 			, //a decorative <object> smiley gif
 			"<div class=\"sprite card_icons visa\" role=\"img\" aria-label=\"Visa\"></div>"
-			, //using role="img" with a suitable label
+			, //using role="img" with a suitable label with 'aria-label'
 
 		};
 	}
