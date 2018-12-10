@@ -220,7 +220,7 @@ public class HeadingsAndLabels extends Check {
 			if (newLabelsSize == 1 && prevLabelsSize == 0) {
 				//if the 'label' is blank ("") then no label is added.
 				//this tests for that case, and if not: this is the primary label so raises the error.
-				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, ele, WARNING_SRS_TITLE_ONLY(), Result.WARNING_SRS_TITLE_ONLY);
+				//addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, ele, WARNING_SRS_TITLE_ONLY(), Result.WARNING_SRS_TITLE_ONLY);
 			}
 
 		}
@@ -481,24 +481,32 @@ public class HeadingsAndLabels extends Check {
 		if (eleList == null) {
 			return true;
 		}
-		ArrayList<WebElement> duplicateTexts = new ArrayList<WebElement>();
+		HashSet<WebElement> duplicateTexts = new HashSet<WebElement>();
 		int duplicatesFound = 0;
 		HashMap<String, WebElement> uniqueStrings = new HashMap<String, WebElement>();
 		for (int i = 0; i < eleList.size(); i++) {
 			WebElement ele_i = eleList.get(i);
-			uniqueStrings.put(ele_i.getAttribute("textContent"), ele_i);
-			if (uniqueStrings.keySet().size() != (i+1)-duplicatesFound) {
-				//the previously added string was a duplicate.
+			String i_textContent = ele_i.getAttribute("textContent");
+			
+			if (uniqueStrings.get(i_textContent) == null) {
+				uniqueStrings.put(ele_i.getAttribute("textContent"), ele_i);
+			}
+			else {
+				//element i's textContent is a duplicate.
 				duplicatesFound++;
-				
-				//must mark both headings as duplicates.
+				//must mark both headings as duplicates
 				duplicateTexts.add(ele_i);
-				duplicateTexts.add(uniqueStrings.get(ele_i.getAttribute("textContent")));
+				duplicateTexts.add(uniqueStrings.get(i_textContent));
 			}
 		}
 		
 		System.out.println("Reached marking stage");
 		System.out.println("Size of eleList is " + eleList.size());
+		System.out.println("Size of duplicateTexts is " + duplicateTexts.size());
+		System.out.println("Duplicates found is " + duplicatesFound);
+		for (WebElement e: eleList) {
+			System.out.println(e);
+		}
 		//mark all duplicates
 		if (duplicatesFound > 0) {
 			//mark all the elements as duplicates.
@@ -510,6 +518,10 @@ public class HeadingsAndLabels extends Check {
 
 			}
 			eleList.removeAll(duplicateTexts);
+			System.out.println("New size of eleList is " + eleList.size());
+			for (WebElement e: eleList) {
+				System.out.println(e);
+			}
 			Iterator<WebElement> succIt = eleList.iterator();
 			while (succIt.hasNext()) {
 				System.out.println("Marking success");
@@ -587,16 +599,23 @@ public class HeadingsAndLabels extends Check {
 
 		this.tests.add(new Test("<h1>My Fail Heading</h1>\n<h1>My Fail Heading</h1>", 
 				new ResultSet[] {Result.ERROR}));
+		
+		this.tests.add(new Test("<h1>My Fail Heading</h1>\n<h1>My Fail Heading</h1>\n<h1>My Fail Heading</h1>\n<h1>My Fail Heading</h1>", 
+				new ResultSet[] {Result.ERROR}));
+		
 		this.tests.add(new Test("<h1>My Fail Heading</h1>\n<h2>My Pass Heading</h2>\n<h1>My Fail Heading</h1>", 
-				new ResultSet[] {Result.ERROR}));
+				new ResultSet[] {Result.ERROR, Result.SUCCESS}));
+		
 		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h2>My Fail Heading</h2>\n<h2>My Fail Heading</h2>", 
-				new ResultSet[] {Result.ERROR}));
+				new ResultSet[] {Result.ERROR, Result.SUCCESS}));
+		
 		this.tests.add(new Test("<h1>Cool</h1>\n<h2>NotVeryCool</h2>\n<h3>Bewildering</h3>\n<h3>Bewildering</h3>", 
-				new ResultSet[] {Result.ERROR}));
+				new ResultSet[] {Result.ERROR, Result.SUCCESS}));
 		this.tests.add(new Test("<h1>Cool</h1>\n<h1>Not cool</h1>\n<h1>Cool</h1>", 
-				new ResultSet[] {Result.ERROR}));
+				new ResultSet[] {Result.ERROR, Result.SUCCESS}));
+		
 		this.tests.add(new Test("<h1>A</h1>\n<h2>B</h2>\n<h3>C</h3>\n<h1>A</h1>", 
-				new ResultSet[] {Result.ERROR}));
+				new ResultSet[] {Result.ERROR, Result.SUCCESS}));
 		
 		//duplicate labels:
 		this.tests.add(new Test(" <label for=\"request_subject\">Duplicate Label</label>\r\n"
@@ -625,10 +644,8 @@ public class HeadingsAndLabels extends Check {
 				+ "<optgroup>"
 				+ "<option>A</option>"
 				+ "</select>", 
-				new ResultSet[] {Result.ERROR, Result.WARNING_LABEL_GENERAL}));
-		
-		//only using title as primary label
-		this.tests.add(new Test("<textarea title=\"My Fancy Title\"</textarea>", new ResultSet[] {Result.WARNING_SRS_TITLE_ONLY}));
+				new ResultSet[] {Result.ERROR, Result.WARNING_LABEL_GENERAL, Result.SUCCESS}));
+
 
 	}
 	

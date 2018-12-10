@@ -33,8 +33,7 @@ public class CheckList {
 		boolean correct = true;
 		c.initialise();
 		for (Test t : tests) {
-			try {
-				
+			try {				
 				TestsServer ts = new TestsServer(t.getHTMLString());
 				ts.createServer(RunTests.TEST_PORT);
 				String content = inter.getRenderedHtml("http://localhost:" + RunTests.TEST_PORT + "/");
@@ -42,7 +41,7 @@ public class CheckList {
 					content = t.getHTMLString();
 				}
 				testCount++;
-				
+				System.out.println("Next test: " + t.getHTMLString());
 				String testDetails = c.getName() + "-test (" + (testCount) + "/" + tests.size()+ ")";
 				correct = RunTests.test(testDetails, t.getExpectedResults(), c.executeCheck(content, inter)) && correct;
 				
@@ -53,9 +52,9 @@ public class CheckList {
 	
 				e.printStackTrace(); 
 			}
-			inter.close();
 	}
-				
+		inter.close();
+	
 			
 
 		return correct;

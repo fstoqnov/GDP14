@@ -69,7 +69,6 @@ public abstract class Check implements Comparable<Check> {
 	}
 
 	public void addFlagToElement(List<Marker> markers, int type, WebElement ele, String desc, ResultSet result) {
-		System.out.println("Adding flag");
 		markers.add(new Marker(desc, type, this, ele, result));
 	}
 	

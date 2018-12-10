@@ -47,13 +47,13 @@ public class RunTests {
 		return correct;
 	}
 
-	/*public static boolean test(String testName, long expectedValue, long testValue) {
+	public static boolean test(String testName, long expectedValue, long testValue) {
 		return test(testName, expectedValue + "", testValue + "");
-	}*/
+	}
 	
-	/*public static boolean test(String testName, int expectedValue, int testValue) {
+	public static boolean test(String testName, int expectedValue, int testValue) {
 		return test(testName, expectedValue + "", testValue + "");
-	}*/
+	}
 	
 	public static boolean test(String testName, ResultSet[] expectedResults, ArrayList<ResultSet> receivedResults) {
 		boolean result = true;
@@ -68,11 +68,33 @@ public class RunTests {
 			countFailure++;
 			System.err.println("Test : " + testName + " failed. Expected: set{" + setExpResults + "}, Received: set{" + setRecResults + "}");
 		}
+		else {
+			countPass++;
+			System.out.println("Test: " + testName + " passed ");
+		}
 
 		return result;
 	}
+	
+	public static boolean test(String testName, String expectedValue, String testValue) {
+		boolean result = true;
+		if (expectedValue == null || testValue == null) {
+			result = expectedValue==null && testValue == null;
+		} else {
+			result = expectedValue.equals(testValue);
+		}
+		
+		if (result) {
+			countPass++;
+			System.out.println("Test: " + testName + " passed ");
+		} else {
+			countFailure++;
+			System.err.println("Test: " + testName + " failed. Expected: '" + expectedValue + "', Received: '" + testValue + "'");
+		}
+		return result;
+	}
 
-	/*public static boolean test(String testName, boolean expectedValue, boolean testValue) {
+	public static boolean test(String testName, boolean expectedValue, boolean testValue) {
 		return test(testName, String.valueOf(expectedValue), String.valueOf(testValue));
-	}*/
+	}
 }

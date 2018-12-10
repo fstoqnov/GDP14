@@ -31,7 +31,7 @@ public class Marker {
 		this.attribute = null;
 		this.type = type;
 		this.check = check;
-		id = element.getAttribute("id");
+		this.id = element.getAttribute("id");
 		this.outerHTML = element.getAttribute("outerHTML");
 	}
 	
@@ -50,7 +50,7 @@ public class Marker {
 		this.type = type;
 		this.check = check;
 		this.desc = desc;
-		id = element.getAttribute("id");
+		this.id = element.getAttribute("id");
 		this.outerHTML = element.getAttribute("outerHTML");
 		this.result = result;
 	}
@@ -62,7 +62,7 @@ public class Marker {
 		this.type = type;
 		this.check = check;
 		this.desc = desc;
-		id = element.getAttribute("id");
+		this.id = element.getAttribute("id");
 		this.outerHTML = element.getAttribute("outerHTML");
 	}
 	
@@ -72,7 +72,7 @@ public class Marker {
 		this.position = -1;
 		this.type = type;
 		this.check = check;
-		id = element.getAttribute("id");
+		this.id = element.getAttribute("id");
 		this.outerHTML = element.getAttribute("outerHTML");
 	}
 	
@@ -83,7 +83,7 @@ public class Marker {
 		this.type = type;
 		this.check = check;
 		this.desc = desc;
-		id = element.getAttribute("id");
+		this.id = element.getAttribute("id");
 		this.outerHTML = element.getAttribute("outerHTML");
 	}
 
@@ -93,7 +93,7 @@ public class Marker {
 		this.attribute = null;
 		this.type = type;
 		this.check = check;
-		id = element.getAttribute("id");
+		this.id = element.getAttribute("id");
 		this.outerHTML = element.getAttribute("outerHTML");
 	}
 

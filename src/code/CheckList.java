@@ -30,7 +30,7 @@ public class CheckList {
 		//checks.add(new InfoAndRelationships());
 		//checks.add(new KeyboardFunctionality());
 		//checks.add(new LabelsOrInstructions());
-		//checks.add(new LanguageOfPage());
+		checks.add(new LanguageOfPage());
 		//checks.add(new LanguageOfParts());
 		//checks.add(new NameRoleVal());
 		//checks.add(new NonTextContent());
