@@ -8,6 +8,8 @@ import com.mashape.unirest.http.Unirest;
 
 import code.Marker;
 import code.interfaces.SeleniumInterface;
+import tests.Test;
+
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.log4j.PropertyConfigurator;
 import org.openqa.selenium.WebElement;
@@ -81,11 +83,11 @@ public class Parsing extends Check {
             }
 
             if(success) {
-                markers.add(new Marker(Marker.MARKER_SUCCESS, this, Result.SUCCESS));
+                markers.add(new Marker("HTML succesfully validated by parser", Marker.MARKER_SUCCESS, this, Result.SUCCESS));
             }
         }
         catch(UnirestException e) {
-            markers.add(new Marker("Could not connect to W3C Markup Validation service - check not run", Marker.MARKER_AMBIGUOUS, this, -1, Result.WARNING_CONNECTION_FAILURE));
+            markers.add(new Marker("Could not connect to W3C Markup Validation service - check not run", Marker.MARKER_AMBIGUOUS, this, Result.WARNING_CONNECTION_FAILURE));
         }
     }
 
@@ -126,20 +128,18 @@ public class Parsing extends Check {
         return g.fromJson(response, JsonObject.class).getAsJsonArray("messages");
     }
 
-    @Override
-    public String[] getHTMLPass() {
-        return new String[] {
-                "<!DOCTYPE html><html lang=\"en\"><head><title><div><img /></div></title></head></html>"
-        };
-    }
 
-    @Override
-    public String[] getHTMLFail() {
-        return new String[] {
-                "<!DOCTYPE html><html><head><div><img></img></div></html>",
-                "<!DOCTYPE html><html><head><p id='id1'><p id='id1'><div><img /></head></div></html>",
-                "<!DOCTYPE html><html><head><div><img /></head></div></html>"
-        };
+
+    
+    public void setupTests() {
+    	this.tests.add(new Test("<!DOCTYPE html><html lang=\"en\"><head><title><div><img /></div></title></head></html>", new ResultSet[] {Result.SUCCESS}));
+    	
+    	this.tests.add(new Test("<!DOCTYPE html><html><head><div><img></img></div></html>", new ResultSet[] {Result.ERROR}));
+
+    	this.tests.add(new Test("<!DOCTYPE html><html><head><p id='id1'><p id='id1'><div><img /></head></div></html>", new ResultSet[] {Result.ERROR}));
+
+    	this.tests.add(new Test( "<!DOCTYPE html><html><head><div><img /></head></div></html>", new ResultSet[] {Result.ERROR}));
+
     }
 
     @Override

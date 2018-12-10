@@ -9,6 +9,7 @@ import org.openqa.selenium.WebElement;
 import code.Marker;
 import code.interfaces.SeleniumInterface;
 import code.structures.LabelledWebElement;
+import tests.Test;
 
 public class LabelsOrInstructions extends Check {
 	private static String ERR_ARIA_DESCRIBED_BY_MISSING() { return "The element specified in aria-describedby is missing";}
@@ -21,14 +22,15 @@ public class LabelsOrInstructions extends Check {
 	
 	private static String ERR_OPTION_NO_TEXT() { return "This <option> element does not have accessible text to differentiate it from other options";}
 	
-	private static String ERR_TITLE_ONLY() { return "Primary label for this element is a 'title' attribute, which is not always accessible to all users";}
+	private static String WARNING_SRS_TITLE_ONLY() { return "Primary label for this element is a 'title' attribute, which is not always accessible to all users";}
 	
 	private static String WARNING_RECAPTCHA_TEXTAREA() { return "Recaptcha is not WCAG2.1 compliant - this <textarea> element has no accessible label";}
 	
 	private static enum Result implements ResultSet {
 		ERROR,
 		SUCCESS,
-		WARNING_RECAPTCHA_TEXTAREA
+		WARNING_RECAPTCHA_TEXTAREA,
+		WARNING_SRS_TITLE_ONLY
 	}
 	public LabelsOrInstructions() {
 		super("Criterion 3.3.2 Labels or Instructions");
@@ -258,7 +260,7 @@ public class LabelsOrInstructions extends Check {
 			if (newLabelsSize == 1 && prevLabelsSize == 0) {
 				//if the 'label' is blank ("") then no label is added.
 				//this tests for that case, and if not: this is the primary label so raises the error.
-				addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_TITLE_ONLY(), Result.ERROR);
+				addFlagToElement(markers, Marker.MARKER_ERROR, ele, WARNING_SRS_TITLE_ONLY(), Result.WARNING_SRS_TITLE_ONLY);
 
 			}
 
@@ -271,40 +273,59 @@ public class LabelsOrInstructions extends Check {
 		}
 	}
 
-	@Override
-	public String[] getHTMLPass() {
-		return new String[] {
-				"<label for=\"inputId\">description</label><input id=\"inputId\">"
-				, //using label 'for='
-				"<input id=\"inputId\" aria-describedby=\"description\"><div id=\"description\">A quick description</div>"
-				, //aria described by
-				"<input id=\"inputId\" aria-labelledby=\"description other\">\n"
-				+ "<div id=\"description\">A quick description</div><span id=\"other\">extended</span>"
-				, //aria labelled by
-				"<input id=\"inputId\" aria-labelledby=\"description\"><div style=\"display:none\" id=\"description\">A quick description</div>" 
-				, //aria labelled by hidden - should not make a difference
-				"<fieldset><legend>Car Details</legend>\n"
+	public void setupTests() {
+		//using label 'for='
+		this.tests.add(new Test("<label for=\"inputId\">description</label><input id=\"inputId\">", 
+				new ResultSet[] {Result.SUCCESS}));
+		
+		//aria described by
+		this.tests.add(new Test("<input id=\"inputId\" aria-describedby=\"description\"><div id=\"description\">A quick description</div>", 
+				new ResultSet[] {Result.SUCCESS}));
+		
+		//aria labelled by
+		this.tests.add(new Test("<input id=\"inputId\" aria-labelledby=\"description other\">\n"
+				+ "<div id=\"description\">A quick description</div><span id=\"other\">extended</span>", 
+				new ResultSet[] {Result.SUCCESS}));
+		
+		//aria labelled by hidden - should not make a difference
+		this.tests.add(new Test("<input id=\"inputId\" aria-labelledby=\"description\"><div style=\"display:none\" id=\"description\">A quick description</div>", 
+				new ResultSet[] {Result.SUCCESS}));
+		
+		//using 'aria-label' and an encapsulating <label>., 
+		this.tests.add(new Test("<fieldset><legend>Car Details</legend>\n"
 				+ "<input type=\"checkbox\" aria-label=\"Audi\"AUDI>\n"
 				+ "<input type=\"checkbox\" aria-label=\"Ford\"FORD></fieldset>\n"
 				+ "<label>Click when happy with selection\n"
-				+ "<input type=\"submit\">", //using 'aria-label' and an encapsulating <label>.
-		};
-	}
-
-	@Override
-	public String[] getHTMLFail() {
-		return new String[] {
-				"<input>",
-				"<input id=\"inputId\" aria-describedby=\"description\">", //aria described by missing
-				"<input id=\"inputId\" aria-labelledby=\"description other\"><div id=\"description\">A quick description</div>", //aria labelled by missing
-				"<input id=\"inputId\" aria-labelledby=\"\">", //aria labelled by empty
-				"<fieldset><legend>Car Brands</legend>\n"
+				+ "<input type=\"submit\">", 
+				new ResultSet[] {Result.SUCCESS}));
+		
+		
+		this.tests.add(new Test("<input>", 
+				new ResultSet[] {Result.ERROR}));
+		
+		//aria described by missing
+		this.tests.add(new Test("<input id=\"inputId\" aria-describedby=\"description\">", 
+				new ResultSet[] {Result.ERROR}));
+		
+		//aria labelled by missing
+		this.tests.add(new Test("<input id=\"inputId\" aria-labelledby=\"description other\"><div id=\"description\">A quick description</div>", 
+				new ResultSet[] {Result.ERROR}));
+		
+		//aria labelled by empty
+		this.tests.add(new Test("<input id=\"inputId\" aria-labelledby=\"\">", 
+				new ResultSet[] {Result.ERROR}));
+		
+		//using checkboxes with text, but no accessible label.
+		this.tests.add(new Test("<fieldset><legend>Car Brands</legend>\n"
 				+ "<input type=\"checkbox\"AUDI>\n"
-				+ "<input type=\"checkbox\"FORD></fieldset>", //using checkboxes with text, but no accessible label.
-				"<input id=\"inputId\" type=\"text\" title=\"Enter your registration no. here\">", //only label is a 'title' attribute
-				
-		};
+				+ "<input type=\"checkbox\"FORD></fieldset>", 
+				new ResultSet[] {Result.ERROR}));
+		
+		//only label is a 'title' attribute
+		this.tests.add(new Test("<input id=\"inputId\" type=\"text\" title=\"Enter your registration no. here\">", 
+				new ResultSet[] {Result.WARNING_SRS_TITLE_ONLY}));
 	}
+	
 
 	@Override
 	public void initialise() {}

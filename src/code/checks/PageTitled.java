@@ -6,6 +6,7 @@ import org.openqa.selenium.WebElement;
 
 import code.Marker;
 import code.interfaces.SeleniumInterface;
+import tests.Test;
 
 public class PageTitled extends Check {
 
@@ -41,17 +42,10 @@ public class PageTitled extends Check {
 		}							  
 	}
 	
-	@Override
-	public String[] getHTMLPass() {
-		//empty string passed due to no success case for guideline in current implementation
-		return new String[] {};
-	}
+	public void setupTests() {
+		tests.add(new Test("<html>No Title present in document</html>", new ResultSet[] {Result.ERROR}));
+		tests.add(new Test("<html> <head> <title>Hello everyone</title> </head> <body> wow lots going on today </body> </html>", new ResultSet[] {Result.WARNING_TITLE_FOUND}));
 
-	@Override
-	public String[] getHTMLFail() {
-		return new String[] {
-				"<html>No Title present in document</html>"
-		};
 	}
 
 	@Override

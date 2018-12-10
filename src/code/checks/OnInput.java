@@ -6,6 +6,7 @@ import org.openqa.selenium.WebElement;
 
 import code.Marker;
 import code.interfaces.SeleniumInterface;
+import tests.Test;
 
 public class OnInput extends Check {
 
@@ -56,19 +57,21 @@ public class OnInput extends Check {
 	public void initialise() {
 		
 	}
-
-	@Override
-	public String[] getHTMLPass() {
-		//invalid because it only throws a warning - never passes.
-		return null;
-	}
-
-	@Override
-	public String[] getHTMLFail() {
-		//invalid because it only throws a warning - never fails.
-		return null;
-	}
 	
+	public void setupTests() {
+		//form with input and button
+		this.tests.add(new Test("<form><input type=\"text\"><button type=\"button\">CLICK HERE TO SUBMIT</button></form>", new ResultSet[] {Result.WARNING_SRS_NO_SUBMIT}));
+		//form with no button
+		this.tests.add(new Test("<form><input type=\"text\"></form>", new ResultSet[] {Result.WARNING_SRS_NO_SUBMIT}));
+		
+		//both
+		this.tests.add(new Test("<form><input type=\"text\"></form>\n<form><input type=\"text\"><button type=\"button\">CLICK HERE TO SUBMIT</button></form>", 
+				new ResultSet[] {Result.WARNING_SUBMIT_PRESENT, Result.WARNING_SRS_NO_SUBMIT}));
+
+		
+		
+
+	}
 	
 
 }

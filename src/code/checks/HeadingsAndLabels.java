@@ -45,7 +45,6 @@ public class HeadingsAndLabels extends Check {
 
 	@Override
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
-		System.out.println("Running check in HeadingsAndLabels");
 		
 		checkSiblingHeadingsUnique(markers, inter);
 		checkLabelsUnique(markers, inter);
@@ -375,7 +374,6 @@ public class HeadingsAndLabels extends Check {
 	private void checkSiblingHeadingsUnique(List<Marker> markers, SeleniumInterface inter) {
 		//check that sibling headings are unique,
 		TreeMap<Integer, TreeNode<WebElement>> headingTree = Headings.getHeadingTree(inter);
-		System.out.println("headingTree size is " + headingTree.size());
 		ArrayList<TreeNode<WebElement>> headingList = new ArrayList<TreeNode<WebElement>>(headingTree.values());
 		//Iterator<Entry<Integer, TreeNode<WebElement>>> it = (Iterator<Entry<Integer, TreeNode<WebElement>>>) headingTree.entrySet().iterator();
 		
@@ -438,7 +436,7 @@ public class HeadingsAndLabels extends Check {
 		if (eleList == null) {
 			return true;
 		}
-		ArrayList<WebElement> duplicates = new ArrayList<WebElement>();
+		HashSet<WebElement> duplicates = new HashSet<WebElement>();
 		int duplicatesFound = 0;
 		HashMap<String, WebElement> uniqueAttrs = new HashMap<String, WebElement>();
 		for (int i = 0; i < uniqueAttrs.size(); i++) {
@@ -447,11 +445,13 @@ public class HeadingsAndLabels extends Check {
 			if (attrValue == null) {
 				continue;
 			}
-			uniqueAttrs.put(attrValue, ele_i);
-			if (uniqueAttrs.keySet().size() != (i+1)-duplicatesFound) {
-				//the previously added string was a duplicate.
+			if (uniqueAttrs.get(attrValue) == null) {
+				uniqueAttrs.put(attrValue, ele_i);
+			}
+			else {
+				//this is a duplicate.
 				duplicatesFound++;
-				//so we must add both elements as duplicates.
+				//we must mark both elements as duplicates.
 				duplicates.add(ele_i);
 				duplicates.add(uniqueAttrs.get(attrValue));
 			}
@@ -499,32 +499,20 @@ public class HeadingsAndLabels extends Check {
 				duplicateTexts.add(uniqueStrings.get(i_textContent));
 			}
 		}
-		
-		System.out.println("Reached marking stage");
-		System.out.println("Size of eleList is " + eleList.size());
-		System.out.println("Size of duplicateTexts is " + duplicateTexts.size());
-		System.out.println("Duplicates found is " + duplicatesFound);
-		for (WebElement e: eleList) {
-			System.out.println(e);
-		}
+
 		//mark all duplicates
 		if (duplicatesFound > 0) {
 			//mark all the elements as duplicates.
 			Iterator<WebElement> failIt = duplicateTexts.iterator();
 			while (failIt.hasNext()) {
-				System.out.println("Marking failure");
 				WebElement dupl = failIt.next();
 				addFlagToElement(markers, Marker.MARKER_ERROR, dupl, errorMsg, Result.ERROR);
 
 			}
 			eleList.removeAll(duplicateTexts);
-			System.out.println("New size of eleList is " + eleList.size());
-			for (WebElement e: eleList) {
-				System.out.println(e);
-			}
+
 			Iterator<WebElement> succIt = eleList.iterator();
 			while (succIt.hasNext()) {
-				System.out.println("Marking success");
 				WebElement passEle = succIt.next();
 				addFlagToElement(markers, Marker.MARKER_SUCCESS, passEle, successMsg, Result.SUCCESS);
 
@@ -534,7 +522,6 @@ public class HeadingsAndLabels extends Check {
 		//else:
 		Iterator<WebElement> successIt = eleList.iterator();
 		while (successIt.hasNext()) {
-			System.out.println("Marking success");
 			WebElement passEle = successIt.next();
 			addFlagToElement(markers, Marker.MARKER_SUCCESS, passEle, successMsg, Result.SUCCESS);
 		}

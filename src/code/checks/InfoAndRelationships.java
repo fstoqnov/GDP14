@@ -11,6 +11,7 @@ import code.Marker;
 import code.interfaces.SeleniumInterface;
 import code.structures.Headings;
 import code.structures.TreeNode;
+import tests.Test;
 
 public class InfoAndRelationships extends Check {
 
@@ -24,7 +25,6 @@ public class InfoAndRelationships extends Check {
 	private static enum Result implements ResultSet{
 		ERROR,
 		SUCCESS,
-		ERR_HEADING_NEST
 	}
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
 		checkHeadingNesting(markers, inter);
@@ -62,7 +62,7 @@ public class InfoAndRelationships extends Check {
 				}
 				else {
 					//a jump of more than one in heading level is invalid.
-					addFlagToElement(markers, Marker.MARKER_ERROR, headingEle, ERR_HEADING_NEST(level, headingLevel), Result.ERR_HEADING_NEST);
+					addFlagToElement(markers, Marker.MARKER_ERROR, headingEle, ERR_HEADING_NEST(level, headingLevel), Result.ERROR);
 					sharedIndex.increment();
 					checkHeadingNestingAtLevel(headingLevel, headingList, sharedIndex, markers, inter);
 				}
@@ -82,21 +82,14 @@ public class InfoAndRelationships extends Check {
 		
 	}
 
-	@Override
-	public String[] getHTMLPass() {
-		return new String[] {
-				"<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>\n<h3>My Pass Heading</h3>",
-				"<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>\n<h3>My Pass Heading</h3>\n<h1>Another Pass Heading</h1>",
-				
-		};
-	}
+	public void setupTests() {
+		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>\n<h3>My Pass Heading</h3>", new ResultSet[] {Result.SUCCESS}));
+		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>\n<h3>My Pass Heading</h3>\n<h1>Another Pass Heading</h1>", new ResultSet[] {Result.SUCCESS}));
 
-	@Override
-	public String[] getHTMLFail() {
-		return new String[] {
-				"<h1>My Pass Heading</h1>\n<h3>My Fail Heading</h3>",
-				"<h2>My Fail Heading</h2>"
-				
-		};
+
+		
+		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h3>My Fail Heading</h3>", new ResultSet[] {Result.ERROR, Result.SUCCESS}));
+		this.tests.add(new Test("<h2>My Fail Heading</h2>", new ResultSet[] {Result.ERROR}));
+
 	}
 }

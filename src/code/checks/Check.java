@@ -34,7 +34,6 @@ public abstract class Check implements Comparable<Check> {
 		System.out.println("Received results right here! Markers size is {" + markers.size() + ", " + m.size() + "}");
 		for (int i=0; i < markers.size(); i++) {
 			resultsReceived.add(markers.get(i).getResult());
-			System.out.println(markers.get(i).getResult());
 			m.add(markers.get(i));
 		}
 		

@@ -7,6 +7,7 @@ import org.openqa.selenium.WebElement;
 import code.Marker;
 import code.interfaces.SeleniumInterface;
 import nu.validator.messages.Result;
+import tests.Test;
 
 public class KeyboardFunctionality extends Check {
 	public KeyboardFunctionality() {
@@ -51,29 +52,29 @@ public class KeyboardFunctionality extends Check {
 	public void initialise() {
 		//nothing to do
 	}
-
-	@Override
-	public String[] getHTMLPass() {
-		return new String[] {
-				"<input type=\"button\" tabindex=\"0\" aria-label=\"Close\">",
-				"<input type=\"button\" tabindex=\"-1\" aria-label=\"Skip Link\">",
-				"<img src=\"/images/logo.png\" alt=\"fancyImage\"/>"
-
-		};
+	
+	public void setupTests() {
+		this.tests.add(new Test("<input type=\"button\" tabindex=\"0\" aria-label=\"Close\">", 
+				new ResultSet[] {Result.SUCCESS}));
+		
+		this.tests.add(new Test("<input type=\"button\" tabindex=\"-1\" aria-label=\"Skip Link\">", 
+				new ResultSet[] {Result.SUCCESS}));
+		
+		this.tests.add(new Test("<img src=\"/images/logo.png\" alt=\"fancyImage\"/>", 
+				new ResultSet[] {Result.SUCCESS}));
+		
+		this.tests.add(new Test("<input type=\"button\" tabindex=\"1\" aria-label=\"Open\">", 
+				new ResultSet[] {Result.ERROR}));
+		
+		this.tests.add(new Test("<input type=\"button\" tabindex=\"2\" aria-label=\"Close\">", 
+				new ResultSet[] {Result.ERROR}));
+		
+		this.tests.add(new Test("<img ismap src=\"/images/logo.png\" alt=\"fancyImage\"/>", 
+				new ResultSet[] {Result.ERROR}));
+		
+		this.tests.add(new Test("<img src=\"/images/logo.png\" alt=\"fancyImage\" ismap/>", 
+				new ResultSet[] {Result.ERROR}));
 	}
-
-	@Override
-	public String[] getHTMLFail() {
-		return new String[] {
-				"<input type=\"button\" tabindex=\"1\" aria-label=\"Open\">",
-				"<input type=\"button\" tabindex=\"2\" aria-label=\"Close\">",
-				"<img ismap src=\"/images/logo.png\" alt=\"fancyImage\"/>",
-				"<img src=\"/images/logo.png\" alt=\"fancyImage\" ismap/>"
-		};
-	}
-	
-	
-	
 	
 	
 	

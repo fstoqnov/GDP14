@@ -8,6 +8,7 @@ import org.openqa.selenium.WebElement;
 
 import code.Marker;
 import code.interfaces.SeleniumInterface;
+import tests.Test;
 
 public class NonTextContent extends Check {
 
@@ -282,51 +283,73 @@ public class NonTextContent extends Check {
 		
 	}
 
-	@Override
-	public String[] getHTMLPass() {
-		return new String[] {
-			"<img src=\"smiley.gif\" alt=\"Smiley face\">" 
-			, //using alt
-			"<img src=\"smiley.gif\" title=\"Smiley face\">"
-			, //using title
-			"<p id=\"mydesc\">DescriptionRightHere</p>\n<p id=\"betterdesc\">There are many facets to a good accessible description</p>\n"
-			+ "<img src=\"smiley.gif\" aria-labelledby=\"mydesc betterdesc\">"
-			, //using aria-labelledby
-			"<img src=\"smiley.gif\" aria-describedby=\"Somethingexternal.com/my_image_label\">"
-			, //using aria-describedby
-			"<img src=\"planets.gif\" width=\"145\" height=\"126\" alt=\"Planets\"\r\n" + 
-			"usemap=\"#planetmap\">\r\n" + 
-			"\r\n" + 
-			"<map name=\"planetmap\">\r\n" + 
-			"  <area shape=\"rect\" coords=\"0,0,82,126\" href=\"sun.htm\" alt=\"Sun\">\r\n" + 
-			"</map>"
-			, //using <area> and aria-label
-			"<img src=\"sculpture.png\" longdesc=\"https://en.wikipedia.org/wiki/Desiderio_da_Settignano\">" 
-			, //using longdesc
-			"<img src=\"smiley.gif\" alt=\"\">" 
-			, //a decorative smiley gif
-			"<object src=\"smiley.gif\" role=\"presentation\">"
-			, //a decorative <object> smiley gif
-			"<div class=\"sprite card_icons visa\" role=\"img\" aria-label=\"Visa\"></div>"
-			, //using role="img" with a suitable label with 'aria-label'
+	
+	public void setupTests() {
+		
+		//using alt
+		this.tests.add(new Test("<img src=\"smiley.gif\" alt=\"Smiley face\">", 
+				new ResultSet[] {Result.SUCCESS}));
+		
+		//using title
+		this.tests.add(new Test("<img src=\"smiley.gif\" title=\"Smiley face\">", 
+				new ResultSet[] {Result.SUCCESS}));
+		
+		//using aria-labelledby
+		this.tests.add(new Test("<p id=\"mydesc\">DescriptionRightHere</p>\n<p id=\"betterdesc\">There are many facets to a good accessible description</p>\n"
+				+ "<img src=\"smiley.gif\" aria-labelledby=\"mydesc betterdesc\">", 
+				new ResultSet[] {Result.SUCCESS}));
+		
+		//using aria-describedby
+		this.tests.add(new Test("<img src=\"smiley.gif\" aria-describedby=\"Somethingexternal.com/my_image_label\">", 
+				new ResultSet[] {Result.SUCCESS}));
+		
+		//using <area> and aria-label
+		this.tests.add(new Test("<img src=\"planets.gif\" width=\"145\" height=\"126\" alt=\"Planets\"\r\n" + 
+				"usemap=\"#planetmap\">\r\n" + 
+				"\r\n" + 
+				"<map name=\"planetmap\">\r\n" + 
+				"  <area shape=\"rect\" coords=\"0,0,82,126\" href=\"sun.htm\" alt=\"Sun\">\r\n" + 
+				"</map>", 
+				new ResultSet[] {Result.SUCCESS}));
+		
+		//using longdesc
+		this.tests.add(new Test("<img src=\"sculpture.png\" longdesc=\"https://en.wikipedia.org/wiki/Desiderio_da_Settignano\">", 
+				new ResultSet[] {Result.SUCCESS}));
+		
+		//a decorative smiley gif
+		this.tests.add(new Test("<img src=\"smiley.gif\" alt=\"\">" , 
+				new ResultSet[] {Result.SUCCESS}));
 
-		};
+		//a decorative <object> smiley gif
+		this.tests.add(new Test("<object src=\"smiley.gif\" role=\"presentation\">", 
+				new ResultSet[] {Result.SUCCESS}));
+
+		//using role="img" with a suitable label with 'aria-label'
+		this.tests.add(new Test("<div class=\"sprite card_icons visa\" role=\"img\" aria-label=\"Visa\"></div>", 
+				new ResultSet[] {Result.SUCCESS}));
+
+		
+		
+		//no description given
+		this.tests.add(new Test("<img src=\"smiley.gif\" height=\"42\" width=\"42\">", 
+				new ResultSet[] {Result.ERROR}));
+
+		//<area> with no description given (despite img above having description)
+		this.tests.add(new Test("<img src=\"planets.gif\" width=\"145\" height=\"126\" alt=\"Planets\"\r\n" + 
+				"usemap=\"#planetmap\">\r\n" + 
+				"\r\n" + 
+				"<map name=\"planetmap\">\r\n" + 
+				"  <area shape=\"rect\" coords=\"0,0,82,126\" href=\"sun.htm\">\r\n" + 
+				"</map>", 
+				new ResultSet[] {Result.ERROR}));
+
+		 //an overly long alt text. doesn't currently fail as its only an ambiguous_serious.
+		this.tests.add(new Test("<img src=\"smiley.gif\" alt=\"This alt text is way too long. This alt text is way too long. "
+				+ "This alt text is way too long. This alt text is way too long. This alt text is way too long. This alt text is way too long. "
+				+ "This alt text is way too long.This alt text is way too long.This alt text is way too long.This alt text is way too long."
+				+ "This alt text is way too long.This alt text is way too long. This alt text is way too long. "
+				+ "This alt text is way too long. This alt text is way too long\">",
+				new ResultSet[] {Result.WARNING_SRS_LABEL_LENGTH}));
 	}
 
-	@Override
-	public String[] getHTMLFail() {
-		return new String[] {
-			"<img src=\"smiley.gif\" height=\"42\" width=\"42\">" 
-			, //no description given
-			"<img src=\"planets.gif\" width=\"145\" height=\"126\" alt=\"Planets\"\r\n" + 
-			"usemap=\"#planetmap\">\r\n" + 
-			"\r\n" + 
-			"<map name=\"planetmap\">\r\n" + 
-			"  <area shape=\"rect\" coords=\"0,0,82,126\" href=\"sun.htm\">\r\n" + 
-			"</map>"
-			, //<area> with no description given (despite img above having description)
-			"<img src=\"smiley.gif\" alt=\"This alt text is way too long. This alt text is way too long. This alt text is way too long. This alt text is way too long. This alt text is way too long. This alt text is way too long. This alt text is way too long.This alt text is way too long.This alt text is way too long.This alt text is way too long.This alt text is way too long.This alt text is way too long. This alt text is way too long. This alt text is way too long. This alt text is way too long\">"
-			, //an overly long alt text. doesn't currently fail as its only an ambiguous_serious.
-		};
-	}
 }

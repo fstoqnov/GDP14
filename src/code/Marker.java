@@ -24,6 +24,31 @@ public class Marker {
 	public static final int MARKER_AMBIGUOUS_SERIOUS = 3;
 	public static final int MARKER_SUCCESS = 4;
 
+	//primary constructor used in Check subclasses
+	public Marker(String desc, int type, Check check, WebElement element, ResultSet result) {
+		this.element = element;
+		this.position = -1;
+		this.attribute = null;
+		this.type = type;
+		this.check = check;
+		this.desc = desc;
+		this.id = element.getAttribute("id");
+		this.outerHTML = element.getAttribute("outerHTML");
+		this.result = result;
+	}
+	
+	public Marker(String desc, int type, Check check, ResultSet result) {
+		this.element=null;
+		this.position = -1;
+		this.attribute = null;
+		this.type = type;
+		this.check = check;
+		this.desc = desc;
+		this.id = null;
+		this.outerHTML = null;
+		this.result = result;
+	}
+	
 	//The constructors are coded lazily, I was tired. Feel free to clean them up
 	public Marker(int type, Check check, WebElement element) {
 		this.element = element;
@@ -43,17 +68,7 @@ public class Marker {
 		this.check = check;
 	}
 	
-	public Marker(String desc, int type, Check check, WebElement element, ResultSet result) {
-		this.element = element;
-		this.position = -1;
-		this.attribute = null;
-		this.type = type;
-		this.check = check;
-		this.desc = desc;
-		this.id = element.getAttribute("id");
-		this.outerHTML = element.getAttribute("outerHTML");
-		this.result = result;
-	}
+
 
 	public Marker(String desc, int type, Check check, WebElement element, String attribute) {
 		this.element = element;
