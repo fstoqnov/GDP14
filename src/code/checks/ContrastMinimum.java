@@ -15,7 +15,16 @@ public class ContrastMinimum extends Check {
 	public ContrastMinimum() {
 		super("Criterion 1.4.3 Contrast(Minimum)");
 	}
+	
+	private static String SUCCESS_CONTRAST() { return "contrast ratio adequate for font size and weight";}
+	private static String WARNING_SRS_INADEQUATE_CONTRAST(String contrastString, double requiredRatio) { return "contrast ratio inadequate (" + contrastString + "). Should be " + requiredRatio; }
 
+	private static enum Result {
+		ERROR,
+		SUCCESS,
+		WARNING_SRS_INADEQUATE_CONTRAST
+	}
+	
 	@Override
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
 		List<WebElement> eles = inter.getAllElements();
@@ -38,9 +47,9 @@ public class ContrastMinimum extends Check {
 				}
 
 				if (contrast >= requiredRatio) {
-					addFlagToElement(markers, Marker.MARKER_SUCCESS, eles.get(i), "contrast ratio adequate for font size and weight");
+					addFlagToElement(markers, Marker.MARKER_SUCCESS, eles.get(i), SUCCESS_CONTRAST(), Result.SUCCESS);
 				} else {
-					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, eles.get(i), "contrast ratio inadequate (" + contrastString + "). Should be " + requiredRatio);
+					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, eles.get(i), WARNING_SRS_INADEQUATE_CONTRAST(contrastString, requiredRatio), Result.WARNING_SRS_INADEQUATE_CONTRAST);
 				}
 			}
 		}

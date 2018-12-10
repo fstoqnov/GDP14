@@ -15,7 +15,17 @@ public class IdentifyInputPurpose extends Check {
 	public IdentifyInputPurpose() {
 		super("Criterion 1.3.5 Identify Input Purpose");
 	}
+	
+	private static String WARNING_INVALID_AUTOCOMPLETE_ATTR() {return "no autocomplete attribute defined by wcag 2.1 input purposes";}
+	private static String SUCC_AUTOCOMPLETE() {return "autocomplete attribute in defined list";}
+	private static String WARNING_NO_AUTOCOMPLETE_ATTR() {return "no autocomplete attribute";}
 
+	private static enum Result {
+		ERROR,
+		SUCCESS,
+		WARNING_INVALID_AC,
+		WARNING_NO_AC
+	}
 	@Override
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
 		WebElement[] forms = inter.getElementsByTagName("form");
@@ -24,12 +34,12 @@ public class IdentifyInputPurpose extends Check {
 			for (int j = 0; j < inputs.length; j ++) {
 				if (inputs[j].getAttribute("autocomplete") != null) {
 					if (!list.contains(inputs[j].getAttribute("autocomplete"))) {
-						addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[j], "no autocomplete attribute defined by wcag 2.1 input purposes");
+						addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[j], WARNING_INVALID_AUTOCOMPLETE_ATTR(), Result.WARNING_INVALID_AC);
 					} else {
-						addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[j], "autocomplete attribute in defined list");
+						addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[j], SUCC_AUTOCOMPLETE(), Result.SUCCESS);
 					}
 				} else {
-					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[j], "no autocomplete attribute");
+					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[j], WARNING_NO_AUTOCOMPLETE_ATTR(), Result.WARNING_NO_AC);
 				}
 			}
 		}

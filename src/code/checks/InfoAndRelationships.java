@@ -17,7 +17,15 @@ public class InfoAndRelationships extends Check {
 	public InfoAndRelationships() {
 		super("Criterion 1.3.1 Info and Relationships");
 	}
+	
+	private static String SUCC_HEADING_NEST() {return "Correctly nested heading";}
+	private static String ERR_HEADING_NEST(int initialLevel, int newLevel) {return "Incorrectly nested heading - jumped from " + initialLevel + " to " + newLevel;}
 
+	private static enum Result {
+		ERROR,
+		SUCCESS,
+		ERR_HEADING_NEST
+	}
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
 		checkHeadingNesting(markers, inter);
 	}
@@ -42,21 +50,19 @@ public class InfoAndRelationships extends Check {
 			
 			if (headingLevel == level) {
 				//this heading element is correctly nested
-				addFlagToElement(markers, Marker.MARKER_SUCCESS, headingEle, "Correctly nested heading");
+				addFlagToElement(markers, Marker.MARKER_SUCCESS, headingEle, SUCC_HEADING_NEST(), Result.SUCCESS);
 				sharedIndex.increment();
 			}
 			else if (headingLevel > level) {
 				if (headingLevel-level ==1) {
 					//correctly nested new heading level
-					addFlagToElement(markers, Marker.MARKER_SUCCESS, headingEle, "Correctly nested heading");
+					addFlagToElement(markers, Marker.MARKER_SUCCESS, headingEle, SUCC_HEADING_NEST(), Result.SUCCESS);
 					sharedIndex.increment();
 					checkHeadingNestingAtLevel(headingLevel, headingList, sharedIndex, markers, inter);
 				}
 				else {
 					//a jump of more than one in heading level is invalid.
-					addFlagToElement(markers, Marker.MARKER_ERROR, headingEle, 
-							"Incorrectly nested heading - jumped from " 
-							+ String.valueOf(level) + " to " + String.valueOf(headingLevel) + ".");
+					addFlagToElement(markers, Marker.MARKER_ERROR, headingEle, ERR_HEADING_NEST(level, headingLevel), Result.ERR_HEADING_NEST);
 					sharedIndex.increment();
 					checkHeadingNestingAtLevel(headingLevel, headingList, sharedIndex, markers, inter);
 				}

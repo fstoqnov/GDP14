@@ -18,12 +18,25 @@ import code.interfaces.SeleniumInterface;
 import code.structures.Headings;
 import code.structures.LabelledWebElement;
 import code.structures.TreeNode;
+import nu.validator.messages.Result;
 
 public class HeadingsAndLabels extends Check {
 
 	public HeadingsAndLabels() {
 		super("Criterion 2.4.6 Headings and Labels");
 	}
+	
+	private static String ERR_TITLE() {return "Primary label for this element is a 'title' attribute, which is not always accessible to all users";}
+	private static String WARNING_LABEL_GENERAL() {return "Manual Check: does this label properly describes the form control element";}
+	private static String ERR_LABEL_DUPL() {return "Element label is not unique";}
+	private static String SUCC_LABEL_DUPL() {return "Element label is not duplicated on this page";}
+	
+	private static enum Result {
+		ERROR,
+		SUCCESS,
+		WARNING_LABEL_GENERAL
+	}
+	
 	//There is also a requirement within 2.4.6 that Headings and Labels are fit-for-purpose, 
 	//obviously we can't check this. So SUCCESS is probably not really possible to raise
 	//we can raise a warning on all these elements --> Need to be checked manually.	
@@ -87,7 +100,7 @@ public class HeadingsAndLabels extends Check {
 			WebElement formControlEle = formControlLabel.getEle();
 				
 			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, formControlEle,
-					"Manual Check: does this label properly describes the form control element");
+					WARNING_LABEL_GENERAL(), Result.WARNING_LABEL_GENERAL);
 			if (formControlLabel.getLabelsSize() ==0) {
 				formControlIt.remove(); //this should be handled elsewhere. Don't want to highlight duplicate lacking labels.
 			}
@@ -109,13 +122,13 @@ public class HeadingsAndLabels extends Check {
 		
 		for (int i = 0; i < duplicateLabels.size(); i++) {
 			addFlagToElement(markers, Marker.MARKER_ERROR, duplicateLabels.get(i).getEle(),
-					"Element label is not unique");
+					ERR_LABEL_DUPL(), Result.ERROR);
 		}
 		
 		formControlLabels.removeAll(duplicateLabels);
 		for (int i = 0; i < formControlLabels.size(); i++) {
 			addFlagToElement(markers, Marker.MARKER_SUCCESS, formControlLabels.get(i).getEle(),
-					"Element label is not duplicated on this page");
+					SUCC_LABEL_DUPL(), Result.SUCCESS);
 			
 		}
 		
@@ -203,7 +216,7 @@ public class HeadingsAndLabels extends Check {
 			if (newLabelsSize == 1 && prevLabelsSize == 0) {
 				//if the 'label' is blank ("") then no label is added.
 				//this tests for that case, and if not: this is the primary label so raises the error.
-				addFlagToElement(markers, Marker.MARKER_ERROR, ele, "Primary label for this element is a 'title' attribute, which is not always accessible to all users");
+				addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_TITLE(), Result.ERROR);
 			}
 
 		}
@@ -444,13 +457,13 @@ public class HeadingsAndLabels extends Check {
 			Iterator<WebElement> failIt = duplicates.iterator();
 			while (failIt.hasNext()) {
 				WebElement dupl = failIt.next();
-				addFlagToElement(markers, Marker.MARKER_ERROR, dupl, errorMsg);
+				addFlagToElement(markers, Marker.MARKER_ERROR, dupl, errorMsg, Result.ERROR);
 			}
 			eleList.removeAll(duplicates);
 			Iterator<WebElement> succIt = eleList.iterator();
 			while (succIt.hasNext()) {
 				WebElement passEle = succIt.next();
-				addFlagToElement(markers, Marker.MARKER_SUCCESS, passEle, successMsg);
+				addFlagToElement(markers, Marker.MARKER_SUCCESS, passEle, successMsg, Result.SUCCESS);
 			}
 			return false;
 		}
@@ -484,13 +497,13 @@ public class HeadingsAndLabels extends Check {
 			Iterator<WebElement> failIt = duplicateTexts.iterator();
 			while (failIt.hasNext()) {
 				WebElement dupl = failIt.next();
-				addFlagToElement(markers, Marker.MARKER_ERROR, dupl, errorMsg);
+				addFlagToElement(markers, Marker.MARKER_ERROR, dupl, errorMsg, Result.ERROR);
 			}
 			eleList.removeAll(duplicateTexts);
 			Iterator<WebElement> succIt = eleList.iterator();
 			while (succIt.hasNext()) {
 				WebElement passEle = succIt.next();
-				addFlagToElement(markers, Marker.MARKER_SUCCESS, passEle, successMsg);
+				addFlagToElement(markers, Marker.MARKER_SUCCESS, passEle, successMsg, Result.SUCCESS);
 			}
 			return false;
 		}
@@ -504,6 +517,11 @@ public class HeadingsAndLabels extends Check {
 		
 	}
 
+	public void getTests() { //template
+		String pass1 = "<h1>My Pass Heading</h1>";
+		Result[] expectedPass1 = { Result.SUCCESS, Result.error5_bad, Result.error3 };
+		this.addNewTest(pass1, expectedPass1);
+	}
 	@Override
 	public String[] getHTMLPass() {
 		return new String[] {

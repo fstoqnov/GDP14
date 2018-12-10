@@ -11,19 +11,19 @@ import code.interfaces.SeleniumInterface;
 import code.structures.LabelledWebElement;
 
 public class LabelsOrInstructions extends Check {
-	private static final String ERR_ARIA_DESCRIBED_BY_MISSING = "The element specified in aria-describedby is missing";
-	private static final String ERR_ARIA_DESCRIBED_BY_EMPTY = "No elements were specified in aria-describedby";
+	private static String ERR_ARIA_DESCRIBED_BY_MISSING() { return "The element specified in aria-describedby is missing";}
+	private static String ERR_ARIA_DESCRIBED_BY_EMPTY() { return "No elements were specified in aria-describedby";}
 	
-	private static final String ERR_ARIA_LABELLED_BY_MISSING = "An element specified in aria-labelledby is missing";
-	private static final String ERR_ARIA_LABELLED_BY_EMPTY = "No elements specified in aria-labelledby";
+	private static String ERR_ARIA_LABELLED_BY_MISSING() { return "An element specified in aria-labelledby is missing";}
+	private static String ERR_ARIA_LABELLED_BY_EMPTY() { return "No elements specified in aria-labelledby";}
 	
-	private static final String ERR_LABEL_MISSING = "No accessible label provided for this form control element";
+	private static String ERR_LABEL_MISSING() { return "No accessible label provided for this form control element";}
 	
-	private static final String ERR_OPTION_NO_TEXT = "This <option> element does not have accessible text to differentiate it from other options";
+	private static String ERR_OPTION_NO_TEXT() { return "This <option> element does not have accessible text to differentiate it from other options";}
 	
-	private static final String ERR_TITLE_ONLY = "Primary label for this element is a 'title' attribute, which is not always accessible to all users";
+	private static String ERR_TITLE_ONLY() { return "Primary label for this element is a 'title' attribute, which is not always accessible to all users";}
 	
-	private static final String ERR_RECAPTCHA_TEXTAREA = "Recaptcha is not WCAG2.1 compliant - this <textarea> element has no accessible label";
+	private static String WARNING_RECAPTCHA_TEXTAREA() { return "Recaptcha is not WCAG2.1 compliant - this <textarea> element has no accessible label";}
 	public LabelsOrInstructions() {
 		super("Criterion 3.3.2 Labels or Instructions");
 	}
@@ -62,7 +62,7 @@ public class LabelsOrInstructions extends Check {
 			String elementID = textareaEles[i].getAttribute("id");
 			if (elementID != null) {
 				if (elementID.equals("g-recaptcha-response")) {
-					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, textareaEles[i], ERR_RECAPTCHA_TEXTAREA);
+					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, textareaEles[i], WARNING_RECAPTCHA_TEXTAREA(), Result.WARNING_RECAPTCHA_TEXTAREA);
 					continue;
 				}
 			}
