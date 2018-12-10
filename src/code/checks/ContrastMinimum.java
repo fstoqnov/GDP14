@@ -45,7 +45,6 @@ public class ContrastMinimum extends Check {
 				} else {
 					requiredRatio = 4.5D;
 				}
-				System.out.println("Reached this point. contrast is: " + contrast + ", required is: " + requiredRatio);
 				if (contrast >= requiredRatio) {
 					addFlagToElement(markers, Marker.MARKER_SUCCESS, eles.get(i), SUCCESS_CONTRAST(), Result.SUCCESS);
 				} else {

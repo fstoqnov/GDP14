@@ -116,7 +116,6 @@ public class NonTextContent extends Check {
 		WebElement[] objectEles = inter.getElementsByTagName("object");
 		//elements with <object> tag can be described by standard labelling techniques.
 		
-		System.out.println("Found: img: " + imgEles.length + ", area: " + areaEles.length + ", imageRole: " + imageRoleEles.length + ", object: " + objectEles.length);
 		for (int i = 0; i < imgEles.length; i++) {
 			NonTextLabel ntl = new NonTextLabel(imgEles[i]);
 			this.findImgLabel(markers, imgEles[i], ntl, altEles, inter);
@@ -139,16 +138,13 @@ public class NonTextContent extends Check {
 	private void findImgLabel(List<Marker> markers, WebElement ele, NonTextLabel ntl, HashSet<WebElement> altEles, SeleniumInterface inter) {
 		//check the alt tag and the 'longdesc' tag, which are unique to these elements, then pass it along
 		
-		System.out.println("in findImgLabel");
 		if (altEles.contains(ele)) {
-			System.out.println("it has an alt");
 			String altTag = ele.getAttribute("alt");
 			if (altTag.equals("")) {
 				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_CHECK_DECORATIVE(), Result.WARNING_CHECK_DECORATIVE);
 				return;
 			}
 			ntl.setAlt(altTag);
-			System.out.println("setting alt");
 		}
 		/*This doesn't work due to a strange quirk either of Selenium, or ChromeDriver
 		 * All img elements don't show up as having an 'alt' attribute when searching for it, but
@@ -187,12 +183,10 @@ public class NonTextContent extends Check {
 	}
 	
 	private void findElementLabel(List<Marker> markers, WebElement ele, NonTextLabel ntl, SeleniumInterface inter) {
-		System.out.println("Called findElementLabel");
 		//check if element is decorative:
 		String eleRole = ele.getAttribute("role");
 		if (eleRole != null) {
 			if (eleRole.equals("presentation")) {
-				System.out.println("DECORATIVE role");
 				//this is a sign for a decoration image - accessible tools will ignore this element.
 				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_CHECK_DECORATIVE(), Result.WARNING_CHECK_DECORATIVE);
 				return;
@@ -241,31 +235,26 @@ public class NonTextContent extends Check {
 	//handle markers for complete labels.
 	private void checkElementLabel(List<Marker> markers, WebElement ele, NonTextLabel ntl, SeleniumInterface inter) {
 		if (ntl.hasSpecificLabel()) {
-			System.out.println("specific label!");
 			String specLabel = ntl.getSpecificLabel();
 			this.checkLabel(markers, ele, specLabel, inter);
 		}
 		else if (ntl.hasAriaLabelledby()) {
-			System.out.println("arialabelledby!");
 			ArrayList<String> labels = ntl.getAriaLabelledbyLabels();
 			for (int i=0; i < labels.size(); i++) {
 				this.checkLabel(markers, ele, labels.get(i), inter);
 			}
 		}
 		else if (ntl.hasTitlelabel()) {
-			System.out.println("title!");
 			String titleLabel = ntl.getTitleLabel();
 			this.checkLabel(markers, ele, titleLabel, inter);
 		}
 		else if (ntl.hasDescriptions()) {
-			System.out.println("description!");
 			ArrayList<String> descriptions = ntl.getDescriptions();
 			for (int i=0; i < descriptions.size(); i++) {
 				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_DESCRIPTION(descriptions.get(i)), Result.WARNING_DESCRIPTION);
 			}
 		}
 		else {
-			System.out.println("no labels!");
 			addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_NO_LABEL(), Result.ERROR);
 		}
 	}

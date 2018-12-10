@@ -41,7 +41,7 @@ public class CheckList {
 					content = t.getHTMLString();
 				}
 				testCount++;
-				System.out.println("Next test: " + t.getHTMLString());
+				//System.out.println("Next test: " + t.getHTMLString());
 				String testDetails = c.getName() + "-test (" + (testCount) + "/" + tests.size()+ ")";
 				correct = RunTests.test(testDetails, t.getExpectedResults(), c.executeCheck(content, inter)) && correct;
 				

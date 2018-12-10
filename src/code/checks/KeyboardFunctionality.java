@@ -25,9 +25,7 @@ public class KeyboardFunctionality extends Check {
 	@Override
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
 		//Initially, we check that all elements with tabindex attributes have values <=0
-		System.out.println("Starting Keyboard Functionality Test");
 		WebElement[] tabIndexEle = inter.getElementsWithAttributeAnyValue("tabindex");
-		System.out.println("Number of 'tabindex' found is " + String.valueOf(tabIndexEle.length));
 		for (int i = 0; i < tabIndexEle.length; i ++) {
 			String tabIndexVal = tabIndexEle[i].getAttribute("tabindex");
 			if (Integer.valueOf(tabIndexVal) > 0) {
@@ -41,7 +39,6 @@ public class KeyboardFunctionality extends Check {
 		
 		//We ensure that server-side image maps are not used.
 		WebElement[] isMapEle = inter.getElementsWithAttributeAnyValue("ismap");
-		System.out.println("Number of ismap elements found is " + String.valueOf(isMapEle.length));
 		for (int i = 0; i < isMapEle.length; i++) {
 			addFlagToElement(markers, Marker.MARKER_ERROR, isMapEle[i], ERR_SERVER_MAP(), Result.ERROR);
 		}
