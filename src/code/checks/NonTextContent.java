@@ -139,13 +139,16 @@ public class NonTextContent extends Check {
 	private void findImgLabel(List<Marker> markers, WebElement ele, NonTextLabel ntl, HashSet<WebElement> altEles, SeleniumInterface inter) {
 		//check the alt tag and the 'longdesc' tag, which are unique to these elements, then pass it along
 		
+		System.out.println("in findImgLabel");
 		if (altEles.contains(ele)) {
+			System.out.println("it has an alt");
 			String altTag = ele.getAttribute("alt");
 			if (altTag.equals("")) {
 				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_CHECK_DECORATIVE(), Result.WARNING_CHECK_DECORATIVE);
 				return;
 			}
-			ntl.setAlt(ele.getAttribute(altTag));
+			ntl.setAlt(altTag);
+			System.out.println("setting alt");
 		}
 		/*This doesn't work due to a strange quirk either of Selenium, or ChromeDriver
 		 * All img elements don't show up as having an 'alt' attribute when searching for it, but
@@ -270,6 +273,8 @@ public class NonTextContent extends Check {
 	private void checkLabel(List<Marker> markers, WebElement ele, String label, SeleniumInterface inter) {
 		if (label.length() > 100) {
 			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, ele, WARNING_SRS_LABEL_LENGTH(label), Result.WARNING_SRS_LABEL_LENGTH);
+			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_HAS_LABEL(label), Result.WARNING_HAS_LABEL);
+
 		}
 		else {
 			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_HAS_LABEL(label), Result.WARNING_HAS_LABEL);
@@ -288,45 +293,45 @@ public class NonTextContent extends Check {
 		
 		//using alt
 		this.tests.add(new Test("<img src=\"smiley.gif\" alt=\"Smiley face\">", 
-				new ResultSet[] {Result.SUCCESS}));
+				new ResultSet[] {Result.WARNING_HAS_LABEL}));
 		
 		//using title
 		this.tests.add(new Test("<img src=\"smiley.gif\" title=\"Smiley face\">", 
-				new ResultSet[] {Result.SUCCESS}));
+				new ResultSet[] {Result.WARNING_HAS_LABEL}));
 		
 		//using aria-labelledby
 		this.tests.add(new Test("<p id=\"mydesc\">DescriptionRightHere</p>\n<p id=\"betterdesc\">There are many facets to a good accessible description</p>\n"
 				+ "<img src=\"smiley.gif\" aria-labelledby=\"mydesc betterdesc\">", 
-				new ResultSet[] {Result.SUCCESS}));
+				new ResultSet[] {Result.WARNING_HAS_LABEL}));
 		
 		//using aria-describedby
 		this.tests.add(new Test("<img src=\"smiley.gif\" aria-describedby=\"Somethingexternal.com/my_image_label\">", 
-				new ResultSet[] {Result.SUCCESS}));
+				new ResultSet[] {Result.WARNING_DESCRIPTION}));
 		
-		//using <area> and aria-label
+		//using <area> and alt
 		this.tests.add(new Test("<img src=\"planets.gif\" width=\"145\" height=\"126\" alt=\"Planets\"\r\n" + 
 				"usemap=\"#planetmap\">\r\n" + 
 				"\r\n" + 
 				"<map name=\"planetmap\">\r\n" + 
 				"  <area shape=\"rect\" coords=\"0,0,82,126\" href=\"sun.htm\" alt=\"Sun\">\r\n" + 
 				"</map>", 
-				new ResultSet[] {Result.SUCCESS}));
+				new ResultSet[] {Result.WARNING_HAS_LABEL}));
 		
 		//using longdesc
 		this.tests.add(new Test("<img src=\"sculpture.png\" longdesc=\"https://en.wikipedia.org/wiki/Desiderio_da_Settignano\">", 
-				new ResultSet[] {Result.SUCCESS}));
+				new ResultSet[] {Result.WARNING_DESCRIPTION}));
 		
 		//a decorative smiley gif
 		this.tests.add(new Test("<img src=\"smiley.gif\" alt=\"\">" , 
-				new ResultSet[] {Result.SUCCESS}));
+				new ResultSet[] {Result.WARNING_CHECK_DECORATIVE}));
 
 		//a decorative <object> smiley gif
 		this.tests.add(new Test("<object src=\"smiley.gif\" role=\"presentation\">", 
-				new ResultSet[] {Result.SUCCESS}));
+				new ResultSet[] {Result.WARNING_CHECK_DECORATIVE}));
 
 		//using role="img" with a suitable label with 'aria-label'
 		this.tests.add(new Test("<div class=\"sprite card_icons visa\" role=\"img\" aria-label=\"Visa\"></div>", 
-				new ResultSet[] {Result.SUCCESS}));
+				new ResultSet[] {Result.WARNING_HAS_LABEL}));
 
 		
 		
@@ -341,7 +346,7 @@ public class NonTextContent extends Check {
 				"<map name=\"planetmap\">\r\n" + 
 				"  <area shape=\"rect\" coords=\"0,0,82,126\" href=\"sun.htm\">\r\n" + 
 				"</map>", 
-				new ResultSet[] {Result.ERROR}));
+				new ResultSet[] {Result.ERROR, Result.WARNING_HAS_LABEL}));
 
 		 //an overly long alt text. doesn't currently fail as its only an ambiguous_serious.
 		this.tests.add(new Test("<img src=\"smiley.gif\" alt=\"This alt text is way too long. This alt text is way too long. "
@@ -349,7 +354,7 @@ public class NonTextContent extends Check {
 				+ "This alt text is way too long.This alt text is way too long.This alt text is way too long.This alt text is way too long."
 				+ "This alt text is way too long.This alt text is way too long. This alt text is way too long. "
 				+ "This alt text is way too long. This alt text is way too long\">",
-				new ResultSet[] {Result.WARNING_SRS_LABEL_LENGTH}));
+				new ResultSet[] {Result.WARNING_SRS_LABEL_LENGTH, Result.WARNING_HAS_LABEL}));
 	}
 
 }

@@ -31,7 +31,6 @@ public abstract class Check implements Comparable<Check> {
 		List<Marker> markers = new ArrayList<Marker>();
 		runCheck(urlContent, markers, inter);
 		boolean passed = true;
-		System.out.println("Received results right here! Markers size is {" + markers.size() + ", " + m.size() + "}");
 		for (int i=0; i < markers.size(); i++) {
 			resultsReceived.add(markers.get(i).getResult());
 			m.add(markers.get(i));

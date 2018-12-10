@@ -35,13 +35,10 @@ public class LanguageOfPage extends Check {
 			String docLang = doc[i].getAttribute("lang");
 			if(docLang == null) {
 				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i], ERR_NO_LANG(), Result.ERROR);
-				System.out.println("No lang attribute");
 			} else if(!lang.contains(docLang)){
 				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i], ERR_INVALID_LANG(docLang), Result.ERROR);
-				System.out.println("Invalid Lang: " + docLang);
 			} else {
 				addFlagToElement(markers, Marker.MARKER_SUCCESS, doc[i], SUCC_LANG(), Result.SUCCESS);
-				System.out.println("Succesful lang!");
 			}
 		}
 		

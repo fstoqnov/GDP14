@@ -17,13 +17,12 @@ public class ContrastMinimum extends Check {
 		super("Criterion 1.4.3 Contrast(Minimum)");
 	}
 	
-	private static String SUCCESS_CONTRAST() { return "contrast ratio adequate for font size and weight";}
-	private static String WARNING_SRS_INADEQUATE_CONTRAST(String contrastString, double requiredRatio) { return "contrast ratio inadequate (" + contrastString + "). Should be " + requiredRatio; }
+	private static String SUCCESS_CONTRAST() { return "Text contrast ratio adequate for font size and weight";}
+	private static String ERR_INADEQUATE_CONTRAST(String contrastString, double requiredRatio) { return "Contrast ratio inadequate for text - Contrast found was (" + contrastString + "). Should be " + requiredRatio; }
 
 	private static enum Result implements ResultSet {
 		ERROR,
 		SUCCESS,
-		WARNING_SRS_INADEQUATE_CONTRAST
 	}
 	
 	@Override
@@ -46,11 +45,11 @@ public class ContrastMinimum extends Check {
 				} else {
 					requiredRatio = 4.5D;
 				}
-
+				System.out.println("Reached this point. contrast is: " + contrast + ", required is: " + requiredRatio);
 				if (contrast >= requiredRatio) {
 					addFlagToElement(markers, Marker.MARKER_SUCCESS, eles.get(i), SUCCESS_CONTRAST(), Result.SUCCESS);
 				} else {
-					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, eles.get(i), WARNING_SRS_INADEQUATE_CONTRAST(contrastString, requiredRatio), Result.WARNING_SRS_INADEQUATE_CONTRAST);
+					addFlagToElement(markers, Marker.MARKER_ERROR, eles.get(i), ERR_INADEQUATE_CONTRAST(contrastString, requiredRatio), Result.ERROR);
 				}
 			}
 		}
@@ -70,8 +69,13 @@ public class ContrastMinimum extends Check {
 	public void setupTests() {
 		this.tests.add(new Test("<div style=\"background:black; color:white\">Test text</div>", new ResultSet[] {Result.SUCCESS}));
 		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:white\">Test text</div></div>", new ResultSet[] {Result.SUCCESS}));
-		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:black; display:none\">Test text</div></div>", new ResultSet[] {Result.SUCCESS}));
-		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:black\"></div></div>", new ResultSet[] {Result.SUCCESS}));
+		
+		//should ignore elements that aren't displayed
+		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:black; display:none\">Test text</div></div>", new ResultSet[] {}));
+		
+		//If there is no text, no contrast failure.
+		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:black\"></div></div>", new ResultSet[] {}));
+		
 		this.tests.add(new Test("<div>Test text</div>", new ResultSet[] {Result.SUCCESS}));
 
 		

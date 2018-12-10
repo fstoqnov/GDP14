@@ -60,7 +60,7 @@ public class OnInput extends Check {
 	
 	public void setupTests() {
 		//form with input and button
-		this.tests.add(new Test("<form><input type=\"text\"><button type=\"button\">CLICK HERE TO SUBMIT</button></form>", new ResultSet[] {Result.WARNING_SRS_NO_SUBMIT}));
+		this.tests.add(new Test("<form><input type=\"text\"><button type=\"button\">CLICK HERE TO SUBMIT</button></form>", new ResultSet[] {Result.WARNING_SUBMIT_PRESENT}));
 		//form with no button
 		this.tests.add(new Test("<form><input type=\"text\"></form>", new ResultSet[] {Result.WARNING_SRS_NO_SUBMIT}));
 		

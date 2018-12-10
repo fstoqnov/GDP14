@@ -26,11 +26,14 @@ public class LabelsOrInstructions extends Check {
 	
 	private static String WARNING_RECAPTCHA_TEXTAREA() { return "Recaptcha is not WCAG2.1 compliant - this <textarea> element has no accessible label";}
 	
+	private static String WARNING_HAS_LABEL() { return "Ensure that this label is sufficient to identify the associated form control field: "; }
+	
 	private static enum Result implements ResultSet {
 		ERROR,
 		SUCCESS,
 		WARNING_RECAPTCHA_TEXTAREA,
-		WARNING_SRS_TITLE_ONLY
+		WARNING_SRS_TITLE_ONLY,
+		WARNING_HAS_LABEL
 	}
 	public LabelsOrInstructions() {
 		super("Criterion 3.3.2 Labels or Instructions");
@@ -260,7 +263,7 @@ public class LabelsOrInstructions extends Check {
 			if (newLabelsSize == 1 && prevLabelsSize == 0) {
 				//if the 'label' is blank ("") then no label is added.
 				//this tests for that case, and if not: this is the primary label so raises the error.
-				addFlagToElement(markers, Marker.MARKER_ERROR, ele, WARNING_SRS_TITLE_ONLY(), Result.WARNING_SRS_TITLE_ONLY);
+				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, ele, WARNING_SRS_TITLE_ONLY(), Result.WARNING_SRS_TITLE_ONLY);
 
 			}
 
@@ -269,27 +272,29 @@ public class LabelsOrInstructions extends Check {
 		
 		if (eleLabel.getLabelsSize() == 0) {
 			addFlagToElement(markers, Marker.MARKER_ERROR, ele, ERR_LABEL_MISSING(), Result.ERROR);
-
+		}
+		else {
+			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, ele, WARNING_HAS_LABEL(), Result.WARNING_HAS_LABEL);
 		}
 	}
 
 	public void setupTests() {
 		//using label 'for='
 		this.tests.add(new Test("<label for=\"inputId\">description</label><input id=\"inputId\">", 
-				new ResultSet[] {Result.SUCCESS}));
+				new ResultSet[] {Result.WARNING_HAS_LABEL}));
 		
 		//aria described by
 		this.tests.add(new Test("<input id=\"inputId\" aria-describedby=\"description\"><div id=\"description\">A quick description</div>", 
-				new ResultSet[] {Result.SUCCESS}));
+				new ResultSet[] {Result.WARNING_HAS_LABEL}));
 		
 		//aria labelled by
 		this.tests.add(new Test("<input id=\"inputId\" aria-labelledby=\"description other\">\n"
 				+ "<div id=\"description\">A quick description</div><span id=\"other\">extended</span>", 
-				new ResultSet[] {Result.SUCCESS}));
+				new ResultSet[] {Result.WARNING_HAS_LABEL}));
 		
 		//aria labelled by hidden - should not make a difference
 		this.tests.add(new Test("<input id=\"inputId\" aria-labelledby=\"description\"><div style=\"display:none\" id=\"description\">A quick description</div>", 
-				new ResultSet[] {Result.SUCCESS}));
+				new ResultSet[] {Result.WARNING_HAS_LABEL}));
 		
 		//using 'aria-label' and an encapsulating <label>., 
 		this.tests.add(new Test("<fieldset><legend>Car Details</legend>\n"
@@ -297,9 +302,11 @@ public class LabelsOrInstructions extends Check {
 				+ "<input type=\"checkbox\" aria-label=\"Ford\"FORD></fieldset>\n"
 				+ "<label>Click when happy with selection\n"
 				+ "<input type=\"submit\">", 
-				new ResultSet[] {Result.SUCCESS}));
+				new ResultSet[] {Result.WARNING_HAS_LABEL}));
 		
-		
+		//one good, one missing
+		this.tests.add(new Test("<form> <input> <label for=\"inputId\">description</label><input id=\"inputId\"> </form>", 
+				new ResultSet[] {Result.ERROR, Result.WARNING_HAS_LABEL}));
 		this.tests.add(new Test("<input>", 
 				new ResultSet[] {Result.ERROR}));
 		
@@ -309,7 +316,7 @@ public class LabelsOrInstructions extends Check {
 		
 		//aria labelled by missing
 		this.tests.add(new Test("<input id=\"inputId\" aria-labelledby=\"description other\"><div id=\"description\">A quick description</div>", 
-				new ResultSet[] {Result.ERROR}));
+				new ResultSet[] {Result.ERROR, Result.WARNING_HAS_LABEL}));
 		
 		//aria labelled by empty
 		this.tests.add(new Test("<input id=\"inputId\" aria-labelledby=\"\">", 
@@ -323,7 +330,7 @@ public class LabelsOrInstructions extends Check {
 		
 		//only label is a 'title' attribute
 		this.tests.add(new Test("<input id=\"inputId\" type=\"text\" title=\"Enter your registration no. here\">", 
-				new ResultSet[] {Result.WARNING_SRS_TITLE_ONLY}));
+				new ResultSet[] {Result.WARNING_SRS_TITLE_ONLY, Result.WARNING_HAS_LABEL}));
 	}
 	
 

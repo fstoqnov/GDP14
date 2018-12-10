@@ -60,9 +60,6 @@ public class KeyboardFunctionality extends Check {
 		this.tests.add(new Test("<input type=\"button\" tabindex=\"-1\" aria-label=\"Skip Link\">", 
 				new ResultSet[] {Result.SUCCESS}));
 		
-		this.tests.add(new Test("<img src=\"/images/logo.png\" alt=\"fancyImage\"/>", 
-				new ResultSet[] {Result.SUCCESS}));
-		
 		this.tests.add(new Test("<input type=\"button\" tabindex=\"1\" aria-label=\"Open\">", 
 				new ResultSet[] {Result.ERROR}));
 		
