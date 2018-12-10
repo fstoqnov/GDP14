@@ -24,7 +24,7 @@ public class CheckList {
 
 	public static void addChecks(List<Check> checks) {
 
-		/*checks.add(new ContrastMinimum());
+		checks.add(new ContrastMinimum());
 		checks.add(new HeadingsAndLabels());
 		checks.add(new InfoAndRelationships());
 		checks.add(new KeyboardFunctionality());
@@ -33,7 +33,7 @@ public class CheckList {
 		checks.add(new NonTextContent());
 		checks.add(new OnInput());
 		checks.add(new PageTitled());
-		checks.add(new Parsing());*/
+		checks.add(new Parsing());
 		checks.add(new IdentifyInputPurpose());
 		//checks.add(new LanguageOfParts());
 		//checks.add(new NameRoleVal());
