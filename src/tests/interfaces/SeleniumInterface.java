@@ -26,7 +26,7 @@ public class SeleniumInterface {
 	}
 
 	private SeleniumInterface() {
-		inter = new code.interfaces.SeleniumInterface();
+		inter = new code.interfaces.SeleniumInterface(false);
 	}
 
 	private boolean testGetRenderedHtml() {

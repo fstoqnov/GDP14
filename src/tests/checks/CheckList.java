@@ -23,7 +23,7 @@ public class CheckList {
 	}
 
 	private boolean testCheck(Check c) {
-		SeleniumInterface inter = new SeleniumInterface();
+		SeleniumInterface inter = new SeleniumInterface(false);
 		String[] pass = c.getHTMLPass();
 		String[] fail = c.getHTMLFail();
 		int passTestCount = 0;

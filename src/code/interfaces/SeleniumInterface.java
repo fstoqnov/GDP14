@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -16,17 +17,19 @@ import org.openqa.selenium.chrome.ChromeOptions;
 public class SeleniumInterface {
 	public WebDriver driver;
 
-	public SeleniumInterface() {
+	public SeleniumInterface(boolean headed) {
 		Logger.getLogger("org.openqa.selenium.remote").setLevel(Level.OFF);
-		startChrome();
+		startChrome(headed);
 	}
 
-	private void startChrome() {
+	private void startChrome(boolean headed) {
 		System.setProperty("webdriver.chrome.silentOutput", "true");
 		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
 
 		ChromeOptions options = new ChromeOptions();
-		options.addArguments("--headless");
+		if (!headed) {
+			options.addArguments("--headless");
+		}
 		driver = new ChromeDriver(options);
 	}
 

@@ -1,11 +1,14 @@
 package code;
 
+import java.util.ArrayList;
+
 import code.interfaces.DatabaseInterface;
 import code.interfaces.SeleniumInterface;
 
 public class RunDemo {
 	public static void main (String[] args) {
-		CheckList cl = new CheckList();
+		new SeleniumInterface(true);
+		/*CheckList cl = new CheckList();
 		DatabaseInterface db;
 		try {
 			//String testURL = "https://google.co.uk";
@@ -17,6 +20,6 @@ public class RunDemo {
 			//new ConformanceReport().generateReportFromPage(db, "guru99.com");
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 }
