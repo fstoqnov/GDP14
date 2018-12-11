@@ -27,9 +27,10 @@ public abstract class Check implements Comparable<Check> {
 
 	
 	public boolean noFailExecuteCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
+		int curMarkerSize = markers.size();
 		this.executeCheck(urlContent, markers, inter);
-		for (Marker m: markers) {
-			if (m.getType() == Marker.MARKER_ERROR) {
+		for (int i = curMarkerSize; i < markers.size(); i ++) {
+			if (markers.get(i).getType() == Marker.MARKER_ERROR) {
 				return false;
 			}
 		}

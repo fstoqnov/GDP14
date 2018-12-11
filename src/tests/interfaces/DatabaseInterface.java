@@ -23,8 +23,9 @@ public class DatabaseInterface {
 	private static final String testContent = "<html>Test</html>";
 	private static final String testSite = "google.com";
 	private static final String testPage = "index.php";
+	public static final String connString = "Server=127.0.0.1;Database=gdb14;Uid=gdpfourteen;Pwd=pa55word;Port=3306";
 	//public static final String connString = "Server=127.0.0.1;Database=gdp14;Uid=gdpfourteen;Pwd=pa55word;Port=3306";
-	public static final String connString = "Server=localhost;Database=testdb;Uid=root;Pwd=Millyp1892;Port=3306";
+	//public static final String connString = "Server=localhost;Database=testdb;Uid=root;Pwd=Millyp1892;Port=3306";
 
 	private static final boolean runLiveDBTests = false;
 
