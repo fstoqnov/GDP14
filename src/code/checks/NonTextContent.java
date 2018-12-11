@@ -117,18 +117,30 @@ public class NonTextContent extends Check {
 		//elements with <object> tag can be described by standard labelling techniques.
 		
 		for (int i = 0; i < imgEles.length; i++) {
+			if (!inter.isElementAriaVisible(imgEles[i])) {
+				return;
+			}
 			NonTextLabel ntl = new NonTextLabel(imgEles[i]);
 			this.findImgLabel(markers, imgEles[i], ntl, altEles, inter);
 		}
 		for (int i=0; i < areaEles.length; i++) {
+			if (!inter.isElementAriaVisible(areaEles[i])) {
+				return;
+			}
 			NonTextLabel ntl = new NonTextLabel(areaEles[i]);
 			this.findImgLabel(markers, areaEles[i], ntl, altEles, inter);
 		}
 		for (int i=0; i < imageRoleEles.length; i++) {
+			if (!inter.isElementAriaVisible(imageRoleEles[i])) {
+				return;
+			}
 			NonTextLabel ntl = new NonTextLabel(imageRoleEles[i]);
 			this.findRoleImgLabel(markers, imageRoleEles[i], ntl, inter);
 		}
 		for (int i=0; i < objectEles.length; i++) {
+			if (!inter.isElementAriaVisible(objectEles[i])) {
+				return;
+			}
 			NonTextLabel ntl = new NonTextLabel(objectEles[i]);
 			this.findElementLabel(markers, objectEles[i], ntl, inter);
 		}
@@ -344,6 +356,24 @@ public class NonTextContent extends Check {
 				+ "This alt text is way too long.This alt text is way too long. This alt text is way too long. "
 				+ "This alt text is way too long. This alt text is way too long\">",
 				new ResultT[] {ResultType.WARNING_SRS_LABEL_LENGTH, ResultType.WARNING_HAS_LABEL}));
+		
+		//test using img that is aria-hidden="true"
+		this.tests.add(new Test("<img src=\"smiley.gif\" alt=\"\" aria-hidden=\"true\" href=\"http://www.lookoverthere.com\">",
+				new ResultT[] {}));
+		
+		//test using img that is aria-hidden="false"
+		this.tests.add(new Test("<img src=\"smiley.gif\" alt=\"\" aria-hidden=\"false\" href=\"http://www.lookoverthere.com\">",
+				new ResultT[] {ResultType.WARNING_CHECK_DECORATIVE}));
+		
+		//test using img within a div that is aria-hidden="true"
+		this.tests.add(new Test("<div class=\"sprite card_icons visa\" role=\"img\" aria-hidden=\"true\">\n"
+				+ "<img src=\"smiley.gif\" alt=\"\" href=\"http://www.lookoverthere.com\"></div>",
+				new ResultT[] {}));
+		
+		//same as above, but the image is not within the aria-hidden="true" <div>
+		this.tests.add(new Test("<div class=\"sprite card_icons visa\" role=\"img\" aria-hidden=\"true\">\n</div>"
+				+ "<img src=\"smiley.gif\" alt=\"\" href=\"http://www.lookoverthere.com\">",
+				new ResultT[] {ResultType.WARNING_CHECK_DECORATIVE}));
 	}
 
 }

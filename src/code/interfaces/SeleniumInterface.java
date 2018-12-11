@@ -259,6 +259,26 @@ public class SeleniumInterface {
 		List<WebElement> el = driver.findElements(By.cssSelector("*"));
 		return el;
 	}
+	
+	public boolean isElementAriaVisible(WebElement ele) {
+		//check if this element, or any of its parents have attribute aria-hidden="true"
+		do {
+			System.out.println("ele is now of type: " + ele.getTagName());
+			String ariaHiddenAttr = ele.getAttribute("aria-hidden");
+			if (ariaHiddenAttr != null) {
+				if (ariaHiddenAttr.equals("true")) {
+					return false;
+				}
+				else if (ariaHiddenAttr.equals("false")) {
+					return true;
+				}
+			}
+			ele = ele.findElement(By.xpath(".."));
+		}
+		while (ele != null && !ele.getTagName().equals("html"));
+		
+		return true;
+	}
 
 	public String getCurrentURL() { return driver.getCurrentUrl(); }
 
