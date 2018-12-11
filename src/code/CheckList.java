@@ -64,7 +64,7 @@ public class CheckList {
 		}
 		return null;
 	}
-    
+
     private void addImplementedChecks() {
 		addImplementedChecks(implementedChecks);
 	}
@@ -79,7 +79,7 @@ public class CheckList {
 	public boolean runChecksAtURLs(RuntimeConfig config, DatabaseInterface db) throws Exception {
 		return runChecksAtURLs(config, true, db);
 	}
-	
+
 	private boolean runChecksAtURLs(RuntimeConfig config, boolean store, DatabaseInterface db) throws Exception {
 		//Boolean passed = true;
 		//Integer totalPassed = 0;
@@ -98,7 +98,7 @@ public class CheckList {
 		String rep;
 		String baseURL;
 		String url;
-		
+
 		keyListener = GlobalKeyListener.startup();
 
 		for (CheckURL curUrl : config.urls) {
@@ -116,7 +116,9 @@ public class CheckList {
 			rootPage = runCheckAtPermutedPage(inter, url, null, store, db, checkResults, curTime, null);
             System.out.println("Checks complete");
             if (store) {
-            	cr.addCheckImages(db, url, inter);
+            	SeleniumInterface imageSI = new SeleniumInterface();
+            	imageSI.getRenderedHtml(url);
+            	cr.addCheckImages(db, url, imageSI);
             }
             System.out.println();
 
@@ -140,16 +142,16 @@ public class CheckList {
 		if(store) {
 			cr.generateReportFromPage(db, config.urls.get(0).checkURL);
 		}
-		
+
 		GlobalKeyListener.stop();
 
 		return checkResults.overallPass;
 	}
-	
+
 	public int waitForInput(int permitted) {
 		return waitForInput(new int[] { permitted });
 	}
-	
+
 	public int waitForInput(int[] permitted) {
 		keyListener.lastKey = 0;
 		while (true) {

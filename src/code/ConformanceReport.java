@@ -5,7 +5,6 @@ import code.interfaces.SeleniumInterface;
 import com.google.common.collect.Lists;
 import database_records.DBPage;
 import database_records.DBSimplePage;
-import nu.validator.datatype.Int;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.Dimension;
@@ -14,6 +13,8 @@ import org.openqa.selenium.Point;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -392,7 +393,7 @@ public class ConformanceReport {
 							anchorError--;
 							fails++;
 						}
-						else {
+						else if(!(usm.type == Marker.MARKER_SUCCESS)){
 							pBuff.append(addWarningElement(getFlagText(usm), anchorError,
 									usm.type == Marker.MARKER_AMBIGUOUS_SERIOUS));
 							String oHTML = usm.outerHTML;
@@ -438,7 +439,7 @@ public class ConformanceReport {
 			report.append(pBuff.toString());
 			report.append(newLine);
 			report.append("</body>");
-			report.append(generateComparisonTable(db, groupedPages));
+			report.append(generateComparisonTable(db, groupedPages, site));
 			report.append(script);
 			report.append("</html>");
 			reportFull = report.toString();
@@ -518,7 +519,7 @@ public class ConformanceReport {
 		return file.getAbsolutePath();
 	}
 
-	private String generateComparisonTable(DatabaseInterface db, List<List<DBSimplePage>> groupedPages) throws Exception{
+	private String generateComparisonTable(DatabaseInterface db, List<List<DBSimplePage>> groupedPages, String url) throws Exception{
 
 		String table = "";
 		long currTimestamp = 0;
@@ -543,17 +544,17 @@ public class ConformanceReport {
 			siteHM.put(c, new ArrayList<>());
 		}
 
-		for(List<DBSimplePage> dbspList : groupedPages) {
-			currTimestamp = dbspList.get(0).timestamp;
-			Date resultDate = new Date(currTimestamp);
-			headers.add(sdf.format(resultDate));
+        for(List<DBSimplePage> dbspList : groupedPages) {
+            currTimestamp = dbspList.get(0).timestamp;
+            Date resultDate = new Date(currTimestamp);
 
 			int siteFails = 0;
 			int siteWarn = 0;
 			int siteSerWarn = 0;
 			Boolean sitePass = true;
 
-			for(DBSimplePage dbsp : dbspList) {
+            for(DBSimplePage dbsp : dbspList) {
+                headers.add(sdf.format(resultDate) + " - " + url + "/" + dbsp.page);
 
 				DBPage dbp = dbsp.loadFullPage(db);
 
@@ -628,10 +629,37 @@ public class ConformanceReport {
 			directory.mkdirs();
 		}
 
+		int maxH = 1080;
+		int maxW = 1920;
+		int imgBuffer = 25;
+
 		for(String check : keys) {
 
 			ArrayList<UnserialisedMarker> currentCheck = checkMarkers.get(check);
 
+			for (UnserialisedMarker usm : currentCheck) {
+				if (usm.tag != null) {
+					WebElement ele = inter.getElementsByTagName(usm.tag)[usm.tagPos];
+					if (ele.getLocation().x + ele.getSize().width + (2 * imgBuffer) > maxW) {
+						maxW = ele.getLocation().x + ele.getSize().width + (2 * imgBuffer);
+					}
+					if (ele.getLocation().y + ele.getSize().height + (2 * imgBuffer) > maxH) {
+						maxH = ele.getLocation().y + ele.getSize().height + (2 * imgBuffer);
+					}
+				}
+			}
+		}
+
+		inter.driver.manage().window().setSize(new Dimension(maxW, maxH));
+		File screesnshot = ((TakesScreenshot)inter.driver).getScreenshotAs(OutputType.FILE);
+		File eleSSFile = ((TakesScreenshot)inter.driver).getScreenshotAs(OutputType.FILE);
+		BufferedImage bImg = ImageIO.read(screesnshot);
+
+		for(String check : keys) {
+
+			ArrayList<UnserialisedMarker> currentCheck = checkMarkers.get(check);
+
+			/*
 			int maxH = 1080;
 			int maxW = 1920;
 			int imgBuffer = 25;
@@ -651,6 +679,12 @@ public class ConformanceReport {
 			inter.driver.manage().window().setSize(new Dimension(maxW, maxH));
 			File screesnshot = ((TakesScreenshot)inter.driver).getScreenshotAs(OutputType.FILE);
 			File eleSSFile = ((TakesScreenshot)inter.driver).getScreenshotAs(OutputType.FILE);
+			BufferedImage bImg = ImageIO.read(screesnshot);
+			*/
+
+			ColorModel cm = bImg.getColorModel();
+			boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+			WritableRaster raster = bImg.copyData(null);
 
 			for(UnserialisedMarker usm : currentCheck) {
 
@@ -683,25 +717,26 @@ public class ConformanceReport {
 
 						if(!(ele.getLocation().y + ele.getSize().height + (2 * imgBuffer) > maxH) &&
 								!(ele.getLocation().x + ele.getSize().width + (2 * imgBuffer) > maxW)) {
-							BufferedImage bImg = ImageIO.read(screesnshot);
-							BufferedImage eleSS;
+							BufferedImage eleSS = new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+							/*
 							if (px > bImg.getWidth() || py > bImg.getHeight()) {
-								
+
 								//TODO this often occurs!
-								
+
 								Graphics2D g = bImg.createGraphics();
 								g.setColor(Color.RED);
 								g.drawRect(rectX, rectY, ele.getSize().width, ele.getSize().height);
 								ImageIO.write(bImg, "png", eleSSFile);
 								FileUtils.copyFile(eleSSFile, new File(path + usm.id + ".png"));
 							} else {
-								eleSS = bImg.getSubimage(px, py, Math.min(eleW, bImg.getWidth() - px), Math.min(eleH, bImg.getHeight() - py));
+							*/
+								eleSS = eleSS.getSubimage(px, py, Math.min(eleW, bImg.getWidth() - px), Math.min(eleH, bImg.getHeight() - py));
 								Graphics2D g = eleSS.createGraphics();
 								g.setColor(Color.RED);
 								g.drawRect(rectX, rectY, ele.getSize().width, ele.getSize().height);
 								ImageIO.write(eleSS, "png", eleSSFile);
 								FileUtils.copyFile(eleSSFile, new File(path + usm.id + ".png"));
-							}
+							//}
 						}
 					}
 				}
