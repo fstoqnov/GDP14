@@ -3,7 +3,7 @@ package tests;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import code.checks.Result;
+import code.checks.ResultT;
 import tests.checks.CheckList;
 import tests.interfaces.DatabaseInterface;
 import tests.interfaces.SeleniumInterface;
@@ -55,11 +55,11 @@ public class RunTests {
 		return test(testName, expectedValue + "", testValue + "");
 	}
 	
-	public static boolean test(String testName, Result[] expectedResults, ArrayList<Result> receivedResults) {
+	public static boolean test(String testName, ResultT[] expectedResults, ArrayList<ResultT> receivedResults) {
 		boolean result = true;
 		
-		HashSet<Result> setRecResults = new HashSet<Result>(receivedResults);
-		HashSet<Result> setExpResults = new HashSet<Result>();
+		HashSet<ResultT> setRecResults = new HashSet<ResultT>(receivedResults);
+		HashSet<ResultT> setExpResults = new HashSet<ResultT>();
 		for (int i=0; i < expectedResults.length; i++) {
 			setExpResults.add(expectedResults[i]);
 		}

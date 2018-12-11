@@ -13,7 +13,7 @@ public class PageTitled extends Check {
 	private static String ERR_NO_TITLE() { return "Title not found on page"; }
 	private static String WARNING_TITLE_FOUND(String title) { return "Title found, ensure its a valid title for page. Title found: " + title; }
 	
-	private static enum ResultType implements Result {
+	private static enum ResultType implements ResultT {
 		ERROR,
 		SUCCESS,
 		WARNING_TITLE_FOUND
@@ -44,8 +44,8 @@ public class PageTitled extends Check {
 	}
 	
 	public void setupTests() {
-		tests.add(new Test("<html>No Title present in document</html>", new Result[] {ResultType.ERROR}));
-		tests.add(new Test("<html> <head> <title>Hello everyone</title> </head> <body> wow lots going on today </body> </html>", new Result[] {ResultType.WARNING_TITLE_FOUND}));
+		tests.add(new Test("<html>No Title present in document</html>", new ResultT[] {ResultType.ERROR}));
+		tests.add(new Test("<html> <head> <title>Hello everyone</title> </head> <body> wow lots going on today </body> </html>", new ResultT[] {ResultType.WARNING_TITLE_FOUND}));
 
 	}
 

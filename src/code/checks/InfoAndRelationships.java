@@ -22,7 +22,7 @@ public class InfoAndRelationships extends Check {
 	private static String SUCC_HEADING_NEST() {return "Correctly nested heading";}
 	private static String ERR_HEADING_NEST(int initialLevel, int newLevel) {return "Incorrectly nested heading - jumped from " + initialLevel + " to " + newLevel;}
 
-	private static enum ResultType implements Result{
+	private static enum ResultType implements ResultT{
 		ERROR,
 		SUCCESS,
 	}
@@ -83,13 +83,13 @@ public class InfoAndRelationships extends Check {
 	}
 
 	public void setupTests() {
-		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>\n<h3>My Pass Heading</h3>", new Result[] {ResultType.SUCCESS}));
-		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>\n<h3>My Pass Heading</h3>\n<h1>Another Pass Heading</h1>", new Result[] {ResultType.SUCCESS}));
+		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>\n<h3>My Pass Heading</h3>", new ResultT[] {ResultType.SUCCESS}));
+		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h2>My Pass Heading</h2>\n<h3>My Pass Heading</h3>\n<h1>Another Pass Heading</h1>", new ResultT[] {ResultType.SUCCESS}));
 
 
 		
-		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h3>My Fail Heading</h3>", new Result[] {ResultType.ERROR, ResultType.SUCCESS}));
-		this.tests.add(new Test("<h2>My Fail Heading</h2>", new Result[] {ResultType.ERROR}));
+		this.tests.add(new Test("<h1>My Pass Heading</h1>\n<h3>My Fail Heading</h3>", new ResultT[] {ResultType.ERROR, ResultType.SUCCESS}));
+		this.tests.add(new Test("<h2>My Fail Heading</h2>", new ResultT[] {ResultType.ERROR}));
 
 	}
 }

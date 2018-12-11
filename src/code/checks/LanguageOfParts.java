@@ -5,18 +5,25 @@ import java.util.HashSet;
 import java.util.List;
 
 import com.detectlanguage.DetectLanguage;
-import com.detectlanguage.Result;
 import com.detectlanguage.errors.APIError;
+import com.detectlanguage.Result;
 
 import org.openqa.selenium.WebElement;
 
 import code.Marker;
 import code.interfaces.SeleniumInterface;
+import tests.Test;
 
 public class LanguageOfParts extends Check {
 	
 	public LanguageOfParts() {
 		super("Criterion 3.1.2 Language of Parts");
+	}
+	
+	private static enum ResultType implements ResultT {
+		ERROR,
+		SUCCESS,
+		WARNING_POSITIONS
 	}
 	
 	@Override
@@ -55,9 +62,9 @@ public class LanguageOfParts extends Check {
 				
 		if(languageTagsFound.size() == languagesFound.size()) {
 			if(languageTagsFound.equals(languagesFound)) {
-				addFlagToElement(markers, Marker.MARKER_SUCCESS, htmlHead[0], "Languages on page are properly declared"); //markers are in the correct place provided not more than once instance of a language is present
+				addFlagToElement(markers, Marker.MARKER_SUCCESS, htmlHead[0], "Languages on page are properly declared", ResultType.SUCCESS); //markers are in the correct place provided not more than once instance of a language is present
 			} else {
-				addFlagToElement(markers, Marker.MARKER_ERROR, htmlHead[0], "Some/All languages on page are not properly declared"); //markers are not in the correct place when only one instance is present
+				addFlagToElement(markers, Marker.MARKER_ERROR, htmlHead[0], "Some/All languages on page are not properly declared", ResultType.ERROR); //markers are not in the correct place when only one instance is present
 			}
 		} else{
 			for(String languageInText : languagesFound) {
@@ -66,17 +73,15 @@ public class LanguageOfParts extends Check {
 				}
 			}
 			if(languagesMatched == languagesFound.size()) {
-				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, htmlHead[0], "Languages are declared, please ensure they are in their correct positions"); //markers are the same, but no way to tell if they are declared in all situations
+				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, htmlHead[0], "Languages are declared, please ensure they are in their correct positions", ResultType.WARNING_POSITIONS); //markers are the same, but no way to tell if they are declared in all situations
 			} else {
-				addFlagToElement(markers, Marker.MARKER_ERROR, htmlHead[0], "Languages are not properly declared, language tags are missing in some positions"); //one or more language declared in text missing from the lang declarations
+				addFlagToElement(markers, Marker.MARKER_ERROR, htmlHead[0], "Languages are not properly declared, language tags are missing in some positions", ResultType.ERROR); //one or more language declared in text missing from the lang declarations
 			}
 		}
 	}
 	
-	@Override
-	public String[] getHTMLPass() {
-		return new String[] {
-				"<html>" 
+	public void setupTests() {
+		this.tests.add(new Test("<html>" 
 				+ "<span title=\"Spanish\"><a lang=\"es\">Español. Buenos días, Esteban. ¿Cómo estás? Como siempre.</a></span>"
 				+ "<blockquote lang=\"de\">"
 				+ "<p>"
@@ -85,14 +90,10 @@ public class LanguageOfParts extends Check {
 				"    und machte sich auf den Weg nach Bremen: dort, meinte er,\r\n" + 
 				"    könnte er ja Stadtmusikant werden.</a></span>"+
 				"</p>" +
-				"</html>"
-		};
-	}
-
-	@Override
-	public String[] getHTMLFail() {
-		return new String[] {
-				"<html>" 
+				"</html>",
+				new ResultT[] {ResultType.SUCCESS}));
+		
+		this.tests.add(new Test("<html>" 
 				+ "<span title=\"Spanish\"><a>Español. Buenos días, Esteban. ¿Cómo estás? Como siempre.</a></span>"
 				+ "<blockquote lang=\"de\">"
 				+ "<p>"
@@ -101,9 +102,10 @@ public class LanguageOfParts extends Check {
 				"    und machte sich auf den Weg nach Bremen: dort, meinte er,\r\n" + 
 				"    könnte er ja Stadtmusikant werden.</a></span>"+
 				  "</p>" +
-				"</html>"
-		};
+				"</html>",
+				new ResultT[] {ResultType.ERROR}));
 	}
+
 
 	@Override
 	public void initialise() {}

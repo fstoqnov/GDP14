@@ -20,7 +20,7 @@ public class ContrastMinimum extends Check {
 	private static String SUCCESS_CONTRAST() { return "Text contrast ratio adequate for font size and weight";}
 	private static String ERR_INADEQUATE_CONTRAST(String contrastString, double requiredRatio) { return "Contrast ratio inadequate for text - Contrast found was (" + contrastString + "). Should be " + requiredRatio; }
 
-	private static enum ResultType implements Result {
+	private static enum ResultType implements ResultT {
 		ERROR,
 		SUCCESS,
 	}
@@ -66,20 +66,20 @@ public class ContrastMinimum extends Check {
 	}
 	
 	public void setupTests() {
-		this.tests.add(new Test("<div style=\"background:black; color:white\">Test text</div>", new Result[] {ResultType.SUCCESS}));
-		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:white\">Test text</div></div>", new Result[] {ResultType.SUCCESS}));
+		this.tests.add(new Test("<div style=\"background:black; color:white\">Test text</div>", new ResultT[] {ResultType.SUCCESS}));
+		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:white\">Test text</div></div>", new ResultT[] {ResultType.SUCCESS}));
 		
 		//should ignore elements that aren't displayed
-		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:black; display:none\">Test text</div></div>", new Result[] {}));
+		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:black; display:none\">Test text</div></div>", new ResultT[] {}));
 		
 		//If there is no text, no contrast failure.
-		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:black\"></div></div>", new Result[] {}));
+		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:black\"></div></div>", new ResultT[] {}));
 		
-		this.tests.add(new Test("<div>Test text</div>", new Result[] {ResultType.SUCCESS}));
+		this.tests.add(new Test("<div>Test text</div>", new ResultT[] {ResultType.SUCCESS}));
 
 		
-		this.tests.add(new Test("<div style=\"background:red; color:orange\">Test text</div>", new Result[] {ResultType.ERROR}));
-		this.tests.add(new Test("<div style=\"background:red\"><div style=\"color:orange\">Test text</div></div>", new Result[] {ResultType.ERROR}));
+		this.tests.add(new Test("<div style=\"background:red; color:orange\">Test text</div>", new ResultT[] {ResultType.ERROR}));
+		this.tests.add(new Test("<div style=\"background:red\"><div style=\"color:orange\">Test text</div></div>", new ResultT[] {ResultType.ERROR}));
 
 	}
 

@@ -13,7 +13,7 @@ public class OnInput extends Check {
 	private static final String WARNING_SRS_NO_SUBMIT() { return "Ensure that <form> elements do not initiate a 'change-of-context without the user's knowledge - this form has no submit button. This may also make it unclear for the user how to submit the values entered in the form fields."; }
 	private static final String WARNING_SUBMIT_PRESENT() { return "Ensure that <form> elements other than explicit submit buttons do not initiate a 'change-of-context' for the user"; }
 	
-	private static enum ResultType implements Result {
+	private static enum ResultType implements ResultT {
 		ERROR,
 		SUCCESS,
 		WARNING_SRS_NO_SUBMIT,
@@ -60,13 +60,13 @@ public class OnInput extends Check {
 	
 	public void setupTests() {
 		//form with input and button
-		this.tests.add(new Test("<form><input type=\"text\"><button type=\"button\">CLICK HERE TO SUBMIT</button></form>", new Result[] {ResultType.WARNING_SUBMIT_PRESENT}));
+		this.tests.add(new Test("<form><input type=\"text\"><button type=\"button\">CLICK HERE TO SUBMIT</button></form>", new ResultT[] {ResultType.WARNING_SUBMIT_PRESENT}));
 		//form with no button
-		this.tests.add(new Test("<form><input type=\"text\"></form>", new Result[] {ResultType.WARNING_SRS_NO_SUBMIT}));
+		this.tests.add(new Test("<form><input type=\"text\"></form>", new ResultT[] {ResultType.WARNING_SRS_NO_SUBMIT}));
 		
 		//both
 		this.tests.add(new Test("<form><input type=\"text\"></form>\n<form><input type=\"text\"><button type=\"button\">CLICK HERE TO SUBMIT</button></form>", 
-				new Result[] {ResultType.WARNING_SUBMIT_PRESENT, ResultType.WARNING_SRS_NO_SUBMIT}));
+				new ResultT[] {ResultType.WARNING_SUBMIT_PRESENT, ResultType.WARNING_SRS_NO_SUBMIT}));
 
 		
 		

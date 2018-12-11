@@ -18,7 +18,7 @@ public class NonTextContent extends Check {
 	private static final String WARNING_SRS_LABEL_LENGTH(String label) { return "Label length is longer than 100 - try to keep accessible labels short. Label found: " + label; }
 	private static final String WARNING_DESCRIPTION(String description) { return "Non-Text element references a long description. Ensure that this is suitable for describing the image - Description found: " + description; }
 	
-	private static enum ResultType implements Result {
+	private static enum ResultType implements ResultT {
 		ERROR,
 		SUCCESS,
 		WARNING_CHECK_DECORATIVE,
@@ -282,20 +282,20 @@ public class NonTextContent extends Check {
 		
 		//using alt
 		this.tests.add(new Test("<img src=\"smiley.gif\" alt=\"Smiley face\">", 
-				new Result[] {ResultType.WARNING_HAS_LABEL}));
+				new ResultT[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//using title
 		this.tests.add(new Test("<img src=\"smiley.gif\" title=\"Smiley face\">", 
-				new Result[] {ResultType.WARNING_HAS_LABEL}));
+				new ResultT[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//using aria-labelledby
 		this.tests.add(new Test("<p id=\"mydesc\">DescriptionRightHere</p>\n<p id=\"betterdesc\">There are many facets to a good accessible description</p>\n"
 				+ "<img src=\"smiley.gif\" aria-labelledby=\"mydesc betterdesc\">", 
-				new Result[] {ResultType.WARNING_HAS_LABEL}));
+				new ResultT[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//using aria-describedby
 		this.tests.add(new Test("<img src=\"smiley.gif\" aria-describedby=\"Somethingexternal.com/my_image_label\">", 
-				new Result[] {ResultType.WARNING_DESCRIPTION}));
+				new ResultT[] {ResultType.WARNING_DESCRIPTION}));
 		
 		//using <area> and alt
 		this.tests.add(new Test("<img src=\"planets.gif\" width=\"145\" height=\"126\" alt=\"Planets\"\r\n" + 
@@ -304,29 +304,29 @@ public class NonTextContent extends Check {
 				"<map name=\"planetmap\">\r\n" + 
 				"  <area shape=\"rect\" coords=\"0,0,82,126\" href=\"sun.htm\" alt=\"Sun\">\r\n" + 
 				"</map>", 
-				new Result[] {ResultType.WARNING_HAS_LABEL}));
+				new ResultT[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//using longdesc
 		this.tests.add(new Test("<img src=\"sculpture.png\" longdesc=\"https://en.wikipedia.org/wiki/Desiderio_da_Settignano\">", 
-				new Result[] {ResultType.WARNING_DESCRIPTION}));
+				new ResultT[] {ResultType.WARNING_DESCRIPTION}));
 		
 		//a decorative smiley gif
 		this.tests.add(new Test("<img src=\"smiley.gif\" alt=\"\">" , 
-				new Result[] {ResultType.WARNING_CHECK_DECORATIVE}));
+				new ResultT[] {ResultType.WARNING_CHECK_DECORATIVE}));
 
 		//a decorative <object> smiley gif
 		this.tests.add(new Test("<object src=\"smiley.gif\" role=\"presentation\">", 
-				new Result[] {ResultType.WARNING_CHECK_DECORATIVE}));
+				new ResultT[] {ResultType.WARNING_CHECK_DECORATIVE}));
 
 		//using role="img" with a suitable label with 'aria-label'
 		this.tests.add(new Test("<div class=\"sprite card_icons visa\" role=\"img\" aria-label=\"Visa\"></div>", 
-				new Result[] {ResultType.WARNING_HAS_LABEL}));
+				new ResultT[] {ResultType.WARNING_HAS_LABEL}));
 
 		
 		
 		//no description given
 		this.tests.add(new Test("<img src=\"smiley.gif\" height=\"42\" width=\"42\">", 
-				new Result[] {ResultType.ERROR}));
+				new ResultT[] {ResultType.ERROR}));
 
 		//<area> with no description given (despite img above having description)
 		this.tests.add(new Test("<img src=\"planets.gif\" width=\"145\" height=\"126\" alt=\"Planets\"\r\n" + 
@@ -335,7 +335,7 @@ public class NonTextContent extends Check {
 				"<map name=\"planetmap\">\r\n" + 
 				"  <area shape=\"rect\" coords=\"0,0,82,126\" href=\"sun.htm\">\r\n" + 
 				"</map>", 
-				new Result[] {ResultType.ERROR, ResultType.WARNING_HAS_LABEL}));
+				new ResultT[] {ResultType.ERROR, ResultType.WARNING_HAS_LABEL}));
 
 		 //an overly long alt text. doesn't currently fail as its only an ambiguous_serious.
 		this.tests.add(new Test("<img src=\"smiley.gif\" alt=\"This alt text is way too long. This alt text is way too long. "
@@ -343,7 +343,7 @@ public class NonTextContent extends Check {
 				+ "This alt text is way too long.This alt text is way too long.This alt text is way too long.This alt text is way too long."
 				+ "This alt text is way too long.This alt text is way too long. This alt text is way too long. "
 				+ "This alt text is way too long. This alt text is way too long\">",
-				new Result[] {ResultType.WARNING_SRS_LABEL_LENGTH, ResultType.WARNING_HAS_LABEL}));
+				new ResultT[] {ResultType.WARNING_SRS_LABEL_LENGTH, ResultType.WARNING_HAS_LABEL}));
 	}
 
 }

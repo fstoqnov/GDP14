@@ -17,7 +17,7 @@ public class KeyboardFunctionality extends Check {
 	private static String SUCC_TAB() { return "Tabindex used not greater than 0";}
 	private static String ERR_SERVER_MAP() {return "Must not use server side image maps ('ismap' attribute)";}
 
-	private static enum ResultType implements Result {
+	private static enum ResultType implements ResultT {
 		ERROR,
 		SUCCESS
 	}
@@ -51,22 +51,22 @@ public class KeyboardFunctionality extends Check {
 	
 	public void setupTests() {
 		this.tests.add(new Test("<input type=\"button\" tabindex=\"0\" aria-label=\"Close\">", 
-				new Result[] {ResultType.SUCCESS}));
+				new ResultT[] {ResultType.SUCCESS}));
 		
 		this.tests.add(new Test("<input type=\"button\" tabindex=\"-1\" aria-label=\"Skip Link\">", 
-				new Result[] {ResultType.SUCCESS}));
+				new ResultT[] {ResultType.SUCCESS}));
 		
 		this.tests.add(new Test("<input type=\"button\" tabindex=\"1\" aria-label=\"Open\">", 
-				new Result[] {ResultType.ERROR}));
+				new ResultT[] {ResultType.ERROR}));
 		
 		this.tests.add(new Test("<input type=\"button\" tabindex=\"2\" aria-label=\"Close\">", 
-				new Result[] {ResultType.ERROR}));
+				new ResultT[] {ResultType.ERROR}));
 		
 		this.tests.add(new Test("<img ismap src=\"/images/logo.png\" alt=\"fancyImage\"/>", 
-				new Result[] {ResultType.ERROR}));
+				new ResultT[] {ResultType.ERROR}));
 		
 		this.tests.add(new Test("<img src=\"/images/logo.png\" alt=\"fancyImage\" ismap/>", 
-				new Result[] {ResultType.ERROR}));
+				new ResultT[] {ResultType.ERROR}));
 	}
 	
 	

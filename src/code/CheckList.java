@@ -35,8 +35,8 @@ public class CheckList {
 		checks.add(new PageTitled());
 		checks.add(new Parsing());
 		checks.add(new IdentifyInputPurpose());
-		//checks.add(new LanguageOfParts());
-		//checks.add(new NameRoleVal());
+		checks.add(new LanguageOfParts());
+		checks.add(new NameRoleVal());
 		
 		Collections.sort(checks);
 	}

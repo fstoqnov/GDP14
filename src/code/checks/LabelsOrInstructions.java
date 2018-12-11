@@ -28,7 +28,7 @@ public class LabelsOrInstructions extends Check {
 	
 	private static String WARNING_HAS_LABEL() { return "Ensure that this label is sufficient to identify the associated form control field: "; }
 	
-	private static enum ResultType implements Result {
+	private static enum ResultType implements ResultT {
 		ERROR,
 		SUCCESS,
 		WARNING_RECAPTCHA_TEXTAREA,
@@ -281,20 +281,20 @@ public class LabelsOrInstructions extends Check {
 	public void setupTests() {
 		//using label 'for='
 		this.tests.add(new Test("<label for=\"inputId\">description</label><input id=\"inputId\">", 
-				new Result[] {ResultType.WARNING_HAS_LABEL}));
+				new ResultT[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//aria described by
 		this.tests.add(new Test("<input id=\"inputId\" aria-describedby=\"description\"><div id=\"description\">A quick description</div>", 
-				new Result[] {ResultType.WARNING_HAS_LABEL}));
+				new ResultT[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//aria labelled by
 		this.tests.add(new Test("<input id=\"inputId\" aria-labelledby=\"description other\">\n"
 				+ "<div id=\"description\">A quick description</div><span id=\"other\">extended</span>", 
-				new Result[] {ResultType.WARNING_HAS_LABEL}));
+				new ResultT[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//aria labelled by hidden - should not make a difference
 		this.tests.add(new Test("<input id=\"inputId\" aria-labelledby=\"description\"><div style=\"display:none\" id=\"description\">A quick description</div>", 
-				new Result[] {ResultType.WARNING_HAS_LABEL}));
+				new ResultT[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//using 'aria-label' and an encapsulating <label>., 
 		this.tests.add(new Test("<fieldset><legend>Car Details</legend>\n"
@@ -302,35 +302,35 @@ public class LabelsOrInstructions extends Check {
 				+ "<input type=\"checkbox\" aria-label=\"Ford\"FORD></fieldset>\n"
 				+ "<label>Click when happy with selection\n"
 				+ "<input type=\"submit\">", 
-				new Result[] {ResultType.WARNING_HAS_LABEL}));
+				new ResultT[] {ResultType.WARNING_HAS_LABEL}));
 		
 		//one good, one missing
 		this.tests.add(new Test("<form> <input> <label for=\"inputId\">description</label><input id=\"inputId\"> </form>", 
-				new Result[] {ResultType.ERROR, ResultType.WARNING_HAS_LABEL}));
+				new ResultT[] {ResultType.ERROR, ResultType.WARNING_HAS_LABEL}));
 		this.tests.add(new Test("<input>", 
-				new Result[] {ResultType.ERROR}));
+				new ResultT[] {ResultType.ERROR}));
 		
 		//aria described by missing
 		this.tests.add(new Test("<input id=\"inputId\" aria-describedby=\"description\">", 
-				new Result[] {ResultType.ERROR}));
+				new ResultT[] {ResultType.ERROR}));
 		
 		//aria labelled by missing
 		this.tests.add(new Test("<input id=\"inputId\" aria-labelledby=\"description other\"><div id=\"description\">A quick description</div>", 
-				new Result[] {ResultType.ERROR, ResultType.WARNING_HAS_LABEL}));
+				new ResultT[] {ResultType.ERROR, ResultType.WARNING_HAS_LABEL}));
 		
 		//aria labelled by empty
 		this.tests.add(new Test("<input id=\"inputId\" aria-labelledby=\"\">", 
-				new Result[] {ResultType.ERROR}));
+				new ResultT[] {ResultType.ERROR}));
 		
 		//using checkboxes with text, but no accessible label.
 		this.tests.add(new Test("<fieldset><legend>Car Brands</legend>\n"
 				+ "<input type=\"checkbox\"AUDI>\n"
 				+ "<input type=\"checkbox\"FORD></fieldset>", 
-				new Result[] {ResultType.ERROR}));
+				new ResultT[] {ResultType.ERROR}));
 		
 		//only label is a 'title' attribute
 		this.tests.add(new Test("<input id=\"inputId\" type=\"text\" title=\"Enter your registration no. here\">", 
-				new Result[] {ResultType.WARNING_SRS_TITLE_ONLY, ResultType.WARNING_HAS_LABEL}));
+				new ResultT[] {ResultType.WARNING_SRS_TITLE_ONLY, ResultType.WARNING_HAS_LABEL}));
 	}
 	
 

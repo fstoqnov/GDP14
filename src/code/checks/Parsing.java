@@ -16,7 +16,7 @@ import org.openqa.selenium.WebElement;
 
 public class Parsing extends Check {
 
-	private static enum ResultType implements Result {
+	private static enum ResultType implements ResultT {
 		ERROR,
 		SUCCESS,
 		WARNING_HTML,
@@ -132,13 +132,13 @@ public class Parsing extends Check {
 
     
     public void setupTests() {
-    	this.tests.add(new Test("<!DOCTYPE html><html lang=\"en\"><head><title><div><img /></div></title></head></html>", new Result[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<!DOCTYPE html><html lang=\"en\"><head><title><div><img /></div></title></head></html>", new ResultT[] {ResultType.SUCCESS}));
     	
-    	this.tests.add(new Test("<!DOCTYPE html><html><head><div><img></img></div></html>", new Result[] {ResultType.ERROR}));
+    	this.tests.add(new Test("<!DOCTYPE html><html><head><div><img></img></div></html>", new ResultT[] {ResultType.ERROR}));
 
-    	this.tests.add(new Test("<!DOCTYPE html><html><head><p id='id1'><p id='id1'><div><img /></head></div></html>", new Result[] {ResultType.ERROR}));
+    	this.tests.add(new Test("<!DOCTYPE html><html><head><p id='id1'><p id='id1'><div><img /></head></div></html>", new ResultT[] {ResultType.ERROR}));
 
-    	this.tests.add(new Test( "<!DOCTYPE html><html><head><div><img /></head></div></html>", new Result[] {ResultType.ERROR}));
+    	this.tests.add(new Test( "<!DOCTYPE html><html><head><div><img /></head></div></html>", new ResultT[] {ResultType.ERROR}));
 
     }
 

@@ -19,7 +19,7 @@ public class LanguageOfPage extends Check {
 	private static String ERR_INVALID_LANG(String givenLang) {return "The language found is not in a valid format. Found lang: " + givenLang;}
 	private static String SUCC_LANG() { return "The language is declared and valid"; }
 	
-	private static enum ResultType implements Result {
+	private static enum ResultType implements ResultT {
 		ERROR,
 		SUCCESS
 	}
@@ -48,15 +48,15 @@ public class LanguageOfPage extends Check {
 
 	public void setupTests() {
 		String pass1 = "<html lang=\"en-GB\"></html>";
-		Result[] expectedPass1 = {ResultType.SUCCESS};
+		ResultT[] expectedPass1 = {ResultType.SUCCESS};
 		this.tests.add(new Test(pass1, expectedPass1));
 		
 		String fail1 = "<html lang=\"not-included\"></html>";
-		Result[] expectedFail1 = {ResultType.ERROR};
+		ResultT[] expectedFail1 = {ResultType.ERROR};
 		this.tests.add(new Test(fail1, expectedFail1));
 		
 		String fail2 = "<html>I have no lang tag specified</html>";
-		Result[] expectedFail2 = {ResultType.ERROR};
+		ResultT[] expectedFail2 = {ResultType.ERROR};
 		this.tests.add(new Test(fail2, expectedFail2));
 
 	}
