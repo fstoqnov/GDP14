@@ -36,9 +36,9 @@ public class NameRoleVal extends Check{
 	
 	
 	
-	private static String ERR_EMPTY_ARIA_LABEL() {return "Aria-label empty, role not discribed";}
+	private static String ERR_EMPTY_ARIA_LABEL() {return "Aria-label empty, role not described";}
 	private static String WARNING_AMBIGUOUS_DESCRIPTION() {return "Role description can not be verified, please check the validity of role description on element";}
-	private static String SUCC_ROLE_DESCRIBED() { return "Role of the element is properly discribed"; }
+	private static String SUCC_ROLE_DESCRIBED() { return "Role of the element is properly described"; }
 	
     public NameRoleVal() { super("Criterion 4.1.2 Name, Role, Value");}
     
