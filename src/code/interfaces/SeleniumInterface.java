@@ -263,7 +263,6 @@ public class SeleniumInterface {
 	public boolean isElementAriaVisible(WebElement ele) {
 		//check if this element, or any of its parents have attribute aria-hidden="true"
 		do {
-			System.out.println("ele is now of type: " + ele.getTagName());
 			String ariaHiddenAttr = ele.getAttribute("aria-hidden");
 			if (ariaHiddenAttr != null) {
 				if (ariaHiddenAttr.equals("true")) {

@@ -16,7 +16,8 @@ public class KeyboardFunctionality extends Check {
 	private static String ERR_POS_TAB() { return "Must not use tabindex greater than 0";}
 	private static String SUCC_TAB() { return "Tabindex used not greater than 0";}
 	private static String ERR_SERVER_MAP() {return "Must not use server side image maps ('ismap' attribute)";}
-
+	//TODO: Need to use inter.isElementAriaVisible to check if elements that are focusable (within the tab order) are aria-hidden - if so, error.
+	
 	private static enum ResultType implements ResultT {
 		ERROR,
 		SUCCESS
