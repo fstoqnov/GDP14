@@ -15,9 +15,9 @@ public class LanguageOfPage extends Check {
 	
 	private ArrayList<String> lang;
 	
-	private static String ERR_NO_LANG() {return "No lang attribute";}
-	private static String ERR_INVALID_LANG(String givenLang) {return "Found Invalid lang: " + givenLang;}
-	private static String SUCC_LANG() { return "Found valid lang"; }
+	private static String ERR_NO_LANG() {return "No language declared for page";}
+	private static String ERR_INVALID_LANG(String givenLang) {return "The language found is not in a valid format. Found lang: " + givenLang;}
+	private static String SUCC_LANG() { return "The language is declared and valid"; }
 	
 	private static enum ResultType implements Result {
 		ERROR,
@@ -39,6 +39,7 @@ public class LanguageOfPage extends Check {
 				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i], ERR_INVALID_LANG(docLang), ResultType.ERROR);
 			} else {
 				addFlagToElement(markers, Marker.MARKER_SUCCESS, doc[i], SUCC_LANG(), ResultType.SUCCESS);
+
 			}
 		}
 		

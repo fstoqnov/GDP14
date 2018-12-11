@@ -55,9 +55,9 @@ public class LanguageOfParts extends Check {
 				
 		if(languageTagsFound.size() == languagesFound.size()) {
 			if(languageTagsFound.equals(languagesFound)) {
-				addFlagToElement(markers, Marker.MARKER_SUCCESS, htmlHead[0]); //markers are in the correct place provided not more than once instance of a language is present
+				addFlagToElement(markers, Marker.MARKER_SUCCESS, htmlHead[0], "Languages on page are properly declared"); //markers are in the correct place provided not more than once instance of a language is present
 			} else {
-				addFlagToElement(markers, Marker.MARKER_ERROR, htmlHead[0]); //markers are not in the correct place when only one instance is present
+				addFlagToElement(markers, Marker.MARKER_ERROR, htmlHead[0], "Some/All languages on page are not properly declared"); //markers are not in the correct place when only one instance is present
 			}
 		} else{
 			for(String languageInText : languagesFound) {
@@ -66,9 +66,9 @@ public class LanguageOfParts extends Check {
 				}
 			}
 			if(languagesMatched == languagesFound.size()) {
-				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, htmlHead[0]); //markers are the same, but no way to tell if they are declared in all situations
+				addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, htmlHead[0], "Languages are declared, please ensure they are in their correct positions"); //markers are the same, but no way to tell if they are declared in all situations
 			} else {
-				addFlagToElement(markers, Marker.MARKER_ERROR, htmlHead[0]); //one or more language declared in text missing from the lang declarations
+				addFlagToElement(markers, Marker.MARKER_ERROR, htmlHead[0], "Languages are not properly declared, language tags are missing in some positions"); //one or more language declared in text missing from the lang declarations
 			}
 		}
 	}

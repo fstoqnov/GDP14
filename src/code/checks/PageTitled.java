@@ -10,8 +10,8 @@ import tests.Test;
 
 public class PageTitled extends Check {
 
-	private static String ERR_NO_TITLE() { return "Document does not have a title"; }
-	private static String WARNING_TITLE_FOUND(String title) { return "Ensure that this title is a good title for the document. Title found: " + title; }
+	private static String ERR_NO_TITLE() { return "Title not found on page"; }
+	private static String WARNING_TITLE_FOUND(String title) { return "Title found, ensure its a valid title for page. Title found: " + title; }
 	
 	private static enum ResultType implements Result {
 		ERROR,
@@ -39,6 +39,7 @@ public class PageTitled extends Check {
 			addFlagToElement(markers, Marker.MARKER_ERROR, doc[0], ERR_NO_TITLE(), ResultType.ERROR); //title not found on the page
 		} else {
 			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, titlehead, WARNING_TITLE_FOUND(titlehead.getText()), ResultType.WARNING_TITLE_FOUND); //title found at titlehead location, might not be described, can't tell
+
 		}							  
 	}
 	
