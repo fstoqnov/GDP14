@@ -24,13 +24,13 @@ public class LanguageOfPage extends Check {
 		for (int i = 0; i < doc.length; i ++) {
 			String docLang = doc[i].getAttribute("lang");
 			if(docLang == null) {
-				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i]);
+				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i], "No language declared for page");
 				System.out.println("No lang attribute");
 			} else if(!lang.contains(docLang)){
-				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i]);
+				addFlagToElement(markers, Marker.MARKER_ERROR, doc[i], "The language found is not in a valid format");
 				System.out.println("Invalid Lang: " + docLang);
 			} else {
-				addFlagToElement(markers, Marker.MARKER_SUCCESS, doc[i]);
+				addFlagToElement(markers, Marker.MARKER_SUCCESS, doc[i], "The language is declared and valid");
 				System.out.println("Succesful lang!");
 			}
 		}

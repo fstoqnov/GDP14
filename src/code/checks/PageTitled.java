@@ -27,9 +27,9 @@ public class PageTitled extends Check {
 		}
 		
 		if(titleExists == false) {
-			addFlagToElement(markers, Marker.MARKER_ERROR, doc[0]); //title not found on the page
+			addFlagToElement(markers, Marker.MARKER_ERROR, doc[0], "Title not found on page"); //title not found on the page
 		} else {
-			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, titlehead); //title found at titlehead location, might not be described, can't tell
+			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, titlehead, "Title found, ensure its a valid title for page"); //title found at titlehead location, might not be described, can't tell
 		}							  
 	}
 	
