@@ -31,6 +31,9 @@ public class OnInput extends Check {
 	private void checkFormSubmitButtons(List<Marker> markers, SeleniumInterface inter) {
 		WebElement[] formElements = inter.getElementsByTagName("form");
 		for (int i = 0; i < formElements.length; i++) {
+			if (!inter.isElementAriaVisible(formElements[i])) {
+				break;
+			}
 			WebElement form = formElements[i];
 			int formButtonCount = inter.getChildrenWithTag(form, "button").length;
 			int formInputSubmitCount = inter.getChildrenWithAttributeAndTag(form, "type", "submit", "input").length;

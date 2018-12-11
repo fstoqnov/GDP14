@@ -58,18 +58,30 @@ public class LabelsOrInstructions extends Check {
 					continue;
 				}
 			}
+			if (!inter.isElementAriaVisible(inputEles[i])) {
+				break;
+			}
 			LabelledWebElement eleLabel = new LabelledWebElement(inputEles[i]);
 			this.checkInputLabel(markers, inputEles[i], eleLabel, labelEles, inter);
 		}
 		for (int i = 0; i < selectEles.length; i++) {
+			if (!inter.isElementAriaVisible(selectEles[i])) {
+				break;
+			}
 			LabelledWebElement eleLabel = new LabelledWebElement(selectEles[i]);
 			this.checkSelectLabel(markers, selectEles[i], eleLabel, labelEles, inter);
 		}
 		for (int i = 0; i < buttonEles.length; i++) {
+			if (!inter.isElementAriaVisible(buttonEles[i])) {
+				break;
+			}
 			LabelledWebElement eleLabel = new LabelledWebElement(buttonEles[i]);
 			this.checkButtonLabel(markers, buttonEles[i], eleLabel, labelEles, inter);
 		}
 		for (int i = 0; i < textareaEles.length; i++) {
+			if (!inter.isElementAriaVisible(textareaEles[i])) {
+				break;
+			}
 			String elementID = textareaEles[i].getAttribute("id");
 			if (elementID != null) {
 				if (elementID.equals("g-recaptcha-response")) {

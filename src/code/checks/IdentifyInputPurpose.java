@@ -33,6 +33,9 @@ public class IdentifyInputPurpose extends Check {
 		for (int i = 0; i < forms.length; i ++) {
 			WebElement[] inputs = inter.getSubElementsByTagName(forms[i], "input");
 			for (int j = 0; j < inputs.length; j ++) {
+				if (!inter.isElementAriaVisible(inputs[i])) {
+					break;
+				}
 				String autocompleteVal = inputs[j].getAttribute("autocomplete");
 				if (autocompleteVal != null) {
 					if (!autocompleteVal.equals("")) { //without this check - when it automatically adds blank autocomplete="" values, that throws off the test.

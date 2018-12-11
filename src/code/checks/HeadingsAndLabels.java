@@ -27,14 +27,13 @@ public class HeadingsAndLabels extends Check {
 	}
 	
 	private static String WARNING_SRS_TITLE_ONLY() {return "Primary label for this element is a 'title' attribute, which is not always accessible to all users";}
-	private static String WARNING_LABEL_GENERAL() {return "Manual Check: does this label properly describes the form control element";}
+	//private static String WARNING_LABEL_GENERAL() {return "Manual Check: does this label properly describes the form control element";}
 	private static String ERR_LABEL_DUPL() {return "Element label is not unique";}
 	private static String SUCC_LABEL_DUPL() {return "Element label is not duplicated on this page";}
 	
 	private static enum ResultType implements ResultT {
 		ERROR,
 		SUCCESS,
-		WARNING_LABEL_GENERAL,
 		WARNING_SRS_TITLE_ONLY
 	}
 	
@@ -70,18 +69,30 @@ public class HeadingsAndLabels extends Check {
 					continue;
 				}
 			}
+			if (!inter.isElementAriaVisible(inputEles[i])) {
+				break;
+			}
 			LabelledWebElement eleLabel = new LabelledWebElement(inputEles[i]);
 			formControlLabels.add(this.getInputLabel(markers, inputEles[i], eleLabel, labelEles, fieldsetEles, inter));
 		}
 		for (int i = 0; i < selectEles.length; i++) {
+			if (!inter.isElementAriaVisible(selectEles[i])) {
+				break;
+			}
 			LabelledWebElement eleLabel = new LabelledWebElement(selectEles[i]);
 			formControlLabels.add(this.getSelectLabel(markers, selectEles[i], eleLabel, labelEles, fieldsetEles, inter));
 		}
 		for (int i = 0; i < buttonEles.length; i++) {
+			if (!inter.isElementAriaVisible(buttonEles[i])) {
+				break;
+			}
 			LabelledWebElement eleLabel = new LabelledWebElement(buttonEles[i]);
 			formControlLabels.add(this.getButtonLabel(markers, buttonEles[i], eleLabel, labelEles, fieldsetEles, inter));
 		}
 		for (int i = 0; i < textareaEles.length; i++) {
+			if (!inter.isElementAriaVisible(textareaEles[i])) {
+				break;
+			}
 			LabelledWebElement eleLabel = new LabelledWebElement(textareaEles[i]);
 			formControlLabels.add(this.getElementLabel(markers, textareaEles[i], eleLabel, labelEles, fieldsetEles, inter));
 		}
@@ -100,9 +111,6 @@ public class HeadingsAndLabels extends Check {
 		while(formControlIt.hasNext()) {
 			LabelledWebElement formControlLabel = formControlIt.next();
 			WebElement formControlEle = formControlLabel.getEle();
-				
-			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, formControlEle,
-					WARNING_LABEL_GENERAL(), ResultType.WARNING_LABEL_GENERAL);
 			if (formControlLabel.getLabelsSize() ==0) {
 				formControlIt.remove(); //this should be handled elsewhere. Don't want to highlight duplicate lacking labels.
 			}
@@ -547,7 +555,7 @@ public class HeadingsAndLabels extends Check {
 		//using one label:
 		this.tests.add(new Test("<label for=\"request_subject\">Subject</label>\n"
 				+ "<input type=\"text\"  id=\"request_subject\">", 
-				new ResultT[] {ResultType.SUCCESS, ResultType.WARNING_LABEL_GENERAL}));
+				new ResultT[] {ResultType.SUCCESS}));
 		
 		//matching labels, but one is inside a fieldset with a <legend>
 		this.tests.add(new Test("<label for=\"size\">Red</label>\n"
@@ -560,7 +568,7 @@ public class HeadingsAndLabels extends Check {
 				+ "<input id=\"g\" type=\"checkbox\"Green>\n"
 				+ "<input id=\"r\" type=\"checkbox\"Red>\n"
 				+ "</fieldset>", 
-				new ResultT[] {ResultType.SUCCESS, ResultType.WARNING_LABEL_GENERAL}));
+				new ResultT[] {ResultType.SUCCESS}));
 
 		//select with no duplicates
 		this.tests.add(new Test("<select>\n"
@@ -568,7 +576,7 @@ public class HeadingsAndLabels extends Check {
 				+ "<option>B</option<\n>"
 				+ "<option>C</option>\n"
 				+ "</select>",
-				new ResultT[] {ResultType.SUCCESS, ResultType.WARNING_LABEL_GENERAL}));
+				new ResultT[] {ResultType.SUCCESS}));
 		
 		//select with duplicates, but optgroups make them unique.
 		this.tests.add(new Test("<select>\n"
@@ -581,7 +589,7 @@ public class HeadingsAndLabels extends Check {
 				+ "<option>B</option>\n"
 				+ "</optgroup>\n"
 				+ "</select>", 
-				new ResultT[] {ResultType.SUCCESS, ResultType.WARNING_LABEL_GENERAL}));
+				new ResultT[] {ResultType.SUCCESS}));
 
 		this.tests.add(new Test("<h1>My Fail Heading</h1>\n<h1>My Fail Heading</h1>", 
 				new ResultT[] {ResultType.ERROR}));
@@ -608,20 +616,20 @@ public class HeadingsAndLabels extends Check {
 				+ "<input type=\"text\" id=\"request_subject\">\n"
 				+ "<label for=\"request_duplicate\">Duplicate Label</label>\r\n"
 				+ "<input type=\"text\" id=\"request_duplicate\">", 
-				new ResultT[] {ResultType.ERROR, ResultType.WARNING_LABEL_GENERAL}));
+				new ResultT[] {ResultType.ERROR}));
 		
 		//duplicate labels from different origins
 		this.tests.add(new Test(" <label for=\"request_subject\">Duplicate Label</label>\r\n"
 				+ "<input type=\"text\" id=\"request_subject\">\n"
 				+ "<input type=\"text\" id=\"other\" aria-label=\"Duplicate Label\">", 
-				new ResultT[] {ResultType.ERROR, ResultType.WARNING_LABEL_GENERAL}));
+				new ResultT[] {ResultType.ERROR}));
 		
 		//duplicate two labels
 		this.tests.add(new Test("<p id =\"long_desc1\">\"There are many options to input into this form\"</p>\n"
 				+ "<p id=\"long_desc2\">\"There are many options to input into this form\"</p>\n"
 				+ "<input id=\"a\" type=\"button\" aria-label=\"Default\" aria-describedby=\"long_desc1\">\n"
 				+ "<input id=\"b\" type=\"button\" aria-label=\"Default\" aria-labelledby=\"long_desc2\">", 
-				new ResultT[] {ResultType.ERROR, ResultType.WARNING_LABEL_GENERAL}));
+				new ResultT[] {ResultType.ERROR}));
 		
 		//select with duplicate options (optgroup with no labels doesn't help)
 		this.tests.add(new Test("<select>\n"
@@ -630,7 +638,7 @@ public class HeadingsAndLabels extends Check {
 				+ "<optgroup>"
 				+ "<option>A</option>"
 				+ "</select>", 
-				new ResultT[] {ResultType.ERROR, ResultType.WARNING_LABEL_GENERAL, ResultType.SUCCESS}));
+				new ResultT[] {ResultType.ERROR, ResultType.SUCCESS}));
 
 
 	}
