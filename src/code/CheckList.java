@@ -16,10 +16,13 @@ import database_records.DBSimplePage;
 public class CheckList {
 
 	private List<Check> checks;
+	private List<Check> implementedChecks;
 
 	public CheckList() {
 		checks = new ArrayList<Check>();
+		implementedChecks = new ArrayList<Check>();
 		addChecks();
+		addImplementedChecks();
 	}
 
 	public static void addChecks(List<Check> checks) {
@@ -37,8 +40,26 @@ public class CheckList {
 		checks.add(new IdentifyInputPurpose());
 		checks.add(new LanguageOfParts());
 		checks.add(new NameRoleVal());
-		
+
 		Collections.sort(checks);
+	}
+
+	public static void addImplementedChecks(List<Check> implementedChecks) {
+
+		implementedChecks.add(new ContrastMinimum());
+		implementedChecks.add(new HeadingsAndLabels());
+		implementedChecks.add(new InfoAndRelationships());
+		implementedChecks.add(new KeyboardFunctionality());
+		implementedChecks.add(new LabelsOrInstructions());
+		implementedChecks.add(new LanguageOfPage());
+		implementedChecks.add(new NonTextContent());
+		implementedChecks.add(new OnInput());
+		implementedChecks.add(new PageTitled());
+		implementedChecks.add(new Parsing());
+		implementedChecks.add(new IdentifyInputPurpose());
+		implementedChecks.add(new LanguageOfParts());
+		implementedChecks.add(new NameRoleVal());
+		Collections.sort(implementedChecks);
 	}
 
 	public static Check getCheckFromCriterionNumber(List<Check> checks, String num) {
@@ -56,6 +77,10 @@ public class CheckList {
 
 	private void addChecks() {
 		addChecks(checks);
+	}
+
+	private void addImplementedChecks() {
+		addImplementedChecks(implementedChecks);
 	}
 
 	public boolean runChecksAtURLs(String[] urls) throws Exception {
@@ -117,7 +142,7 @@ public class CheckList {
 		inter.close();
 
 		if(store) {
-			cr.generateReportFromPage(db, urls[0], new SeleniumInterface());
+			cr.generateReportFromPage(db, urls[0]);
 
 		}
 

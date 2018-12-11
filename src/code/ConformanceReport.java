@@ -5,6 +5,7 @@ import code.interfaces.SeleniumInterface;
 import com.google.common.collect.Lists;
 import database_records.DBPage;
 import database_records.DBSimplePage;
+import nu.validator.datatype.Int;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.Dimension;
@@ -50,6 +51,9 @@ public class ConformanceReport {
             "test.fail {" +
             "   color: #b30000;" +
             "}" +
+            "test.warning {" +
+            "   color: #715409;" +
+            "}" +
             "li {" +
             "   text-decoration: underline;" +
             "   cursor: pointer;" +
@@ -63,6 +67,41 @@ public class ConformanceReport {
             "}" +
             "li.fail {" +
             "   color: #b30000;" +
+            "}" +
+            "table {" +
+            "   text-align: center;" +
+            "   vertical-align: middle" +
+            "   font-family: arial;" +
+            "   border-collapse: collapse;" +
+            "   width: 100%" +
+            "}" +
+            "tr, th, td  {" +
+            "    border: 1px solid white;" +
+            "    padding: 8px;" +
+            "    font-weight: bold;" +
+            "}" +
+            "th {" +
+            "   padding-top: 12px;" +
+            "   padding-bottom: 12px;" +
+            "   text-align: left;" +
+            "   background-color: #4CAF50;" +
+            "   color: white;" +
+            "}" +
+            "tr:nth-child(3n){" +
+            "   background-color: #FF932E;" + //orange - #FF932E
+            "}" +
+            "tr:nth-child(3n+1){" +
+            "   background-color: #F5FFA2;" + //yellow - #F5FFA2s
+            "}" +
+            "tr:nth-child(3n+2){" +
+            "   background-color: #FF6161;" + //red - #FF6161
+            "}" +
+            "tr.hovercell:hover {" +
+            "   background-color: white;" +
+            "}" +
+            "td.check {" +
+            "   background-color: white;" +
+            "   color: black;" +
             "}" +
             "metric {" +
             "   font-size: 18px" +
@@ -106,17 +145,69 @@ public class ConformanceReport {
     private final List<String> title = Lists.newArrayList("<urlTitle>", "</urlTitle>");
     private final List<String> testPass = Lists.newArrayList("<test class=\"pass\">", "</test>");
     private final List<String> testFail = Lists.newArrayList("<test class=\"fail\">", "</test>");
+    private final List<String> testWarning = Lists.newArrayList("<test class=\"warning\">", "</test>");
     private final List<String> listStart = Lists.newArrayList("<ul>");
-    private final List<String> listElement = Lists.newArrayList("<li class=\"fail\">", "</li>");
-    private final List<String> listWarningSeriousElement = Lists.newArrayList();
-    private final List<String> listWarningElement = Lists.newArrayList("<li class=\"warning\">", "</li>");
     private final List<String> listEnd = Lists.newArrayList("</ul>");
+    private final List<String> table = Lists.newArrayList("<div style=\"overflow-x:auto;\">", "<table>", "</table>", "</div>");
+    private final List<String> tableHeading = Lists.newArrayList("<th>", "</th>");
+    private final List<String> tableCellHover = Lists.newArrayList("<td>", "</td>");
+    private final List<String> tableCheck = Lists.newArrayList("<td class=\"check\"; rowspan=\"3\">", "</td>");
     private final List<String> metricPass = Lists.newArrayList("<metric class=\"pass\">", "</metric>");
     private final List<String> metricFail = Lists.newArrayList("<metric class=\"fail\">", "</metric>");
     private final List<String> metricWarningSerious = Lists.newArrayList("<metric class=\"warning_serious\">", "</metric>");
     private final List<String> metricWarning = Lists.newArrayList("<metric class=\"warning\">", "</metric>");
     private final List<String> sourceCode = Lists.newArrayList("<xmp>", "</xmp>");
     private final String newLine = "<br/>";
+
+    public ConformanceReport() {
+        deleteReport(new File("Report/"));
+        new File("Report/").mkdir();
+    }
+
+    private String addTable(String table) { return formatLine(table, this.table); }
+
+    private String addTableRow(String Check, ArrayList<Result> results) {
+        String row = "<tr class=\"hovercell\">";
+        row += formatLine(Check, tableCheck);
+        row += formatLine("&#9746; Fails", tableCellHover);
+        for(Result r : results) {
+            if (r.checked) {
+                row += formatLine(r.fails + "", tableCellHover);
+            } else {
+                row += formatLine("", tableCellHover);
+            }
+        }
+        row += "</tr> <tr class=\"hovercell\">";
+        row += formatLine("&#9888; Serious Warnings", tableCellHover);
+        for(Result r : results) {
+            if (r.checked) {
+                row += formatLine(r.warnSerious + "", tableCellHover);
+            } else {
+                row += formatLine("", tableCellHover);
+            }
+        }
+        row += "</tr> <tr class=\"hovercell\">";
+        row += formatLine(" &#9888; Warnings", tableCellHover);
+        for(Result r : results) {
+            if (r.checked) {
+                row += formatLine(r.warn + "", tableCellHover);
+            } else {
+                row += formatLine("", tableCellHover);
+            }
+        }
+        row += "</tr>";
+        return row;
+    }
+
+    private String addTableHeading(ArrayList<String> headings) {
+        String row = "<tr>";
+
+        for(String h : headings) {
+            row += formatLine(h, tableHeading);
+        }
+
+        return row + "</tr>";
+    }
 
     private String addURL(String url) { return formatLine("Site: " + url, title); }
 
@@ -140,6 +231,11 @@ public class ConformanceReport {
 
     private String addFailTest(String test) {
         return formatLine("&#9746; " + test + ":", testFail) +
+                formatLine("", listStart);
+    }
+
+    private String addWarningTest(String test) {
+        return formatLine("&#9888; " + test + ":", testWarning) +
                 formatLine("", listStart);
     }
 
@@ -186,7 +282,7 @@ public class ConformanceReport {
 
     private String addAnchorName(String line, int anchor) { return "<a href=\"#" + anchor + "\">" + line + "</a>"; }
 
-    public void generateReportFromPage(DatabaseInterface db, String url, SeleniumInterface inter) {
+    public void generateReportFromPage(DatabaseInterface db, String url) {
 
         try {
             String site = db.partialiseFullURL(url).getKey();
@@ -206,7 +302,8 @@ public class ConformanceReport {
             report.append(newLine);
             report.append(newLine);
             report.append(newLine);
-            report.append(addURL(site));
+            report.append(addURL(site) + " - " + addAnchorName("Compare", anchorPage));
+            anchorPage++;
 
             StringBuilder pMetBuff = new StringBuilder();
             StringBuilder pBuff = new StringBuilder();
@@ -217,6 +314,18 @@ public class ConformanceReport {
             int warningsSSite = 0;
 
             for (DBSimplePage simpleP : pages) {
+
+                boolean imagesPersistent = false;
+                String pathReport = "Report/images/" + simpleP.id + "/";
+                File directoryReport = new File(pathReport);
+                File persistentDir = new File("ReportImageDatastore/" + simpleP.id);
+                if(!directoryReport.exists()) {
+                    directoryReport.mkdirs();
+                }
+                if(persistentDir.exists()) {
+                    imagesPersistent = true;
+                    FileUtils.copyDirectory(persistentDir, directoryReport);
+                }
 
                 DBPage dbp = simpleP.loadFullPage(db);
 
@@ -241,47 +350,60 @@ public class ConformanceReport {
                     ArrayList<UnserialisedMarker> currentCheck = checkMarkers.get(check);
 
                     boolean passed = true;
+                    boolean failed = false;
 
-                    if(!checkPass(currentCheck)) {
+                    if(!checkPass(currentCheck) && checkFail(currentCheck)) {
                         pBuff.append(addFailTest(check));
                         passed = false;
+                        failed = true;
+                    }
+                    else if(!checkPass(currentCheck) && !checkFail(currentCheck)) {
+                        pBuff.append(addWarningTest(check));
+                        passed = false;
+                    }
+                    else {
+                        pBuff.append(addPassTest(check));
+                        pBuff.append(newLine);
+                        pBuff.append(newLine);
+                        passes++;
+                        continue;
                     }
 
                     for(UnserialisedMarker usm : currentCheck) {
-                        String path = "images/" + simpleP.id + "/" + usm.id + ".png";
-                        File img = new File(path);
+                        String pathDS = "ReportImageDatastore/" + simpleP.id + "/" + usm.id + ".png";
+                        File img = new File(pathDS);
                         boolean image = img.exists();
 
-                        if(passed) {
-                            pBuff.append(addPassTest(check));
-                            pBuff.append(newLine);
-                            pBuff.append(newLine);
-                            passes++;
-                            break;
-                        }
-                        else if(usm.type == Marker.MARKER_ERROR) {
+                        String pathReportImage = "images/" + simpleP.id + "/" + usm.id + ".png";
+
+                        if(usm.type == Marker.MARKER_ERROR) {
                             pBuff.append(addFailElement(getFlagText(usm), anchorError));
-                            if(image) {
+                            if(image && imagesPersistent) {
                                 String alt = usm.tag + " tag number " + usm.tagPos + ": " + usm.desc;
-                                pBuff.append(addSourceID(newLine + addImage(path, alt) + addSource(usm.outerHTML),
-                                        anchorError));
+                                pBuff.append(addSourceID(newLine + addImage(pathReportImage, alt) +
+                                                addSource(usm.outerHTML), anchorError));
                             }
                             else {
-                                pBuff.append(addSourceID(addSource(usm.outerHTML), anchorError));
+                                String oHTML = usm.outerHTML;
+                                String filteredoHTML = oHTML.replaceAll("<xmp>|</xmp>", "");
+                                pBuff.append(addSourceID(addSource(filteredoHTML), anchorError));
                             }
+                            pBuff.append(newLine);
                             anchorError--;
                             fails++;
                         }
                         else {
                             pBuff.append(addWarningElement(getFlagText(usm), anchorError,
                                     usm.type == Marker.MARKER_AMBIGUOUS_SERIOUS));
-                            if (image) {
+                            String oHTML = usm.outerHTML;
+                            String filteredoHTML = oHTML.replaceAll("<xmp>|</xmp>", "");
+                            if (image && imagesPersistent) {
                                 String alt = usm.tag + " tag number " + usm.tagPos + ": " + usm.desc;
-                                pBuff.append(addSourceID(newLine + addImage(path, alt) + addSource(usm.outerHTML),
-                                        anchorError));
+                                pBuff.append(addSourceID(newLine + addImage(pathReportImage, alt) +
+                                                addSource(filteredoHTML), anchorError));
                             }
                             else {
-                                pBuff.append(addSourceID(addSource(usm.outerHTML), anchorError));
+                                pBuff.append(addSourceID(addSource(filteredoHTML), anchorError));
                             }
                             pBuff.append(newLine);
                             anchorError--;
@@ -314,12 +436,14 @@ public class ConformanceReport {
             report.append(newLine);
             report.append(pMetBuff.toString());
             report.append(pBuff.toString());
+            report.append(newLine);
             report.append("</body>");
+            report.append(generateComparisonTable(db, groupedPages));
             report.append(script);
             report.append("</html>");
             reportFull = report.toString();
 
-            writeToFile(reportFull, "report");
+            writeToFile(reportFull, "Report/report");
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -373,6 +497,17 @@ public class ConformanceReport {
         return passed;
     }
 
+    private boolean checkFail(ArrayList<UnserialisedMarker> currentCheck) {
+        boolean failed = false;
+        for(UnserialisedMarker usm : currentCheck) {
+            if(usm.type == Marker.MARKER_ERROR) {
+                failed = true;
+                break;
+            }
+        }
+        return failed;
+    }
+
     private String writeToFile(String source, String filename) throws Exception{
 
         File file = new File(filename + ".html");
@@ -381,6 +516,94 @@ public class ConformanceReport {
         writer.write(source);
         writer.close();
         return file.getAbsolutePath();
+    }
+
+    private String generateComparisonTable(DatabaseInterface db, List<List<DBSimplePage>> groupedPages) throws Exception{
+
+        String table = "";
+        long currTimestamp = 0;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy HH:mm");
+        ArrayList<String> allChecks = new ArrayList<>();
+        ArrayList<String> headers = new ArrayList<>();
+        headers.add("Criterion");
+        headers.add("");
+        HashMap<String, ArrayList<Result>> tableHM = new HashMap<>();
+        HashMap<String, ArrayList<Result>> siteHM = new HashMap<>();
+
+        for(List<DBSimplePage> dbspList : groupedPages) {
+            for(String check : pagePerformance(dbspList.get(0).loadFullPage(db), db).keySet()) {
+                if(!allChecks.contains(check)) {
+                    allChecks.add(check);
+                }
+            }
+        }
+        Collections.sort(allChecks);
+        for(String c : allChecks) {
+            tableHM.put(c, new ArrayList<>());
+            siteHM.put(c, new ArrayList<>());
+        }
+
+        for(List<DBSimplePage> dbspList : groupedPages) {
+            currTimestamp = dbspList.get(0).timestamp;
+            Date resultDate = new Date(currTimestamp);
+            headers.add(sdf.format(resultDate));
+
+            int siteFails = 0;
+            int siteWarn = 0;
+            int siteSerWarn = 0;
+            Boolean sitePass = true;
+
+            for(DBSimplePage dbsp : dbspList) {
+
+                DBPage dbp = dbsp.loadFullPage(db);
+
+                HashMap<String, ArrayList<UnserialisedMarker>> pagePerf = pagePerformance(dbp, db);
+                for(String check : allChecks) {
+
+                    if(!pagePerf.keySet().contains(check)) {
+                        tableHM.get(check).add(new Result());
+                        continue;
+                    }
+
+                    int checkFails = 0;
+                    int checkWarn = 0;
+                    int checkSerWarn = 0;
+                    Boolean checkPass = true;
+
+                    for(UnserialisedMarker usm : pagePerf.get(check)) {
+                        if(usm.type == Marker.MARKER_ERROR) { checkFails++; siteFails++; }
+                        else if(usm.type == Marker.MARKER_AMBIGUOUS) { checkWarn++; siteWarn++; }
+                        else if(usm.type == Marker.MARKER_AMBIGUOUS_SERIOUS) { checkSerWarn++; siteSerWarn++; }
+                    }
+                    checkPass = (checkFails == 0 && checkSerWarn == 0 && checkWarn == 0);
+                    if(sitePass && !checkPass) { sitePass = false; }
+                    tableHM.get(check).add(new Result(checkFails, checkSerWarn, checkWarn));
+                }
+            }
+        }
+
+        String mainTable = "";
+        for(String check : allChecks) {
+            mainTable += addTableRow(check, tableHM.get(check));
+        }
+        table = addAnchorTarget(addTable(addTableHeading(headers) + mainTable), 0);
+        return table;
+    }
+
+    private class Result {
+        private int fails;
+        private int warnSerious;
+        private int warn;
+        private Boolean checked;
+        private Result(int fails, int warnSerious, int warn) {
+            this.fails = fails;
+            this.warnSerious = warnSerious;
+            this.warn = warn;
+            this.checked = true;
+        }
+        private Result() {
+            this.checked = false;
+        }
     }
 
     public void addCheckImages(DatabaseInterface db, String url, SeleniumInterface inter) throws Exception{
@@ -399,7 +622,7 @@ public class ConformanceReport {
         keys.addAll(checkMarkers.keySet());
         Collections.sort(keys);
 
-        String path = "images/" + simpleP.id + "/";
+        String path = "ReportImageDatastore/" + simpleP.id + "/";
         File directory = new File(path);
         if(!directory.exists()) {
             directory.mkdirs();
@@ -426,6 +649,8 @@ public class ConformanceReport {
             }
 
             inter.driver.manage().window().setSize(new Dimension(maxW, maxH));
+            File screesnshot = ((TakesScreenshot)inter.driver).getScreenshotAs(OutputType.FILE);
+            File eleSSFile = ((TakesScreenshot)inter.driver).getScreenshotAs(OutputType.FILE);
 
             for(UnserialisedMarker usm : currentCheck) {
 
@@ -441,8 +666,12 @@ public class ConformanceReport {
                     int rectY = 0;
 
                     if(px > 0 && py > 0 && eleH > 0 && eleW > 0) {
-                        File screesnshot = ((TakesScreenshot)inter.driver).getScreenshotAs(OutputType.FILE);
-                        BufferedImage bImg = ImageIO.read(screesnshot);
+                        if(p.y + eleH + (2*imgBuffer) < inter.driver.manage().window().getSize().height) {
+                            eleH += 2 * imgBuffer;
+                        }
+                        if(p.x + eleW +  (2*imgBuffer) < inter.driver.manage().window().getSize().width) {
+                            eleW += 2 * imgBuffer;
+                        }
                         if(px - imgBuffer > 0) {
                             px -= imgBuffer;
                             rectX = imgBuffer;
@@ -451,21 +680,50 @@ public class ConformanceReport {
                             py -= imgBuffer;
                             rectY = imgBuffer;
                         }
-                        if(p.y + eleH + imgBuffer < inter.driver.manage().window().getSize().height) {
-                            eleH += 2 * imgBuffer;
+
+                        if(!(ele.getLocation().y + ele.getSize().height + (2 * imgBuffer) > maxH) &&
+                                !(ele.getLocation().x + ele.getSize().width + (2 * imgBuffer) > maxW)) {
+                            BufferedImage bImg = ImageIO.read(screesnshot);
+                            BufferedImage eleSS = bImg.getSubimage(px, py, eleW, eleH);
+                            Graphics2D g = eleSS.createGraphics();
+                            g.setColor(Color.RED);
+                            g.drawRect(rectX, rectY, ele.getSize().width, ele.getSize().height);
+                            ImageIO.write(eleSS, "png", eleSSFile);
+                            FileUtils.copyFile(eleSSFile, new File(path + usm.id + ".png"));
                         }
-                        if(p.x + eleW +  imgBuffer < inter.driver.manage().window().getSize().width) {
-                            eleW += 2 * imgBuffer;
-                        }
-                        BufferedImage eleSS = bImg.getSubimage(px, py, eleW, eleH);
-                        Graphics2D g = eleSS.createGraphics();
-                        g.setColor(Color.RED);
-                        g.drawRect(rectX, rectY, ele.getSize().width, ele.getSize().height);
-                        ImageIO.write(eleSS, "png", screesnshot);
-                        FileUtils.copyFile(screesnshot, new File(path + usm.id + ".png"));
                     }
                 }
             }
+        }
+    }
+
+    private void deleteReport(File dir) {
+        try {
+            if(!dir.exists()) {
+            }
+            else {
+                if(dir.isDirectory()) {
+                    if(dir.list().length == 0) {
+                        dir.delete();
+                    }
+                    else {
+                        String[] files = dir.list();
+                        for(String f : files) {
+                            File fileD = new File(dir, f);
+                            deleteReport(fileD);
+                        }
+                    }
+                    if(dir.list().length == 0) {
+                        dir.delete();
+                    }
+                }
+                else {
+                    dir.delete();
+                }
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
