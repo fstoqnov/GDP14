@@ -17,6 +17,8 @@ import org.openqa.selenium.chrome.ChromeOptions;
 public class SeleniumInterface {
 	public WebDriver driver;
 
+	public SeleniumInterface() { this(false); }
+	
 	public SeleniumInterface(boolean headed) {
 		Logger.getLogger("org.openqa.selenium.remote").setLevel(Level.OFF);
 		startChrome(headed);

@@ -4,11 +4,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.openqa.selenium.*;
+import org.jnativehook.keyboard.NativeKeyEvent;
 
 import com.google.common.collect.Lists;
 
-import code.checks.*;
+import code.checks.Check;
+import code.checks.ContrastMinimum;
+import code.checks.HeadingsAndLabels;
+import code.checks.IdentifyInputPurpose;
+import code.checks.InfoAndRelationships;
+import code.checks.KeyboardFunctionality;
+import code.checks.LabelsOrInstructions;
+import code.checks.LanguageOfPage;
+import code.checks.LanguageOfParts;
+import code.checks.NameRoleVal;
+import code.checks.NonTextContent;
+import code.checks.OnInput;
+import code.checks.PageTitled;
+import code.checks.Parsing;
 import code.interfaces.DatabaseInterface;
 import code.interfaces.SeleniumInterface;
 import database_records.DBSimplePage;
@@ -19,9 +32,12 @@ public class CheckList {
 
 	public CheckList() {
 		checks = new ArrayList<Check>();
+		
 		addChecks();
 	}
 
+	private GlobalKeyListener keyListener;
+	
 	public static void addChecks(List<Check> checks) {
 
 		checks.add(new ContrastMinimum());
@@ -58,18 +74,25 @@ public class CheckList {
 		addChecks(checks);
 	}
 
-	public boolean runChecksAtURLs(String[] urls) throws Exception {
-		return runChecksAtURLs(urls, false, null, false);
+	public boolean runChecksAtURLs(RuntimeConfig config) throws Exception {
+		return runChecksAtURLs(config, false, null);
 	}
+	
+	private static final int KEY_F2 = NativeKeyEvent.VC_F2; //TODO
+	private static final int KEY_F4 = NativeKeyEvent.VC_F4; //TODO
 
-	public boolean runChecksAtURLs(String[] urls, boolean store, DatabaseInterface db, boolean dynamic) throws Exception {
+	public boolean runChecksAtURLs(RuntimeConfig config, DatabaseInterface db) throws Exception {
+		return runChecksAtURLs(config, true, db);
+	}
+	
+	private boolean runChecksAtURLs(RuntimeConfig config, boolean store, DatabaseInterface db) throws Exception {
 		//Boolean passed = true;
 		//Integer totalPassed = 0;
 		//Integer totalFailed = 0;
 		/*Integers are not mutable, so this previous method won't work
 		need to use CheckResults here.*/
 		CheckResults checkResults = new CheckResults();
-		SeleniumInterface inter = new SeleniumInterface();
+		SeleniumInterface inter = new SeleniumInterface(config.headedRequired());
 		long curTime = System.currentTimeMillis();
 
 		ConformanceReport cr = new ConformanceReport();
@@ -79,35 +102,38 @@ public class CheckList {
 
 		String rep;
 		String baseURL;
+		String url;
+		
+		keyListener = GlobalKeyListener.startup();
 
-		for (String url : urls) {
+		for (CheckURL curUrl : config.urls) {
+			System.out.println("Checking URL " + curUrl.checkURL);
+			url = curUrl.checkURL;
+
 			inter.getRenderedHtml(url);
+			if (curUrl.loginRequired) {
+				System.out.println("Login required, waiting for F2 keypress...");
+				waitForInput(KEY_F2);
+				System.out.println("Key press detected");
+			}
 			baseURL = inter.driver.getCurrentUrl();
 			domReps.add(inter.getDomRep());
 			rootPage = runCheckAtPermutedPage(inter, url, null, store, db, checkResults, curTime, null);
-            cr.addCheckImages(db, url, inter);
-			if (dynamic) {
-				List<WebElement> elements = inter.getAllElements();
-				JavascriptExecutor js = (JavascriptExecutor) inter.driver;
-				for (int i = 0; i < elements.size(); i ++) {
-					for (int j = 0; j < events.size(); j ++) {
-						if (events.get(j).equals("onclick") && elements.get(i).getTagName().toLowerCase().equals("a") && elements.get(i).getAttribute("href") != null) {
-							if (!elements.get(i).getAttribute("href").startsWith("#")) {
-								continue;
-							}
-						}
-						try {
-							js.executeScript("arguments[0]." + events.get(j) + "()", elements.get(i));
-							if (inter.driver.getCurrentUrl().equals(baseURL)) {
-								if (!domReps.contains(rep = inter.getDomRep())) {
-									domReps.add(rep);
-									runCheckAtPermutedPage(inter, url, events.get(j), store, db, checkResults, curTime, rootPage);
-								}
-							} else {
-								inter.getRenderedHtml(url);
-							}
-						} catch (Exception e) {  }
-					}
+            System.out.println("Checks complete");
+            if (store) {
+            	cr.addCheckImages(db, url, inter);
+            }
+            System.out.println();
+
+			if (curUrl.dynamic) {
+				System.out.println("Dynamic input mode. Press F2 to stop dynamic content checking, press F4 to store results");
+				int event_no = 0;
+				while (waitForInput(new int[] { KEY_F2, KEY_F4 }) != KEY_F2) {
+					System.out.println("Key press detected");
+					runCheckAtPermutedPage(inter, inter.driver.getCurrentUrl(), "event_num:" + event_no, store, db, checkResults, curTime, rootPage); //TODO can we name the event in some way
+					System.out.println("Checks completed");
+					System.out.println("Press F2 to stop dynamic content checking, press F4 to store results");
+					event_no++;
 				}
 			}
 		}
@@ -117,11 +143,28 @@ public class CheckList {
 		inter.close();
 
 		if(store) {
-			cr.generateReportFromPage(db, urls[0], new SeleniumInterface());
-
+			cr.generateReportFromPage(db, config.urls.get(0).checkURL, new SeleniumInterface(false));
 		}
+		
+		GlobalKeyListener.stop();
 
 		return checkResults.overallPass;
+	}
+	
+	public int waitForInput(int permitted) {
+		return waitForInput(new int[] { permitted });
+	}
+	
+	public int waitForInput(int[] permitted) {
+		keyListener.lastKey = 0;
+		while (true) {
+			for (int i = 0; i < permitted.length; i ++) {
+				if (keyListener.lastKey == permitted[i]) {
+					return keyListener.lastKey;
+				}
+			}
+			try { Thread.sleep(50); } catch (Exception e) {  }
+		}
 	}
 
 	private static final List<String> events = Lists.newArrayList(

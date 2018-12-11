@@ -26,7 +26,7 @@ public class CheckList {
 	}
 
 	private boolean testCheck(Check c) {
-		SeleniumInterface inter = new SeleniumInterface();
+		SeleniumInterface inter = new SeleniumInterface(false);
 		ArrayList<Test> tests = c.getTests();
 
 		int testCount = 0;

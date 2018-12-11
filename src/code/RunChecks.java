@@ -2,15 +2,19 @@ package code;
 
 import java.util.ArrayList;
 
+import code.interfaces.DatabaseInterface;
+import code.interfaces.SeleniumInterface;
+
 public class RunChecks {
 	public static void main(String[] args) {
 		CheckList cl = new CheckList();
 		try {
-			cl.runChecksAtURLs(getConfig(args));
+			DatabaseInterface db;
+			cl.runChecksAtURLs(getConfig(args), db = new DatabaseInterface(tests.interfaces.DatabaseInterface.connString));
+			new ConformanceReport().generateReportFromPage(db, "https://slidewiki.org", new SeleniumInterface(false));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		GlobalKeyListener.stop();
 	}
 	
 	public static RuntimeConfig getConfig(String[] args) {
