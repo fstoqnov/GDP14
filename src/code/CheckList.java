@@ -28,33 +28,32 @@ import database_records.DBSimplePage;
 
 public class CheckList {
 
-	private List<Check> checks;
+	private List<Check> implementedChecks;
 
 	public CheckList() {
-		checks = new ArrayList<Check>();
-		
-		addChecks();
+		implementedChecks = new ArrayList<Check>();
+		addImplementedChecks();
 	}
 
 	private GlobalKeyListener keyListener;
-	
-	public static void addChecks(List<Check> checks) {
 
-		checks.add(new ContrastMinimum());
-		checks.add(new HeadingsAndLabels());
-		checks.add(new InfoAndRelationships());
-		checks.add(new KeyboardFunctionality());
-		checks.add(new LabelsOrInstructions());
-		checks.add(new LanguageOfPage());
-		checks.add(new NonTextContent());
-		checks.add(new OnInput());
-		checks.add(new PageTitled());
-		checks.add(new Parsing());
-		checks.add(new IdentifyInputPurpose());
-		checks.add(new LanguageOfParts());
-		checks.add(new NameRoleVal());
-		
-		Collections.sort(checks);
+	public static void addImplementedChecks(List<Check> implementedChecks) {
+
+		implementedChecks.add(new ContrastMinimum());
+		implementedChecks.add(new HeadingsAndLabels());
+		implementedChecks.add(new InfoAndRelationships());
+		implementedChecks.add(new KeyboardFunctionality());
+		implementedChecks.add(new LabelsOrInstructions());
+		implementedChecks.add(new LanguageOfPage());
+		implementedChecks.add(new NonTextContent());
+		implementedChecks.add(new OnInput());
+		implementedChecks.add(new PageTitled());
+		implementedChecks.add(new Parsing());
+		implementedChecks.add(new IdentifyInputPurpose());
+		implementedChecks.add(new LanguageOfParts());
+		implementedChecks.add(new NameRoleVal());
+
+		Collections.sort(implementedChecks);
 	}
 
 	public static Check getCheckFromCriterionNumber(List<Check> checks, String num) {
@@ -65,19 +64,19 @@ public class CheckList {
 		}
 		return null;
 	}
+    
+    private void addImplementedChecks() {
+		addImplementedChecks(implementedChecks);
+	}
 
 	private Check getCheckFromCriterionNumber(String num) {
 		return getCheckFromCriterionNumber(checks, num);
 	}
 
-	private void addChecks() {
-		addChecks(checks);
-	}
-
 	public boolean runChecksAtURLs(RuntimeConfig config) throws Exception {
 		return runChecksAtURLs(config, false, null);
-	}
-	
+    }
+
 	private static final int KEY_F2 = NativeKeyEvent.VC_F2; //TODO
 	private static final int KEY_F4 = NativeKeyEvent.VC_F4; //TODO
 

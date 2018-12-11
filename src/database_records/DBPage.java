@@ -61,7 +61,7 @@ public class DBPage {
 		rs = stmt.executeQuery(query);
 		markers = new ArrayList<UnserialisedMarker>();
 		List<Check> checks = new ArrayList<Check>();
-		CheckList.addChecks(checks);
+		CheckList.addImplementedChecks(checks);
 		while (rs.next()) {
 			markers.add(new UnserialisedMarker(rs.getLong("id"), rs.getInt("severity"), rs.getString("eleTagName"), rs.getInt("eleTagNumber"), rs.getString("attribute"), rs.getLong("position"), CheckList.getCheckFromCriterionNumber(checks, rs.getString("check")), rs.getString("desc"), rs.getString("eleID"), rs.getBoolean("hidden"), rs.getString("outerHTML")));
 		}
