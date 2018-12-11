@@ -32,7 +32,7 @@ public class OnInput extends Check {
 		WebElement[] formElements = inter.getElementsByTagName("form");
 		for (int i = 0; i < formElements.length; i++) {
 			if (!inter.isElementAriaVisible(formElements[i])) {
-				return;
+				break;
 			}
 			WebElement form = formElements[i];
 			int formButtonCount = inter.getChildrenWithTag(form, "button").length;

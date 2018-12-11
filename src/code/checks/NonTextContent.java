@@ -118,28 +118,28 @@ public class NonTextContent extends Check {
 		
 		for (int i = 0; i < imgEles.length; i++) {
 			if (!inter.isElementAriaVisible(imgEles[i])) {
-				return;
+				break;
 			}
 			NonTextLabel ntl = new NonTextLabel(imgEles[i]);
 			this.findImgLabel(markers, imgEles[i], ntl, altEles, inter);
 		}
 		for (int i=0; i < areaEles.length; i++) {
 			if (!inter.isElementAriaVisible(areaEles[i])) {
-				return;
+				break;
 			}
 			NonTextLabel ntl = new NonTextLabel(areaEles[i]);
 			this.findImgLabel(markers, areaEles[i], ntl, altEles, inter);
 		}
 		for (int i=0; i < imageRoleEles.length; i++) {
 			if (!inter.isElementAriaVisible(imageRoleEles[i])) {
-				return;
+				break;
 			}
 			NonTextLabel ntl = new NonTextLabel(imageRoleEles[i]);
 			this.findRoleImgLabel(markers, imageRoleEles[i], ntl, inter);
 		}
 		for (int i=0; i < objectEles.length; i++) {
 			if (!inter.isElementAriaVisible(objectEles[i])) {
-				return;
+				break;
 			}
 			NonTextLabel ntl = new NonTextLabel(objectEles[i]);
 			this.findElementLabel(markers, objectEles[i], ntl, inter);

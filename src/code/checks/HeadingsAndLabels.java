@@ -70,28 +70,28 @@ public class HeadingsAndLabels extends Check {
 				}
 			}
 			if (!inter.isElementAriaVisible(inputEles[i])) {
-				return;
+				break;
 			}
 			LabelledWebElement eleLabel = new LabelledWebElement(inputEles[i]);
 			formControlLabels.add(this.getInputLabel(markers, inputEles[i], eleLabel, labelEles, fieldsetEles, inter));
 		}
 		for (int i = 0; i < selectEles.length; i++) {
 			if (!inter.isElementAriaVisible(selectEles[i])) {
-				return;
+				break;
 			}
 			LabelledWebElement eleLabel = new LabelledWebElement(selectEles[i]);
 			formControlLabels.add(this.getSelectLabel(markers, selectEles[i], eleLabel, labelEles, fieldsetEles, inter));
 		}
 		for (int i = 0; i < buttonEles.length; i++) {
 			if (!inter.isElementAriaVisible(buttonEles[i])) {
-				return;
+				break;
 			}
 			LabelledWebElement eleLabel = new LabelledWebElement(buttonEles[i]);
 			formControlLabels.add(this.getButtonLabel(markers, buttonEles[i], eleLabel, labelEles, fieldsetEles, inter));
 		}
 		for (int i = 0; i < textareaEles.length; i++) {
 			if (!inter.isElementAriaVisible(textareaEles[i])) {
-				return;
+				break;
 			}
 			LabelledWebElement eleLabel = new LabelledWebElement(textareaEles[i]);
 			formControlLabels.add(this.getElementLabel(markers, textareaEles[i], eleLabel, labelEles, fieldsetEles, inter));
