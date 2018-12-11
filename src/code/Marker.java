@@ -5,6 +5,7 @@ import java.util.Objects;
 import org.openqa.selenium.WebElement;
 
 import code.checks.Check;
+import code.checks.ResultT;
 
 public class Marker {
 	private WebElement element;
@@ -15,12 +16,39 @@ public class Marker {
 	private String desc;
 	private boolean hidden;
 	private String id;
+	private String outerHTML;
+	private ResultT result;
 
 	public static final int MARKER_ERROR = 1;
 	public static final int MARKER_AMBIGUOUS = 2;
 	public static final int MARKER_AMBIGUOUS_SERIOUS = 3;
 	public static final int MARKER_SUCCESS = 4;
 
+	//primary constructor used in Check subclasses
+	public Marker(String desc, int type, Check check, WebElement element, ResultT result) {
+		this.element = element;
+		this.position = -1;
+		this.attribute = null;
+		this.type = type;
+		this.check = check;
+		this.desc = desc;
+		this.id = element.getAttribute("id");
+		this.outerHTML = element.getAttribute("outerHTML");
+		this.result = result;
+	}
+	
+	public Marker(String desc, int type, Check check, ResultT result) {
+		this.element=null;
+		this.position = -1;
+		this.attribute = null;
+		this.type = type;
+		this.check = check;
+		this.desc = desc;
+		this.id = null;
+		this.outerHTML = null;
+		this.result = result;
+	}
+	
 	//The constructors are coded lazily, I was tired. Feel free to clean them up
 	public Marker(int type, Check check, WebElement element) {
 		this.element = element;
@@ -28,7 +56,8 @@ public class Marker {
 		this.attribute = null;
 		this.type = type;
 		this.check = check;
-		id = element.getAttribute("id");
+		this.id = element.getAttribute("id");
+		this.outerHTML = element.getAttribute("outerHTML");
 	}
 	
 	public Marker(int type, Check check) {
@@ -39,15 +68,7 @@ public class Marker {
 		this.check = check;
 	}
 	
-	public Marker(String desc, int type, Check check, WebElement element) {
-		this.element = element;
-		this.position = -1;
-		this.attribute = null;
-		this.type = type;
-		this.check = check;
-		this.desc = desc;
-		id = element.getAttribute("id");
-	}
+
 
 	public Marker(String desc, int type, Check check, WebElement element, String attribute) {
 		this.element = element;
@@ -56,7 +77,8 @@ public class Marker {
 		this.type = type;
 		this.check = check;
 		this.desc = desc;
-		id = element.getAttribute("id");
+		this.id = element.getAttribute("id");
+		this.outerHTML = element.getAttribute("outerHTML");
 	}
 	
 	public Marker(int type, Check check, WebElement element, String attribute) {
@@ -65,7 +87,8 @@ public class Marker {
 		this.position = -1;
 		this.type = type;
 		this.check = check;
-		id = element.getAttribute("id");
+		this.id = element.getAttribute("id");
+		this.outerHTML = element.getAttribute("outerHTML");
 	}
 	
 	public Marker(String desc, int type, Check check, WebElement element, long position) {
@@ -75,7 +98,8 @@ public class Marker {
 		this.type = type;
 		this.check = check;
 		this.desc = desc;
-		id = element.getAttribute("id");
+		this.id = element.getAttribute("id");
+		this.outerHTML = element.getAttribute("outerHTML");
 	}
 
 	public Marker(int type, Check check, WebElement element, long position) {
@@ -84,7 +108,8 @@ public class Marker {
 		this.attribute = null;
 		this.type = type;
 		this.check = check;
-		id = element.getAttribute("id");
+		this.id = element.getAttribute("id");
+		this.outerHTML = element.getAttribute("outerHTML");
 	}
 
 	public Marker(int type, Check check, long position) {
@@ -104,6 +129,17 @@ public class Marker {
 		this.desc = desc;
 	}
 
+	public Marker(String desc, int type, Check check, String outerHTML, ResultT result) {
+		this.element = null;
+		this.position = -1;
+		this.attribute = null;
+		this.type = type;
+		this.check = check;
+		this.desc = desc;
+		this.outerHTML = outerHTML;
+		this.result = result;
+	}
+
 	public WebElement getElement() { return element; }
 	public String getAttribute() { return attribute; }
 	public long getPosition() { return position; }
@@ -112,6 +148,8 @@ public class Marker {
 	public String getDesc() { return desc; }
 	public boolean getHidden() { return hidden; }
 	public String getEleID() { return id; }
+	public String getOuterHTML() { return outerHTML; }
+	public ResultT getResult() { return result; }
 
 	public boolean equals(Object o) {
 

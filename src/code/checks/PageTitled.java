@@ -6,9 +6,18 @@ import org.openqa.selenium.WebElement;
 
 import code.Marker;
 import code.interfaces.SeleniumInterface;
+import tests.Test;
 
 public class PageTitled extends Check {
 
+	private static String ERR_NO_TITLE() { return "Title not found on page"; }
+	private static String WARNING_TITLE_FOUND(String title) { return "Title found, ensure its a valid title for page. Title found: " + title; }
+	
+	private static enum ResultType implements ResultT {
+		ERROR,
+		SUCCESS,
+		WARNING_TITLE_FOUND
+	}
 	public PageTitled() {
 		super("Criterion 2.4.2 Page Titled");
 	}
@@ -27,23 +36,17 @@ public class PageTitled extends Check {
 		}
 		
 		if(titleExists == false) {
-			addFlagToElement(markers, Marker.MARKER_ERROR, doc[0]); //title not found on the page
+			addFlagToElement(markers, Marker.MARKER_ERROR, doc[0], ERR_NO_TITLE(), ResultType.ERROR); //title not found on the page
 		} else {
-			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, titlehead); //title found at titlehead location, might not be described, can't tell
+			addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, titlehead, WARNING_TITLE_FOUND(titlehead.getText()), ResultType.WARNING_TITLE_FOUND); //title found at titlehead location, might not be described, can't tell
+
 		}							  
 	}
 	
-	@Override
-	public String[] getHTMLPass() {
-		//empty string passed due to no success case for guideline in current implementation
-		return new String[] {};
-	}
+	public void setupTests() {
+		tests.add(new Test("<html>No Title present in document</html>", new ResultT[] {ResultType.ERROR}));
+		tests.add(new Test("<html> <head> <title>Hello everyone</title> </head> <body> wow lots going on today </body> </html>", new ResultT[] {ResultType.WARNING_TITLE_FOUND}));
 
-	@Override
-	public String[] getHTMLFail() {
-		return new String[] {
-				"<html>No Title present in document</html>"
-		};
 	}
 
 	@Override

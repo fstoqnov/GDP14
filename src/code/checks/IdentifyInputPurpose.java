@@ -7,6 +7,7 @@ import org.openqa.selenium.WebElement;
 
 import code.Marker;
 import code.interfaces.SeleniumInterface;
+import tests.Test;
 
 public class IdentifyInputPurpose extends Check {
 
@@ -15,40 +16,50 @@ public class IdentifyInputPurpose extends Check {
 	public IdentifyInputPurpose() {
 		super("Criterion 1.3.5 Identify Input Purpose");
 	}
+	
+	private static String WARNING_INVALID_AUTOCOMPLETE_ATTR() {return "no autocomplete attribute defined by wcag 2.1 input purposes";}
+	private static String SUCC_AUTOCOMPLETE() {return "autocomplete attribute in defined list";}
+	private static String WARNING_NO_AUTOCOMPLETE_ATTR() {return "no autocomplete attribute";}
 
+	private static enum ResultType implements ResultT {
+		ERROR,
+		SUCCESS,
+		WARNING_INVALID_AC,
+		WARNING_NO_AC
+	}
 	@Override
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
 		WebElement[] forms = inter.getElementsByTagName("form");
 		for (int i = 0; i < forms.length; i ++) {
 			WebElement[] inputs = inter.getSubElementsByTagName(forms[i], "input");
 			for (int j = 0; j < inputs.length; j ++) {
-				if (inputs[j].getAttribute("autocomplete") != null) {
-					if (!list.contains(inputs[j].getAttribute("autocomplete"))) {
-						addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[j], "no autocomplete attribute defined by wcag 2.1 input purposes");
+				String autocompleteVal = inputs[j].getAttribute("autocomplete");
+				if (autocompleteVal != null) {
+					if (!autocompleteVal.equals("")) { //without this check - when it automatically adds blank autocomplete="" values, that throws off the test.
+						
+						if (!list.contains(inputs[j].getAttribute("autocomplete"))) {
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[j], WARNING_INVALID_AUTOCOMPLETE_ATTR(), ResultType.WARNING_INVALID_AC);
+						} else {
+							addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[j], SUCC_AUTOCOMPLETE(), ResultType.SUCCESS);
+						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[j], "autocomplete attribute in defined list");
+						addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[j], WARNING_NO_AUTOCOMPLETE_ATTR(), ResultType.WARNING_NO_AC);
 					}
 				} else {
-					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[j], "no autocomplete attribute");
+					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[j], WARNING_NO_AUTOCOMPLETE_ATTR(), ResultType.WARNING_NO_AC);
 				}
 			}
 		}
 	}
 
-	@Override
-	public String[] getHTMLPass() {
-		return new String[] {
-				"<form><input autocomplete=\"honorific-prefix\"></form>",
-				"<input type=\"text\"><form><input autocomplete=\"language\"></form>"
-		};
-	}
-
-	@Override
-	public String[] getHTMLFail() {
-		return new String[] {
-				"<form><input autocomplete=\"not-included\"></form>",
-				"<form><input type=\"text\"></form>"
-		};
+	public void setupTests() {
+		this.tests.add(new Test("<form><input autocomplete=\"honorific-prefix\"></form>", new ResultType[] {ResultType.SUCCESS}));
+		this.tests.add(new Test("<input type=\"text\"><form><input autocomplete=\"language\"></form>", new ResultType[] {ResultType.SUCCESS}));
+		
+		this.tests.add(new Test("<form><input autocomplete=\"not-included\"></form>", new ResultType[] {ResultType.WARNING_INVALID_AC}));
+		
+		this.tests.add(new Test("<form><input type=\"text\"></form>", new ResultType[] {ResultType.WARNING_NO_AC}));
+		
 	}
 
 	@Override

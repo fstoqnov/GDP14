@@ -1,5 +1,9 @@
 package tests;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
+import code.checks.ResultT;
 import tests.checks.CheckList;
 import tests.interfaces.DatabaseInterface;
 import tests.interfaces.SeleniumInterface;
@@ -51,16 +55,38 @@ public class RunTests {
 		return test(testName, expectedValue + "", testValue + "");
 	}
 	
+	public static boolean test(String testName, ResultT[] expectedResults, ArrayList<ResultT> receivedResults) {
+		boolean result = true;
+		
+		HashSet<ResultT> setRecResults = new HashSet<ResultT>(receivedResults);
+		HashSet<ResultT> setExpResults = new HashSet<ResultT>();
+		for (int i=0; i < expectedResults.length; i++) {
+			setExpResults.add(expectedResults[i]);
+		}
+		if (!setRecResults.equals(setExpResults)) {
+			result = false;
+			countFailure++;
+			System.err.println("Test : " + testName + " failed. Expected: set{" + setExpResults + "}, Received: set{" + setRecResults + "}");
+		}
+		else {
+			countPass++;
+			System.out.println("Test: " + testName + " passed ");
+		}
+
+		return result;
+	}
+	
 	public static boolean test(String testName, String expectedValue, String testValue) {
-		boolean result;
+		boolean result = true;
 		if (expectedValue == null || testValue == null) {
-			result = expectedValue == null && testValue == null;
+			result = expectedValue==null && testValue == null;
 		} else {
 			result = expectedValue.equals(testValue);
 		}
+		
 		if (result) {
 			countPass++;
-			System.out.println("Test: " + testName + " passed");
+			System.out.println("Test: " + testName + " passed ");
 		} else {
 			countFailure++;
 			System.err.println("Test: " + testName + " failed. Expected: '" + expectedValue + "', Received: '" + testValue + "'");

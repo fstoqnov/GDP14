@@ -9,13 +9,22 @@ import org.openqa.selenium.WebElement;
 
 import code.Marker;
 import code.interfaces.SeleniumInterface;
+import tests.Test;
 
 public class ContrastMinimum extends Check {
 
 	public ContrastMinimum() {
 		super("Criterion 1.4.3 Contrast(Minimum)");
 	}
+	
+	private static String SUCCESS_CONTRAST() { return "Text contrast ratio adequate for font size and weight";}
+	private static String ERR_INADEQUATE_CONTRAST(String contrastString, double requiredRatio) { return "Contrast ratio inadequate for text - Contrast found was (" + contrastString + "). Should be " + requiredRatio; }
 
+	private static enum ResultType implements ResultT {
+		ERROR,
+		SUCCESS,
+	}
+	
 	@Override
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
 		List<WebElement> eles = inter.getAllElements();
@@ -36,11 +45,10 @@ public class ContrastMinimum extends Check {
 				} else {
 					requiredRatio = 4.5D;
 				}
-
 				if (contrast >= requiredRatio) {
-					addFlagToElement(markers, Marker.MARKER_SUCCESS, eles.get(i), "contrast ratio adequate for font size and weight");
+					addFlagToElement(markers, Marker.MARKER_SUCCESS, eles.get(i), SUCCESS_CONTRAST(), ResultType.SUCCESS);
 				} else {
-					addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, eles.get(i), "contrast ratio inadequate (" + contrastString + "). Should be " + requiredRatio);
+					addFlagToElement(markers, Marker.MARKER_ERROR, eles.get(i), ERR_INADEQUATE_CONTRAST(contrastString, requiredRatio), ResultType.ERROR);
 				}
 			}
 		}
@@ -56,24 +64,23 @@ public class ContrastMinimum extends Check {
 		// TODO Auto-generated method stub
 
 	}
+	
+	public void setupTests() {
+		this.tests.add(new Test("<div style=\"background:black; color:white\">Test text</div>", new ResultT[] {ResultType.SUCCESS}));
+		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:white\">Test text</div></div>", new ResultT[] {ResultType.SUCCESS}));
+		
+		//should ignore elements that aren't displayed
+		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:black; display:none\">Test text</div></div>", new ResultT[] {}));
+		
+		//If there is no text, no contrast failure.
+		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:black\"></div></div>", new ResultT[] {}));
+		
+		this.tests.add(new Test("<div>Test text</div>", new ResultT[] {ResultType.SUCCESS}));
 
-	@Override
-	public String[] getHTMLPass() {
-		return new String[] {
-				"<div style=\"background:black; color:white\">Test text</div>",
-				"<div style=\"background:black\"><div style=\"color:white\">Test text</div></div>",
-				"<div style=\"background:black\"><div style=\"color:black; display:none\">Test text</div></div>",
-				"<div style=\"background:black\"><div style=\"color:black\"></div></div>",
-				"<div>Test text</div>"
-		};
-	}
+		
+		this.tests.add(new Test("<div style=\"background:red; color:orange\">Test text</div>", new ResultT[] {ResultType.ERROR}));
+		this.tests.add(new Test("<div style=\"background:red\"><div style=\"color:orange\">Test text</div></div>", new ResultT[] {ResultType.ERROR}));
 
-	@Override
-	public String[] getHTMLFail() {
-		return new String[] {
-				"<div style=\"background:red; color:orange\">Test text</div>",
-				"<div style=\"background:red\"><div style=\"color:orange\">Test text</div></div>"
-		};
 	}
 
 	public double calculateContrastRatio(WebElement element, SeleniumInterface inter) {
