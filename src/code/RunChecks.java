@@ -9,9 +9,7 @@ public class RunChecks {
 	public static void main(String[] args) {
 		CheckList cl = new CheckList();
 		try {
-			DatabaseInterface db;
-			cl.runChecksAtURLs(getConfig(args), db = new DatabaseInterface(tests.interfaces.DatabaseInterface.connString));
-			new ConformanceReport().generateReportFromPage(db, "https://slidewiki.org", new SeleniumInterface(false));
+			cl.runChecksAtURLs(getConfig(args), new DatabaseInterface(tests.interfaces.DatabaseInterface.connString));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

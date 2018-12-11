@@ -69,10 +69,6 @@ public class CheckList {
 		addImplementedChecks(implementedChecks);
 	}
 
-	private Check getCheckFromCriterionNumber(String num) {
-		return getCheckFromCriterionNumber(checks, num);
-	}
-
 	public boolean runChecksAtURLs(RuntimeConfig config) throws Exception {
 		return runChecksAtURLs(config, false, null);
     }
@@ -142,7 +138,7 @@ public class CheckList {
 		inter.close();
 
 		if(store) {
-			cr.generateReportFromPage(db, config.urls.get(0).checkURL, new SeleniumInterface(false));
+			cr.generateReportFromPage(db, config.urls.get(0).checkURL);
 		}
 		
 		GlobalKeyListener.stop();
@@ -175,7 +171,7 @@ public class CheckList {
 		System.out.println("Running checks for url: '" + url + "'" + (event != null ? " with event '" + event + "'" : ""));
 		String content = inter.getHTML();
 		boolean curPassed;
-		for (Check c : checks) {
+		for (Check c : implementedChecks) {
 			curPassed = c.noFailExecuteCheck(content, markers, inter);
 			checkResults.insertResult(curPassed);
 			if (curPassed) {
@@ -195,5 +191,5 @@ public class CheckList {
 		return null;
 	}
 
-	public List<Check> getChecks() { return checks; }
+	public List<Check> getChecks() { return implementedChecks; }
 }
