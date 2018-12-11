@@ -34,16 +34,18 @@ public class NameRoleVal extends Check{
 	private ArrayList<String> urlInputWords;
 	private ArrayList<String> weekInputWords;
 	
-	private static final String MARKER_SUCCESS_MESSAGE = "Role of the element is properly discribed";
-	private static final String MARKER_ERROR_MESSAGE = "Aria-label empty, role not discribed";
-	private static final String MARKER_AMBIGUOUS_MESSAGE = "Role description can not be verified, please check the validity of role description on element";
+	
+	
+	private static String ERR_EMPTY_ARIA_LABEL() {return "Aria-label empty, role not discribed";}
+	private static String WARNING_AMBIGUOUS_DESCRIPTION() {return "Role description can not be verified, please check the validity of role description on element";}
+	private static String SUCC_ROLE_DESCRIBED() { return "Role of the element is properly discribed"; }
 	
     public NameRoleVal() { super("Criterion 4.1.2 Name, Role, Value");}
     
     private static enum ResultType implements ResultT {
     	ERROR,
     	SUCCESS,
-    	WARNING_NOT_FOUND
+    	WARNING_AMBIGUOUS_DESCRIPTION
     }
 
     @Override
@@ -66,15 +68,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, buttons[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, buttons[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, buttons[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, buttons[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, buttons[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, buttons[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(buttons[i].getAttribute("type").equals("submit")) {
 					if(!buttons[i].getAttribute("aria-label").equals("")) {
@@ -86,15 +88,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, buttons[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, buttons[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, buttons[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, buttons[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, buttons[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, buttons[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(buttons[i].getAttribute("type").equals("reset")) {
 					if(!buttons[i].getAttribute("aria-label").equals("")) {
@@ -106,15 +108,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, buttons[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, buttons[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, buttons[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, buttons[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, buttons[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, buttons[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				}		
 			}
@@ -135,15 +137,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("checkbox")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -155,15 +157,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("color")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -175,15 +177,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("date")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -195,15 +197,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("datetime-local")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -215,15 +217,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("email")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -235,15 +237,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("file")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -255,15 +257,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("image")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -275,15 +277,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("month")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -295,15 +297,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("number")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -315,15 +317,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("password")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -335,15 +337,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("radio")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -355,15 +357,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("range")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -375,15 +377,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("reset")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -395,15 +397,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("search")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -415,15 +417,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("submit")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -435,15 +437,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("tel")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -455,15 +457,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("text")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -475,15 +477,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("time")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -495,15 +497,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("url")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -515,15 +517,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS_SERIOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} else if(inputs[i].getAttribute("type").equals("week")) {
 					if(!inputs[i].getAttribute("aria-label").equals("")) {
@@ -535,15 +537,15 @@ public class NameRoleVal extends Check{
 								if(ariaLabel.contains(keyWord)) {
 									foundmatch = true;
 									contains = true;
-									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], MARKER_SUCCESS_MESSAGE, ResultType.SUCCESS);
+									addFlagToElement(markers, Marker.MARKER_SUCCESS, inputs[i], SUCC_ROLE_DESCRIBED(), ResultType.SUCCESS);
 								} 
 							}
 						} 
 						if(contains == false) {
-							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], MARKER_AMBIGUOUS_MESSAGE, ResultType.WARNING_NOT_FOUND);
+							addFlagToElement(markers, Marker.MARKER_AMBIGUOUS, inputs[i], WARNING_AMBIGUOUS_DESCRIPTION(), ResultType.WARNING_AMBIGUOUS_DESCRIPTION);
 						}
 					} else {
-						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], MARKER_ERROR_MESSAGE, ResultType.ERROR);
+						addFlagToElement(markers, Marker.MARKER_ERROR, inputs[i], ERR_EMPTY_ARIA_LABEL(), ResultType.ERROR);
 					}
 				} 
 			}
@@ -551,32 +553,31 @@ public class NameRoleVal extends Check{
     }
     
     public void setupTests() {
-    	this.tests.add(new Test("<button>", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<button type=\"button\" aria-label=\"close\">description</button>", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	//work without explicitly declaring it? the button defaults to 'submit' but not in examples on wcag ????
-    	this.tests.add(new Test("<button type=\"submit\" aria-label=\"submit\">description</button>", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<button type=\"reset\" aria-label=\"reset\">description</button>", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input>", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"button\" aria-label=\"Close\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"checkbox\" aria-label=\"option\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"color\" aria-label=\"blue\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"date\" aria-label=\"birthday\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"datetime-local\" aria-label=\"schedule\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"email\" aria-label=\"email\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"file\" aria-label=\"file\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"image\" aria-label=\"image\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"month\" aria-label=\"month\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"number\" aria-label=\"number\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"password\" aria-label=\"password\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"radio\" aria-label=\"option\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"range\" aria-label=\"volume\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"reset\" aria-label=\"reset\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"search\" aria-label=\"search\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"submit\" aria-label=\"submit\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"tel\" aria-label=\"phone\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"text\" aria-label=\"word\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"time\" aria-label=\"time\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
-    	this.tests.add(new Test("<input type=\"week\" aria-label=\"week\">", new ResultT[] {ResultType.WARNING_NOT_FOUND}));
+    	this.tests.add(new Test("<button>", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<button type=\"button\" aria-label=\"close\">description</button>", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<button type=\"submit\" aria-label=\"submit\">description</button>", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<button type=\"reset\" aria-label=\"reset\">description</button>", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input>", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"button\" aria-label=\"Close\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"checkbox\" aria-label=\"option\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"color\" aria-label=\"blue\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"date\" aria-label=\"birthday\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"datetime-local\" aria-label=\"schedule\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"email\" aria-label=\"email\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"file\" aria-label=\"file\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"image\" aria-label=\"image\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"month\" aria-label=\"month\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"number\" aria-label=\"number\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"password\" aria-label=\"password\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"radio\" aria-label=\"option\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"range\" aria-label=\"volume\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"reset\" aria-label=\"reset\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"search\" aria-label=\"search\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"submit\" aria-label=\"submit\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"tel\" aria-label=\"phone\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"text\" aria-label=\"word\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"time\" aria-label=\"time\">", new ResultT[] {ResultType.SUCCESS}));
+    	this.tests.add(new Test("<input type=\"week\" aria-label=\"week\">", new ResultT[] {ResultType.SUCCESS}));
     	
     	//from getHTMLFail
     	this.tests.add(new Test("<button aria-label=\"\">", new ResultT[] {ResultType.ERROR}));
