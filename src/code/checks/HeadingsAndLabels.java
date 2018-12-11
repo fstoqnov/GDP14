@@ -70,7 +70,6 @@ public class HeadingsAndLabels extends Check {
 					continue;
 				}
 			}
-			System.out.println("looking at an input element " + inputEles[i].getAttribute("outerHTML"));
 			LabelledWebElement eleLabel = new LabelledWebElement(inputEles[i]);
 			formControlLabels.add(this.getInputLabel(markers, inputEles[i], eleLabel, labelEles, fieldsetEles, inter));
 		}
