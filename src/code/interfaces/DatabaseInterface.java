@@ -62,6 +62,83 @@ public class DatabaseInterface {
 							+ connectionString.split("Database=")[1].split(";")[0],
 							connectionProps);
 			connected = true;
+
+			try {
+				String query = "SELECT 1 FROM `site` LIMIT 1";
+				Statement stmt = conn.createStatement();
+				stmt.executeQuery(query);
+			} catch (Exception e) {
+				try {
+					String sql = "CREATE TABLE `site` (\r\n" + 
+							"    `id` int NOT NULL AUTO_INCREMENT,\r\n" + 
+							"    `url` VARCHAR(256) NOT NULL,\r\n" + 
+							"    CHECK (LENGTH(`url`) >= 3),\r\n" + 
+							"    CONSTRAINT `XGSQL__site_PK_site` PRIMARY KEY (`id`)\r\n" + 
+							")";
+					Statement stmt = conn.createStatement();
+					stmt.execute(sql);
+					sql = "ALTER TABLE `site` AUTO_INCREMENT=10000001;";
+					stmt = conn.createStatement();
+					stmt.execute(sql);
+					sql =  
+							"CREATE TABLE `checkpage` (\r\n" + 
+									"    `id` int NOT NULL AUTO_INCREMENT,\r\n" + 
+									"    `parent` int NULL,\r\n" + 
+									"    `depth` int,\r\n" + 
+									"    `event` VARCHAR(256) NULL,\r\n" + 
+									"    `site` int NOT NULL,\r\n" + 
+									"    `page` VARCHAR(256) NOT NULL,\r\n" + 
+									"    `timestamp` bigint NOT NULL,\r\n" + 
+									"    `source` mediumblob NOT NULL,\r\n" + 
+									"    CONSTRAINT `XGSQL__checkpage_PK_checkpage` PRIMARY KEY (`id`),\r\n" + 
+									"    CONSTRAINT `XGSQL__checkpage_FK_site` FOREIGN KEY (`site`) REFERENCES `site` (`id`) ON DELETE restrict,\r\n" + 
+									"    CONSTRAINT `XGSQL__checkpage_FK_parent` FOREIGN KEY (`parent`) REFERENCES `checkpage` (`id`) ON DELETE restrict\r\n" + 
+									");";
+					stmt = conn.createStatement();
+					stmt.execute(sql);
+					sql = "ALTER TABLE `checkpage` AUTO_INCREMENT=100000001;";
+					stmt = conn.createStatement();
+					stmt.execute(sql);
+					sql = "CREATE TABLE `variable` (\r\n" + 
+							"    `id` int NOT NULL AUTO_INCREMENT,\r\n" + 
+							"    `checkpage` int NOT NULL,\r\n" + 
+							"    `name` VARCHAR(256) NOT NULL,\r\n" + 
+							"    CHECK (LENGTH(`name`) >= 3),\r\n" + 
+							"    `value` blob NOT NULL,\r\n" + 
+							"    CONSTRAINT `XGSQL__variable_PK_variable` PRIMARY KEY (`id`),\r\n" + 
+							"    CONSTRAINT `XGSQL__variable_FK_checkpage` FOREIGN KEY (`checkpage`) REFERENCES `checkpage` (`id`) ON DELETE restrict\r\n" + 
+							");";
+					stmt = conn.createStatement();
+					stmt.execute(sql);
+					sql = "ALTER TABLE `variable` AUTO_INCREMENT=1000000001;";
+					stmt = conn.createStatement();
+					stmt.execute(sql);
+					sql = "CREATE TABLE `marker` (\r\n" + 
+							"    `id` bigint NOT NULL AUTO_INCREMENT,\r\n" + 
+							"    `checkpage` int NOT NULL,\r\n" + 
+							"    `severity` smallint NOT NULL,\r\n" + 
+							"    `position` bigint,\r\n" + 
+							"    `eleTagName` VARCHAR(16),\r\n" + 
+							"    `eleID` VARCHAR(256),\r\n" + 
+							"    CHECK (LENGTH(`eleTagName`) >= 1),\r\n" + 
+							"    `eleTagNumber` int,\r\n" + 
+							"    `attribute` VARCHAR(64),\r\n" + 
+							"    CHECK (LENGTH(`attribute`) >= 1),\r\n" + 
+							"    `check` VARCHAR(8) NOT NULL,\r\n" + 
+							"    `desc` VARCHAR(256),\r\n" + 
+							"    `hidden` boolean,\r\n" + 
+							"    `outerHTML` mediumblob,\r\n" + 
+							"    CHECK (LENGTH(`check`) >= 1),\r\n" + 
+							"    CONSTRAINT `XGSQL__marker_PK_marker` PRIMARY KEY (`id`),\r\n" + 
+							"    CONSTRAINT `XGSQL__marker_FK_checkpage` FOREIGN KEY (`checkpage`) REFERENCES `checkpage` (`id`) ON DELETE restrict\r\n" + 
+							");";
+					stmt = conn.createStatement();
+					stmt.execute(sql);
+					sql = "ALTER TABLE `marker` AUTO_INCREMENT=5500000001;";
+					stmt = conn.createStatement();
+					stmt.execute(sql);
+				} catch (Exception e2) { e2.printStackTrace(); }
+			}
 		}
 	}
 
@@ -117,7 +194,7 @@ public class DatabaseInterface {
 	public DBSimplePage insertIntoDatabase(List<Marker> markers, String fullURL, String pageContent, String event, long timestamp, SeleniumInterface si) throws Exception {
 		return insertIntoDatabase(partialiseFullURL(fullURL).getKey(), markers, fullURL, pageContent, event, timestamp, si);
 	}
-	
+
 	public DBSimplePage insertIntoDatabase(List<Marker> markers, String fullURL, String pageContent, String event, long timestamp, DBSimplePage parent, SeleniumInterface si) throws Exception {
 		return insertIntoDatabase(partialiseFullURL(fullURL).getKey(), markers, fullURL, pageContent, event, timestamp, parent, si);
 	}
@@ -133,7 +210,7 @@ public class DatabaseInterface {
 	public DBSimplePage insertIntoDatabase(String site, List<Marker> markers, String fullURL, String pageContent, String event, long timestamp, SeleniumInterface si) throws Exception {
 		return insertIntoDatabase(loadSite(site), markers, fullURL, pageContent, event, timestamp, si);
 	}
-	
+
 	public DBSimplePage insertIntoDatabase(String site, List<Marker> markers, String fullURL, String pageContent, String event, long timestamp, DBSimplePage parent, SeleniumInterface si) throws Exception {
 		return insertIntoDatabase(loadSite(site), markers, fullURL, pageContent, event, timestamp, parent, si);
 	}

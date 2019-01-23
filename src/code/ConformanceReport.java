@@ -5,6 +5,9 @@ import code.interfaces.SeleniumInterface;
 import com.google.common.collect.Lists;
 import database_records.DBPage;
 import database_records.DBSimplePage;
+import ru.yandex.qatools.ashot.AShot;
+import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
+
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.Dimension;
@@ -650,10 +653,8 @@ public class ConformanceReport {
 			}
 		}
 
-		inter.driver.manage().window().setSize(new Dimension(maxW, maxH));
-		File screesnshot = ((TakesScreenshot)inter.driver).getScreenshotAs(OutputType.FILE);
-		File eleSSFile = ((TakesScreenshot)inter.driver).getScreenshotAs(OutputType.FILE);
-		BufferedImage bImg = ImageIO.read(screesnshot);
+		//inter.driver.manage().window().setSize(new Dimension(maxW, maxH));
+		BufferedImage bImg = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(1000)).takeScreenshot(inter.driver).getImage();
 
 		for(String check : keys) {
 
@@ -734,8 +735,7 @@ public class ConformanceReport {
 								Graphics2D g = eleSS.createGraphics();
 								g.setColor(Color.RED);
 								g.drawRect(rectX, rectY, ele.getSize().width, ele.getSize().height);
-								ImageIO.write(eleSS, "png", eleSSFile);
-								FileUtils.copyFile(eleSSFile, new File(path + usm.id + ".png"));
+								ImageIO.write(eleSS, "png", new File(path + usm.id + ".png"));
 							//}
 						}
 					}

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.openqa.selenium.WebElement;
 
+import code.CheckList;
 import code.Marker;
 import code.interfaces.SeleniumInterface;
 import tests.Test;
@@ -59,12 +60,12 @@ public abstract class Check implements Comparable<Check> {
 
 	public String getName() { return name; }
 
-	public void outputPassed() {
-		System.out.println("Passed test '" + getName() + "'");
+	public void outputPassed(CheckList cl) {
+		cl.log("Passed test '" + getName() + "'");
 	}
 
-	public void outputFailed() {
-		System.out.println("Failed test '" + getName() + "'");
+	public void outputFailed(CheckList cl) {
+		cl.log("Failed test '" + getName() + "'");
 	}
 
 	//Called to set up any variables that might be used for multiple same site urls

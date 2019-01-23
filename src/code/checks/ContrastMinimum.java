@@ -16,7 +16,7 @@ public class ContrastMinimum extends Check {
 	public ContrastMinimum() {
 		super("Criterion 1.4.3 Contrast(Minimum)");
 	}
-	
+
 	private static String SUCCESS_CONTRAST() { return "Text contrast ratio adequate for font size and weight";}
 	private static String ERR_INADEQUATE_CONTRAST(String contrastString, double requiredRatio) { return "Contrast ratio inadequate for text - Contrast found was (" + contrastString + "). Should be " + requiredRatio; }
 
@@ -24,33 +24,35 @@ public class ContrastMinimum extends Check {
 		ERROR,
 		SUCCESS,
 	}
-	
+
 	@Override
 	public void runCheck(String urlContent, List<Marker> markers, SeleniumInterface inter) {
 		List<WebElement> eles = inter.getAllElements();
 		String content;
 		boolean containsText;
 		for (int i = 0; i < eles.size(); i ++) {
-			if (!eles.get(i).isDisplayed()) { continue; }
-			content = eles.get(i).getText();
-			containsText = inter.containsText(eles.get(i));
-			if (containsText && content != null && content.trim().length() != 0) {
-				double contrast = calculateContrastRatio(eles.get(i), inter);
-				String contrastString = getFormattedContrastRatio(contrast);
-				double size = Double.parseDouble(inter.getComputedStyleElement(eles.get(i), "fontSize").split("px")[0]);
-				boolean bold = Double.parseDouble(inter.getComputedStyleElement(eles.get(i), "fontWeight")) >= 700 ? true : false;
-				double requiredRatio;
-				if ((bold && size >= 14) || (size >= 18)) {
-					requiredRatio = 3;
-				} else {
-					requiredRatio = 4.5D;
+			try {
+				if (!eles.get(i).isDisplayed()) { continue; }
+				content = eles.get(i).getText();
+				containsText = inter.containsText(eles.get(i));
+				if (containsText && content != null && content.trim().length() != 0) {
+					double contrast = calculateContrastRatio(eles.get(i), inter);
+					String contrastString = getFormattedContrastRatio(contrast);
+					double size = Double.parseDouble(inter.getComputedStyleElement(eles.get(i), "fontSize").split("px")[0]);
+					boolean bold = Double.parseDouble(inter.getComputedStyleElement(eles.get(i), "fontWeight")) >= 700 ? true : false;
+					double requiredRatio;
+					if ((bold && size >= 14) || (size >= 18)) {
+						requiredRatio = 3;
+					} else {
+						requiredRatio = 4.5D;
+					}
+					if (contrast >= requiredRatio) {
+						addFlagToElement(markers, Marker.MARKER_SUCCESS, eles.get(i), SUCCESS_CONTRAST(), ResultType.SUCCESS);
+					} else {
+						addFlagToElement(markers, Marker.MARKER_ERROR, eles.get(i), ERR_INADEQUATE_CONTRAST(contrastString, requiredRatio), ResultType.ERROR);
+					}
 				}
-				if (contrast >= requiredRatio) {
-					addFlagToElement(markers, Marker.MARKER_SUCCESS, eles.get(i), SUCCESS_CONTRAST(), ResultType.SUCCESS);
-				} else {
-					addFlagToElement(markers, Marker.MARKER_ERROR, eles.get(i), ERR_INADEQUATE_CONTRAST(contrastString, requiredRatio), ResultType.ERROR);
-				}
-			}
+			} catch (Exception e) {  }
 		}
 	}
 
@@ -64,20 +66,20 @@ public class ContrastMinimum extends Check {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	public void setupTests() {
 		this.tests.add(new Test("<div style=\"background:black; color:white\">Test text</div>", new ResultT[] {ResultType.SUCCESS}));
 		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:white\">Test text</div></div>", new ResultT[] {ResultType.SUCCESS}));
-		
+
 		//should ignore elements that aren't displayed
 		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:black; display:none\">Test text</div></div>", new ResultT[] {}));
-		
+
 		//If there is no text, no contrast failure.
 		this.tests.add(new Test("<div style=\"background:black\"><div style=\"color:black\"></div></div>", new ResultT[] {}));
-		
+
 		this.tests.add(new Test("<div>Test text</div>", new ResultT[] {ResultType.SUCCESS}));
 
-		
+
 		this.tests.add(new Test("<div style=\"background:red; color:orange\">Test text</div>", new ResultT[] {ResultType.ERROR}));
 		this.tests.add(new Test("<div style=\"background:red\"><div style=\"color:orange\">Test text</div></div>", new ResultT[] {ResultType.ERROR}));
 
@@ -90,7 +92,7 @@ public class ContrastMinimum extends Check {
 		if (background.equals("rgba(0, 0, 0, 0)")) {
 			return 21;
 		}
-		
+
 		String startF = foreground.startsWith("rgba") ? "rgba" : "rgb";
 		String startB = background.startsWith("rgba") ? "rgba" : "rgb";
 		if (foreground == null || background == null) {
