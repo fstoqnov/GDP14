@@ -57,6 +57,28 @@ public class DatabaseInterface {
 					"jdbc:mysql://" +
 							connectionString.split("Server=")[1].split(";")[0] +
 							":" +
+							port,
+					connectionProps);
+
+			ResultSet resultSet = conn.getMetaData().getCatalogs();
+			Boolean dbExists = false;
+			String dbName = connectionString.split("Database=")[1].split(";")[0];
+			while (resultSet.next()) {
+
+				String databaseName = resultSet.getString(1);
+				if(databaseName.equals(dbName)){
+					dbExists = true;
+				}
+			}
+			if(!dbExists) {
+				Statement s = conn.createStatement();
+				s.executeUpdate("CREATE DATABASE " + dbName);
+			}
+
+			conn = DriverManager.getConnection(
+					"jdbc:mysql://" +
+							connectionString.split("Server=")[1].split(";")[0] +
+							":" +
 							port +
 							"/"
 							+ connectionString.split("Database=")[1].split(";")[0],
