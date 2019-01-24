@@ -181,11 +181,13 @@ public class ViewFrame extends JFrame {
 						}
 					} catch (Exception e) {
 						JOptionPane.showMessageDialog(cur, e.toString(), "Whoopsie!", JOptionPane.ERROR_MESSAGE);
+						e.printStackTrace();
 					}
 				}
 			})).start();
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(cur, e.toString(), "Whoopsie!", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
 		}
 	}
 	

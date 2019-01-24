@@ -179,11 +179,11 @@ public class CheckList {
 		}
 
 		GlobalKeyListener.stop();
-		
+
 		if (this.hasFrame) {
 			this.frame.displayFinish();
 		}
-		
+
 		return checkResults.overallPass;
 	}
 
@@ -213,17 +213,24 @@ public class CheckList {
 		String content = inter.getHTML();
 		boolean curPassed;
 		for (Check c : implementedChecks) {
-			curPassed = c.noFailExecuteCheck(content, markers, inter);
-			checkResults.insertResult(curPassed);
-			if (RunChecks.couldRunLanguage == false) {
-				log("ERROR: COULD NOT RUN LANGUAGE OF PARTS CHECK!");
-				RunChecks.couldRunLanguage = true;
-			} else {
-				if (curPassed) {
-					c.outputPassed(this);
+			try {
+				curPassed = c.noFailExecuteCheck(content, markers, inter);
+				checkResults.insertResult(curPassed);
+				if (RunChecks.couldRunLanguage == false) {
+					log("ERROR: COULD NOT RUN LANGUAGE OF PARTS CHECK!");
+					RunChecks.couldRunLanguage = true;
+				} else {
+					if (curPassed) {
+						c.outputPassed(this);
+					}
+					else {
+						c.outputFailed(this);
+					}
 				}
-				else {
-					c.outputFailed(this);
+			} catch (Exception e) {
+				e.printStackTrace();
+				if (this.hasFrame) {
+					this.frame.log("ERROR: COULD NOT RUN CHECK " + c.getName());
 				}
 			}
 		}
