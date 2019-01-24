@@ -48,6 +48,7 @@ public class DatabaseInterface {
 		if (connected) {
 			throw new Exception("Already connected!");
 		} else {
+			Class.forName("org.sqlite.JDBC");
 			int port = connectionString.split("Port=").length > 1 ? Integer.parseInt(connectionString.split("Port=")[1].split(";")[0]) : DatabaseInterface.DEFAULT_MYSQL_PORT;
 			Properties connectionProps = new Properties();
 			connectionProps.put("user", connectionString.split("Uid=")[1].split(";")[0].trim());

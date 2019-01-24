@@ -163,9 +163,17 @@ public class ConformanceReport {
 	private final List<String> sourceCode = Lists.newArrayList("<xmp>", "</xmp>");
 	private final String newLine = "<br/>";
 
+	private String date;
+
 	public ConformanceReport() {
-		deleteReport(new File("Report/"));
-		new File("Report/").mkdir();
+		new File("Reports").mkdir();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH-mm");
+		date = format.format(new Date());
+		new File(getReportLocation()).mkdir();
+	}
+
+	private String getReportLocation() {
+		return "Reports/" + date + "/";
 	}
 
 	private String addTable(String table) { return formatLine(table, this.table); }
@@ -320,9 +328,9 @@ public class ConformanceReport {
 			for (DBSimplePage simpleP : pages) {
 
 				boolean imagesPersistent = false;
-				String pathReport = "Report/images/" + simpleP.id + "/";
+				String pathReport = this.getReportLocation() + "images/" + simpleP.id + "/";
 				File directoryReport = new File(pathReport);
-				File persistentDir = new File("ReportImageDatastore/" + simpleP.id);
+				File persistentDir = new File(this.getReportLocation() + "ReportImageDatastore/" + simpleP.id);
 				if(!directoryReport.exists()) {
 					directoryReport.mkdirs();
 				}
@@ -374,7 +382,7 @@ public class ConformanceReport {
 					}
 
 					for(UnserialisedMarker usm : currentCheck) {
-						String pathDS = "ReportImageDatastore/" + simpleP.id + "/" + usm.id + ".png";
+						String pathDS = this.getReportLocation() + "ReportImageDatastore/" + simpleP.id + "/" + usm.id + ".png";
 						File img = new File(pathDS);
 						boolean image = img.exists();
 
@@ -447,7 +455,7 @@ public class ConformanceReport {
 			report.append("</html>");
 			reportFull = report.toString();
 
-			writeToFile(reportFull, "Report/report");
+			writeToFile(reportFull, getReportLocation() + "report");
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -547,17 +555,17 @@ public class ConformanceReport {
 			siteHM.put(c, new ArrayList<>());
 		}
 
-        for(List<DBSimplePage> dbspList : groupedPages) {
-            currTimestamp = dbspList.get(0).timestamp;
-            Date resultDate = new Date(currTimestamp);
+		for(List<DBSimplePage> dbspList : groupedPages) {
+			currTimestamp = dbspList.get(0).timestamp;
+			Date resultDate = new Date(currTimestamp);
 
 			int siteFails = 0;
 			int siteWarn = 0;
 			int siteSerWarn = 0;
 			Boolean sitePass = true;
 
-            for(DBSimplePage dbsp : dbspList) {
-                headers.add(sdf.format(resultDate) + " - " + url + "/" + dbsp.page);
+			for(DBSimplePage dbsp : dbspList) {
+				headers.add(sdf.format(resultDate) + " - " + url + "/" + dbsp.page);
 
 				DBPage dbp = dbsp.loadFullPage(db);
 
@@ -626,7 +634,7 @@ public class ConformanceReport {
 		keys.addAll(checkMarkers.keySet());
 		Collections.sort(keys);
 
-		String path = "ReportImageDatastore/" + simpleP.id + "/";
+		String path = this.getReportLocation() + "ReportImageDatastore/" + simpleP.id + "/";
 		File directory = new File(path);
 		if(!directory.exists()) {
 			directory.mkdirs();
@@ -681,7 +689,7 @@ public class ConformanceReport {
 			File screesnshot = ((TakesScreenshot)inter.driver).getScreenshotAs(OutputType.FILE);
 			File eleSSFile = ((TakesScreenshot)inter.driver).getScreenshotAs(OutputType.FILE);
 			BufferedImage bImg = ImageIO.read(screesnshot);
-			*/
+			 */
 
 			ColorModel cm = bImg.getColorModel();
 			boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
@@ -690,36 +698,37 @@ public class ConformanceReport {
 			for(UnserialisedMarker usm : currentCheck) {
 
 				if(usm.tag != null) {
-					WebElement ele = inter.getElementsByTagName(usm.tag)[usm.tagPos];
+					try {
+						WebElement ele = inter.getElementsByTagName(usm.tag)[usm.tagPos];
 
-					Point p = ele.getLocation();
-					int eleW = ele.getSize().width;
-					int eleH = ele.getSize().height;
-					int px = p.x;
-					int py = p.y;
-					int rectX = 0;
-					int rectY = 0;
+						Point p = ele.getLocation();
+						int eleW = ele.getSize().width;
+						int eleH = ele.getSize().height;
+						int px = p.x;
+						int py = p.y;
+						int rectX = 0;
+						int rectY = 0;
 
-					if(px > 0 && py > 0 && eleH > 0 && eleW > 0) {
-						if(p.y + eleH + (2*imgBuffer) < inter.driver.manage().window().getSize().height) {
-							eleH += 2 * imgBuffer;
-						}
-						if(p.x + eleW +  (2*imgBuffer) < inter.driver.manage().window().getSize().width) {
-							eleW += 2 * imgBuffer;
-						}
-						if(px - imgBuffer > 0) {
-							px -= imgBuffer;
-							rectX = imgBuffer;
-						}
-						if(py - imgBuffer > 0) {
-							py -= imgBuffer;
-							rectY = imgBuffer;
-						}
+						if(px > 0 && py > 0 && eleH > 0 && eleW > 0) {
+							if(p.y + eleH + (2*imgBuffer) < inter.driver.manage().window().getSize().height) {
+								eleH += 2 * imgBuffer;
+							}
+							if(p.x + eleW +  (2*imgBuffer) < inter.driver.manage().window().getSize().width) {
+								eleW += 2 * imgBuffer;
+							}
+							if(px - imgBuffer > 0) {
+								px -= imgBuffer;
+								rectX = imgBuffer;
+							}
+							if(py - imgBuffer > 0) {
+								py -= imgBuffer;
+								rectY = imgBuffer;
+							}
 
-						if(!(ele.getLocation().y + ele.getSize().height + (2 * imgBuffer) > maxH) &&
-								!(ele.getLocation().x + ele.getSize().width + (2 * imgBuffer) > maxW)) {
-							BufferedImage eleSS = new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-							/*
+							if(!(ele.getLocation().y + ele.getSize().height + (2 * imgBuffer) > maxH) &&
+									!(ele.getLocation().x + ele.getSize().width + (2 * imgBuffer) > maxW)) {
+								BufferedImage eleSS = new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+								/*
 							if (px > bImg.getWidth() || py > bImg.getHeight()) {
 
 								//TODO this often occurs!
@@ -730,14 +739,19 @@ public class ConformanceReport {
 								ImageIO.write(bImg, "png", eleSSFile);
 								FileUtils.copyFile(eleSSFile, new File(path + usm.id + ".png"));
 							} else {
-							*/
-								eleSS = eleSS.getSubimage(px, py, Math.min(eleW, bImg.getWidth() - px), Math.min(eleH, bImg.getHeight() - py));
-								Graphics2D g = eleSS.createGraphics();
-								g.setColor(Color.RED);
-								g.drawRect(rectX, rectY, ele.getSize().width, ele.getSize().height);
-								ImageIO.write(eleSS, "png", new File(path + usm.id + ".png"));
-							//}
+								 */
+								try {
+									eleSS = eleSS.getSubimage(px, py, Math.min(eleW, bImg.getWidth() - px), Math.min(eleH, bImg.getHeight() - py));
+									Graphics2D g = eleSS.createGraphics();
+									g.setColor(Color.RED);
+									g.drawRect(rectX, rectY, ele.getSize().width, ele.getSize().height);
+									ImageIO.write(eleSS, "png", new File(path + usm.id + ".png"));
+								} catch (Exception e) {  }
+								//}
+							}
 						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 				}
 			}

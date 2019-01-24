@@ -33,7 +33,7 @@ public class IdentifyInputPurpose extends Check {
 		for (int i = 0; i < forms.length; i ++) {
 			WebElement[] inputs = inter.getSubElementsByTagName(forms[i], "input");
 			for (int j = 0; j < inputs.length; j ++) {
-				if (!inter.isElementAriaVisible(inputs[i])) {
+				if (!inter.isElementAriaVisible(inputs[j])) {
 					break;
 				}
 				String autocompleteVal = inputs[j].getAttribute("autocomplete");
