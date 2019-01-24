@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
@@ -122,6 +123,8 @@ public class ViewFrame extends JFrame {
 		JOptionPane.showMessageDialog(cur, "All checks are now complete!", "Success!", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
+	JScrollPane jsp;
+	
 	public void switchToRun() {
 		try {
 			RuntimeConfig cf = RunChecks.getConfigFromFile(fileName.getText());
@@ -159,13 +162,13 @@ public class ViewFrame extends JFrame {
 				}
 			});
 
-			panel = new JPanel();
+			panel = new JPanel(new BorderLayout());
 			add(panel);
 			txt = new JTextPane();
 			txt.setPreferredSize(new Dimension(300, 300));
 			txt.setEditable(false);
-			JScrollPane jsp = new JScrollPane(txt);
-			panel.add(jsp, BorderLayout.CENTER);
+			jsp = new JScrollPane(txt);
+			panel.add(jsp);
 
 			pack();
 			repaint();
@@ -195,5 +198,7 @@ public class ViewFrame extends JFrame {
 
 	public void log(String line) {
 		txt.setText(txt.getText() + "\r\n" + line);
+		JScrollBar vertical = jsp.getVerticalScrollBar();
+		vertical.setValue( vertical.getMaximum() );
 	}
 }
