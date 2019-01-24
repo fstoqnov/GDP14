@@ -46,7 +46,7 @@ public class ViewFrame extends JFrame {
 	public JPanel one;
 	public JPanel two;
 	public JPanel three;
-	
+
 	private ViewFrame curView;
 
 	public static final String CUR_START = "Current Page: ";
@@ -122,19 +122,13 @@ public class ViewFrame extends JFrame {
 	public void displayFinish() {
 		JOptionPane.showMessageDialog(cur, "All checks are now complete!", "Success!", JOptionPane.INFORMATION_MESSAGE);
 	}
-	
+
 	JScrollPane jsp;
-	
+
 	public void switchToRun() {
 		try {
 			RuntimeConfig cf = RunChecks.getConfigFromFile(fileName.getText());
-			db = null;
-			if (dbString.getText().trim().length() != 0) {
-				db = new DatabaseInterface(dbString.getText());
-				BufferedWriter bw = new BufferedWriter(new FileWriter(new File("db_store")));
-				bw.write(dbString.getText());
-				bw.close();
-			}
+			db = new DatabaseInterface(dbString.getText());
 
 			this.remove(one);
 			this.remove(two);
@@ -193,7 +187,7 @@ public class ViewFrame extends JFrame {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private DatabaseInterface db;
 
 	public void log(String line) {

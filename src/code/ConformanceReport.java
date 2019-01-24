@@ -521,7 +521,6 @@ public class ConformanceReport {
 	}
 
 	private String writeToFile(String source, String filename) throws Exception{
-
 		File file = new File(filename + ".html");
 		OutputStream outputStream = new FileOutputStream(file.getAbsoluteFile());
 		Writer writer = new OutputStreamWriter(outputStream);
@@ -746,7 +745,7 @@ public class ConformanceReport {
 									g.setColor(Color.RED);
 									g.drawRect(rectX, rectY, ele.getSize().width, ele.getSize().height);
 									ImageIO.write(eleSS, "png", new File(path + usm.id + ".png"));
-								} catch (Exception e) {  }
+								} catch (Exception e) { e.printStackTrace(); }
 								//}
 							}
 						}
@@ -784,6 +783,7 @@ public class ConformanceReport {
 			}
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

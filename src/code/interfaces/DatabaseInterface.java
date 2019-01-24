@@ -49,10 +49,10 @@ public class DatabaseInterface {
 			throw new Exception("Already connected!");
 		} else {
 			Class.forName("org.sqlite.JDBC");
-			int port = connectionString.split("Port=").length > 1 ? Integer.parseInt(connectionString.split("Port=")[1].split(";")[0]) : DatabaseInterface.DEFAULT_MYSQL_PORT;
-			Properties connectionProps = new Properties();
+			//int port = connectionString.split("Port=").length > 1 ? Integer.parseInt(connectionString.split("Port=")[1].split(";")[0]) : DatabaseInterface.DEFAULT_MYSQL_PORT;
+			/*Properties connectionProps = new Properties();
 			connectionProps.put("user", connectionString.split("Uid=")[1].split(";")[0].trim());
-			connectionProps.put("password", connectionString.split("Pwd=")[1].split(";")[0].trim());
+			connectionProps.put("password", connectionString.split("Pwd=")[1].split(";")[0].trim());*/
 
 			/*conn = DriverManager.getConnection(
 					"jdbc:sqlite://" +
