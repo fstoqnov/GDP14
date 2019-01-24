@@ -88,8 +88,9 @@ public class ViewFrame extends JFrame {
 		panel = new JPanel();
 		two = panel;
 		add(panel);
-		panel.add(new JLabel("DB Connection String: "));
+		//panel.add(new JLabel("DB Connection String: "));
 		panel.add(dbString = new JTextField(12));
+		dbString.setVisible(false);
 		if (new File("db_store").exists()) {
 			try {
 				BufferedReader br = new BufferedReader(new FileReader(new File("db_store")));
@@ -117,6 +118,10 @@ public class ViewFrame extends JFrame {
 		setVisible(true);
 	}
 
+	public void displayFinish() {
+		JOptionPane.showMessageDialog(cur, "All checks are now complete!", "Success!", JOptionPane.INFORMATION_MESSAGE);
+	}
+	
 	public void switchToRun() {
 		try {
 			RuntimeConfig cf = RunChecks.getConfigFromFile(fileName.getText());

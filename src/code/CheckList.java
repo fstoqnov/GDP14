@@ -179,7 +179,11 @@ public class CheckList {
 		}
 
 		GlobalKeyListener.stop();
-
+		
+		if (this.hasFrame) {
+			this.frame.displayFinish();
+		}
+		
 		return checkResults.overallPass;
 	}
 
